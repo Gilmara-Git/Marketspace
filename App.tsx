@@ -2,6 +2,10 @@ import { StatusBar } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFonts, Karla_400Regular, Karla_700Bold} from '@expo-google-fonts/karla';
 
+import { NativeBaseProvider } from 'native-base';
+import {SafeAreaProvider} from 'react-native-safe-area-context'
+import { THEME } from './src/themes';
+
 export default function App() {
   const [fontsLoaded]  = useFonts({
     Karla_400Regular,
@@ -10,18 +14,22 @@ export default function App() {
 
  
   return (
-    <View style={styles.container}>
-      <StatusBar 
-        barStyle='dark-content' 
-        backgroundColor='transparent' 
-        translucent />
-        
-      { fontsLoaded ? <View><Text style={{color:'red'}}>Ola</Text></View>
-      :
-      
-      <Text>Open up App.tsx to start working on your Gilmara now Ola!</Text>
-    }
-    </View>
+    <SafeAreaProvider>
+
+        <NativeBaseProvider theme={THEME}>
+          <StatusBar 
+            barStyle='dark-content' 
+            backgroundColor='transparent' 
+            translucent />
+
+          { !fontsLoaded ? <View><Text  style={{color:'red'}}>Ola</Text></View>
+          :
+          
+          <Text numberOfLines={1}>Open up App.tsx to start working on your now Ola!</Text>
+        }
+        </NativeBaseProvider>
+  
+    </SafeAreaProvider>
   );
 }
 
