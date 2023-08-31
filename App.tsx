@@ -1,4 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFonts, Karla_400Regular, Karla_700Bold} from '@expo-google-fonts/karla';
 
@@ -11,7 +11,11 @@ export default function App() {
  
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar 
+        barStyle='dark-content' 
+        backgroundColor='transparent' 
+        translucent />
+        
       { fontsLoaded ? <View><Text style={{color:'red'}}>Ola</Text></View>
       :
       
