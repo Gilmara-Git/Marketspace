@@ -4,7 +4,10 @@ import { useFonts, Karla_400Regular, Karla_700Bold} from '@expo-google-fonts/kar
 
 import { NativeBaseProvider } from 'native-base';
 import {SafeAreaProvider} from 'react-native-safe-area-context'
-import { THEME } from './src/themes';
+import { THEME } from '@themes/index';
+
+import { Loading } from '@components/Loading/index';
+
 
 export default function App() {
   const [fontsLoaded]  = useFonts({
@@ -25,7 +28,8 @@ export default function App() {
           { !fontsLoaded ? <View><Text  style={{color:'red'}}>Ola</Text></View>
           :
           
-          <Text numberOfLines={1}>Open up App.tsx to start working on your now Ola!</Text>
+          <Loading/>
+          // <Text numberOfLines={1}>Open up App.tsx to start working on your now Ola!</Text>
         }
         </NativeBaseProvider>
   
