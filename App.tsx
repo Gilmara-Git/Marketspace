@@ -1,38 +1,37 @@
-import { StatusBar } from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
-import { useFonts, Karla_400Regular, Karla_700Bold} from '@expo-google-fonts/karla';
+import { StatusBar } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import {
+  useFonts,
+  Karla_300Light,
+  Karla_400Regular,
+  Karla_700Bold,
+} from "@expo-google-fonts/karla";
 
-import { NativeBaseProvider } from 'native-base';
-import {SafeAreaProvider} from 'react-native-safe-area-context'
-import { THEME } from '@themes/index';
+import { NativeBaseProvider } from "native-base";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { THEME } from "@themes/index";
 
-import { Loading } from '@components/Loading/index';
-
+import { Loading } from "@components/Loading/index";
+import { SignIn } from "@screens/SignIn/index";
 
 export default function App() {
-  const [fontsLoaded]  = useFonts({
+  const [fontsLoaded] = useFonts({
     Karla_400Regular,
-    Karla_700Bold
-  })
+    Karla_700Bold,
+    Karla_300Light
+  });
 
- 
   return (
     <SafeAreaProvider>
+      <NativeBaseProvider theme={THEME}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="transparent"
+          translucent
+        />
 
-        <NativeBaseProvider theme={THEME}>
-          <StatusBar 
-            barStyle='dark-content' 
-            backgroundColor='transparent' 
-            translucent />
-
-          { !fontsLoaded ? <View><Text  style={{color:'red'}}>Ola</Text></View>
-          :
-          
-          <Loading/>
-          // <Text numberOfLines={1}>Open up App.tsx to start working on your now Ola!</Text>
-        }
-        </NativeBaseProvider>
-  
+        {!fontsLoaded ? <Loading /> : <SignIn />}
+      </NativeBaseProvider>
     </SafeAreaProvider>
   );
 }
@@ -40,8 +39,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
