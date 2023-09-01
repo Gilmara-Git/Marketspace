@@ -10,10 +10,10 @@ type ButtonProps = IButtonProps & {
 } 
 
 export const Button =({title, icon, backColor, color, size, ...rest}: ButtonProps)=>{
-   
+
     return (
         <ButtonNativeBase 
-            height={10}
+            height={11}
             width={size} 
             bg={backColor}
             {...rest}

@@ -1,28 +1,29 @@
-import { Input as InputNativeBase, IInputProps, HStack, Text} from 'native-base';
-import { Svg } from 'react-native-svg';
+import { Input as InputNativeBase, IInputProps, HStack } from 'native-base';
+
 
 
 
 type InputProps = IInputProps & {
-name: string;
-icon?: Svg;
+
+
 }
-export const Input =({name, icon, ...rest}: InputProps)=>{
-    console.log(icon, 'lin11');
+export const Input =({ ...rest}: InputProps)=>{
+ 
     return (
         <HStack>
             <InputNativeBase
-                placeholder={name}
-                height='45'
-                width='279'
+                placeholderTextColor='gray.400'
+                color='gray.600'
+                height={13}
+                width={69}
                 borderRadius={6}
                 bg='gray.50'
-                borderWidth='0'
+                borderWidth={0}
                 my={3}
                 fontFamily='body'
                 fontSize='md'
                 {...rest}
-               
+                 
                 />
         </HStack>
     );
