@@ -16,6 +16,8 @@ export const Button =({title, icon, backColor, color, size, ...rest}: ButtonProp
             height={11}
             width={size} 
             bg={backColor}
+            
+          
             {...rest}
             >
         
