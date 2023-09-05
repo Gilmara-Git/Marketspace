@@ -1,19 +1,25 @@
 import  { useState } from 'react';
 import { VStack, Center, Text, ScrollView, Image } from 'native-base';
 
-import { Input } from '@components/Input/index';
-import { InputPassword } from '@components/InputPassword/index';
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from 'react-hook-form';
 
 
 import Logo  from '@assets/logo.png';
 import Marketspace from '@assets/marketspace.svg';
 import { Button }  from '@components/Button/index';
+import { Input } from '@components/Input/index';
+import { InputPassword } from '@components/InputPassword/index';
 
-type FormData = {
- email: string,
- password: string
-}
+
+const signInSchema = yup.object({
+    email: yup.string().required('Please enter your E-mail').email('Enter a valid e-mail address'),
+    password: yup.string().required('Please enter a 6 digits password').min(6, 'Password must be at least 6 characters')
+
+})
+
+type FormData = yup.InferType<typeof signInSchema>
 
 export const SignIn =()=>{
    
@@ -21,10 +27,7 @@ export const SignIn =()=>{
     const [ isCreating, setIsCreating ] = useState(false);
 
     const { control, handleSubmit , formState: {errors} } = useForm<FormData>({
-        // defaultValues:{
-        //     email: 'gilmarapq@hotmail.com'
-        
-        // }
+       resolver: yupResolver(signInSchema)
     }
     );
     
@@ -74,12 +77,6 @@ export const SignIn =()=>{
                                 <Controller
                                     control={control}
                                     name='email'
-                                    rules={{
-                                        required: 'Type a valid email address',
-                                        pattern: {
-                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                        message: "Invalid Email format",
-                                      },}}
                                     render={({ field: {onChange, value }})=>(
                                         <Input 
                                             placeholder='E-mail' 
@@ -97,7 +94,6 @@ export const SignIn =()=>{
                                 <Controller
                                     control={control}
                                     name='password'
-                                    rules={{required: 'Type a valid password'}}  
                                     render={({field: { onChange, value }})=>(
                                         <InputPassword 
                                             onChangeText={onChange}
