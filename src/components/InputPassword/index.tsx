@@ -4,7 +4,6 @@ import {
   IInputProps,
   FormControl,
   Icon,
-  View,
   Text,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,7 +12,9 @@ type InputProps = IInputProps & {
   errorMessage?: string | undefined;
 };
 
-export const InputPassword = ({ errorMessage, ...rest }: InputProps) => {
+export const InputPassword = ({ errorMessage, isInvalid, ...rest }: InputProps) => {
+  console.log(errorMessage, 'line16', isInvalid)
+  const invalid = !!errorMessage || isInvalid;
    
   const [hidePassword, setHidePassword] = useState(true);
   const togglePassword = () => {
@@ -21,8 +22,12 @@ export const InputPassword = ({ errorMessage, ...rest }: InputProps) => {
   };
 
   return (
-    <FormControl>
+    <FormControl
+      isInvalid={invalid}
+    >
       <InputNativeBase
+       isInvalid={invalid}
+       _invalid={{ borderWidth: 1, borderColor: 'red.400'}}
         height={13}
         width={69}
         borderRadius={6}
@@ -49,11 +54,10 @@ export const InputPassword = ({ errorMessage, ...rest }: InputProps) => {
         {...rest}
       />
 
-      {errorMessage !== undefined && (
         <FormControl.ErrorMessage mt='-2'>
-          <Text fontSize='xs' fontFamily='bold' color='red.400'>{errorMessage}</Text>
+            {errorMessage}
         </FormControl.ErrorMessage>
-      )}
+    
     </FormControl>
   );
 };

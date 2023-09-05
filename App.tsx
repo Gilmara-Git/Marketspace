@@ -1,5 +1,4 @@
 import { StatusBar } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
 import {
   useFonts,
   Karla_300Light,
@@ -13,6 +12,7 @@ import { THEME } from "@themes/index";
 
 import { Loading } from "@components/Loading/index";
 import { SignIn } from "@screens/SignIn/index";
+import { SignUp } from '@screens/SignUp/index';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -36,11 +36,3 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

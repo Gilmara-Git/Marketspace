@@ -1,15 +1,20 @@
 import { Input as InputNativeBase, IInputProps, VStack , FormControl, View, Text} from 'native-base';
 
-
 type InputProps = IInputProps & {
-errorMessage: string | undefined;
-
+errorMessage?: string | undefined;
 }
-export const Input =({ errorMessage, ...rest}: InputProps)=>{
- 
+export const Input =({ errorMessage, isInvalid, ...rest}: InputProps)=>{
+ const invalid = !!errorMessage || isInvalid;
     return (
-        <FormControl>
+        <FormControl
+            isInvalid={invalid}
+        >
             <InputNativeBase
+                isInvalid={invalid}
+                _invalid={{
+                    borderWidth: 1,
+                    borderColor: 'red.400'
+                }}
                 placeholderTextColor='gray.400'
                 color='gray.600'
                 height={13}
@@ -17,7 +22,7 @@ export const Input =({ errorMessage, ...rest}: InputProps)=>{
                 borderRadius={6}
                 bg='gray.50'
                 borderWidth={0}
-                my={3}
+                my={2}
                 fontFamily='body'
                 fontSize='md'
                 _focus={{
@@ -29,15 +34,10 @@ export const Input =({ errorMessage, ...rest}: InputProps)=>{
                  
                 />
 
-
-            { errorMessage !== undefined && (
                 <FormControl.ErrorMessage mt='-2'>
-                    <Text fontSize='xs' fontFamily='bold' color='red.400'>
-                        {errorMessage}
-                    </Text>
+                    {errorMessage}
                 </FormControl.ErrorMessage>
-
-            )}
+           
         </FormControl>
     );
 };
