@@ -135,6 +135,8 @@ export const SignUp =()=>{
                                             value={value}
                                             errorMessage={errors.confirm_password?.message}
                                             isInvalid={!!errors.confirm_password}
+                                            returnKeyType='send'
+                                            onSubmitEditing={handleSubmit(handleCreateUser)}
                                             />
 
                                     )}
@@ -148,6 +150,7 @@ export const SignUp =()=>{
                                     isLoading={isCreating}
                                     onPress={handleSubmit(handleCreateUser)}
                                     _pressed={{bg: 'gray.800'}}
+                               
 
                                 />
 
