@@ -11,8 +11,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { THEME } from "@themes/index";
 
 import { Loading } from "@components/Loading/index";
-import { SignIn } from "@screens/SignIn/index";
-import { SignUp } from '@screens/SignUp/index';
+import { Routes } from '@routes/index'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -30,7 +29,7 @@ export default function App() {
           translucent
         />
 
-        {!fontsLoaded ? <Loading /> : <SignUp />}
+        {!fontsLoaded ? <Loading /> : <Routes />}
       </NativeBaseProvider>
     </SafeAreaProvider>
   );

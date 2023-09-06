@@ -13,6 +13,8 @@ import { Input } from '@components/Input/index';
 import { Button }  from '@components/Button/index';
 import { InputPassword } from '@components/InputPassword/index';
 
+import { useNavigation } from '@react-navigation/native';
+
 const signUpSchema = yup.object({
     name: yup.string().required('Type your name'),
     email: yup.string().required('Type your email').email('Type a valid email address'),
@@ -26,20 +28,18 @@ type FormData = yup.InferType<typeof signUpSchema>
 export const SignUp =()=>{
     const [ isCreating, setIsCreating ] = useState(false);
     const [ isLogin, setIsLogin ] = useState(false);
-    
+    const navigation = useNavigation();
+
     const handleCreateUser = (data : FormData)=>{
         console.log(data, 'line31 signup')
         setIsCreating(true);
     };
     
     const handleLogin =()=>{
-        //signIn/login vira do context
+        navigation.goBack();
         setIsLogin(true)
     };
     
-
-
-
     const { control, handleSubmit , formState: {errors} } = useForm<FormData>({
         resolver: yupResolver(signUpSchema)
     }
@@ -138,6 +138,8 @@ export const SignUp =()=>{
                                             value={value}
                                             errorMessage={errors.confirm_password?.message}
                                             isInvalid={!!errors.confirm_password}
+                                            returnKeyType='send'
+                                            onSubmitEditing={handleSubmit(handleCreateUser)}
                                             />
 
                                     )}
@@ -151,6 +153,7 @@ export const SignUp =()=>{
                                     isLoading={isCreating}
                                     onPress={handleSubmit(handleCreateUser)}
                                     _pressed={{bg: 'gray.800'}}
+                               
 
                                 />
 
