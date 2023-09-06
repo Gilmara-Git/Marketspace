@@ -37,9 +37,6 @@ export const SignUp =()=>{
         setIsLogin(true)
     };
     
-
-
-
     const { control, handleSubmit , formState: {errors} } = useForm<FormData>({
         resolver: yupResolver(signUpSchema)
     }
