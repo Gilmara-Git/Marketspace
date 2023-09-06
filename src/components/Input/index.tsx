@@ -1,4 +1,4 @@
-import { Input as InputNativeBase, IInputProps, VStack , FormControl, View, Text} from 'native-base';
+import { Input as InputNativeBase, IInputProps,FormControl} from 'native-base';
 
 type InputProps = IInputProps & {
 errorMessage?: string | undefined;

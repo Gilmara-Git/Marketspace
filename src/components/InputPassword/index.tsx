@@ -4,7 +4,6 @@ import {
   IInputProps,
   FormControl,
   Icon,
-  Text,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -13,7 +12,7 @@ type InputProps = IInputProps & {
 };
 
 export const InputPassword = ({ errorMessage, isInvalid, ...rest }: InputProps) => {
-  console.log(errorMessage, 'line16', isInvalid)
+
   const invalid = !!errorMessage || isInvalid;
    
   const [hidePassword, setHidePassword] = useState(true);
