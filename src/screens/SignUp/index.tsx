@@ -13,6 +13,8 @@ import { Input } from '@components/Input/index';
 import { Button }  from '@components/Button/index';
 import { InputPassword } from '@components/InputPassword/index';
 
+import { useNavigation } from '@react-navigation/native';
+
 const signUpSchema = yup.object({
     name: yup.string().required('Type your name'),
     email: yup.string().required('Type your email').email('Type a valid email address'),
@@ -26,14 +28,15 @@ type FormData = yup.InferType<typeof signUpSchema>
 export const SignUp =()=>{
     const [ isCreating, setIsCreating ] = useState(false);
     const [ isLogin, setIsLogin ] = useState(false);
-    
+    const navigation = useNavigation();
+
     const handleCreateUser = (data : FormData)=>{
         console.log(data, 'line31 signup')
         setIsCreating(true);
     };
     
     const handleLogin =()=>{
-        //signIn/login vira do context
+        navigation.goBack();
         setIsLogin(true)
     };
     

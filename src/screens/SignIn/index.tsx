@@ -5,6 +5,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from 'react-hook-form';
 
+import { useNavigation } from '@react-navigation/native';
+import { AuthRoutesNavigationProps } from '@routes/auth.routes';
 
 import Logo  from '@assets/logo.png';
 import Marketspace from '@assets/marketspace.svg';
@@ -24,20 +26,23 @@ type FormData = yup.InferType<typeof signInSchema>
 export const SignIn =()=>{
    
     const [ isAccessing, setIsAccessing ] = useState(false);
-    const [ isCreating, setIsCreating ] = useState(false);
+
 
     const { control, handleSubmit , formState: {errors} } = useForm<FormData>({
        resolver: yupResolver(signInSchema)
     }
     );
+
+    const navigation  = useNavigation<AuthRoutesNavigationProps>();
     
-    const handleCreate = ()=>{
-        setIsCreating(true)
+    const handleSignUp = ()=>{
+        navigation.navigate('signUp')
+  
     };
     
     
     const handleSignIn =(data: FormData)=>{
-        console.log('tochegando')
+    
         setIsAccessing(true);
         console.log(data, 'line21')
     }
@@ -135,10 +140,9 @@ export const SignIn =()=>{
                                 <Button 
                                     title='Create an account' 
                                     color='gray.800' 
-                                    backColor={isCreating ? 'gray.500' : 'gray.300' } 
+                                    backColor='gray.300'
                                     size={69} 
-                                    isLoading={isCreating}
-                                    onPress={handleCreate}
+                                    onPress={handleSignUp}
                                     _pressed={{bg: 'gray.400'}}
                                     />
 
