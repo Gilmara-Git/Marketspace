@@ -11,7 +11,9 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { THEME } from "@themes/index";
 
 import { Loading } from "@components/Loading/index";
-import { Routes } from '@routes/index'
+import { Routes } from '@routes/index';
+
+import { Home } from '@screens/Home';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -29,7 +31,7 @@ export default function App() {
           translucent
         />
 
-        {!fontsLoaded ? <Loading /> : <Routes />}
+        {!fontsLoaded ? <Loading /> : <Home />}
       </NativeBaseProvider>
     </SafeAreaProvider>
   );

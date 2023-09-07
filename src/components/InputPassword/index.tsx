@@ -5,6 +5,7 @@ import {
   FormControl,
   Icon,
 } from "native-base";
+
 import { Ionicons } from "@expo/vector-icons";
 
 type InputProps = IInputProps & {
