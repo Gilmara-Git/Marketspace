@@ -1,21 +1,26 @@
+
 import { Button as ButtonNativeBase, IButtonProps, Text } from 'native-base';
-import SvgImage from 'react-native-svg/lib/typescript/elements/Image';
+
 
 type ButtonProps = IButtonProps & {
     title: string,
     size: number,
-    icon?: SvgImage,
+    leftIcon?: any,
+    rightIcon?: any,
     backColor: string,
     color: string,
+    onPressColor: string
 } 
 
-export const Button =({title, icon, backColor, color, size, ...rest}: ButtonProps)=>{
+export const Button =({title, leftIcon, backColor, color, size, onPressColor, ...rest}: ButtonProps)=>{
 
     return (
         <ButtonNativeBase 
             height={11}
             width={size} 
             bg={backColor}
+            _pressed={{bg: onPressColor}}
+            leftIcon={leftIcon}
             {...rest}
             >
         
