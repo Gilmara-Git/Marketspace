@@ -1,9 +1,11 @@
 import { Input as InputNativeBase, IInputProps,FormControl} from 'native-base';
+import { MaterialIcons } from '@expo/vector-icons';
 
 type InputProps = IInputProps & {
 errorMessage?: string | undefined;
+width: number
 }
-export const Input =({ errorMessage, isInvalid, ...rest}: InputProps)=>{
+export const Input =({ errorMessage, width, isInvalid, ...rest}: InputProps)=>{
  const invalid = !!errorMessage || isInvalid;
     return (
         <FormControl
@@ -18,7 +20,7 @@ export const Input =({ errorMessage, isInvalid, ...rest}: InputProps)=>{
                 placeholderTextColor='gray.400'
                 color='gray.600'
                 height={13}
-                width={69}
+                width={width}
                 borderRadius={6}
                 bg='gray.50'
                 borderWidth={0}
