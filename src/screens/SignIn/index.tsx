@@ -89,6 +89,7 @@ export const SignIn =()=>{
                                             keyboardType='email-address'
                                             autoCapitalize='none'
                                             value={value}
+                                            width={69}
                                             errorMessage={errors.email?.message} 
                                             isInvalid={!!errors.email}
                                             />
@@ -120,7 +121,8 @@ export const SignIn =()=>{
                                     backColor='blue.600' 
                                     size={69}
                                     mt={6}
-                                    _pressed={{bg: 'blue.900'}}
+                                    onPressColor='blue.900'
+                                    // _pressed={{bg: 'blue.900'}}
                                     isLoading={isAccessing}
                                     _loading={{
                                         bg:'blue.900'
@@ -143,7 +145,7 @@ export const SignIn =()=>{
                                     backColor='gray.300'
                                     size={69} 
                                     onPress={handleSignUp}
-                                    _pressed={{bg: 'gray.400'}}
+                                    onPressColor= 'gray.400'
                                     />
 
                         </Center>

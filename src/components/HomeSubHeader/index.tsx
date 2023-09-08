@@ -1,27 +1,61 @@
-import { VStack, HStack, Center , Text } from 'native-base';
-import { Horse } from 'phosphor-react-native';
+import { VStack, HStack, Center, Heading, Text, IconButton } from "native-base";
+import { Tag } from "phosphor-react-native";
+import { Feather } from '@expo/vector-icons';
 
-export const HomeSubHeader = ()=>{
-    console.log(typeof Horse, 'line5')
-    return (
-        <VStack mt={8}>
-            <Text fontFamily='body' fontSize='sm'>Your Ads listed for sale</Text>
+export const HomeSubHeader = () => {
+  return (
+    <VStack mt={8}>
+      <Text fontFamily="body" fontSize="sm" color='gray.600' mb={3}>
+        Your Ads listed for sale
+      </Text>
 
-            <HStack bg='blue.100' height='66' >
-                <Center>
-                    <VStack>
-                        <Horse />
-                    </VStack>
+      <HStack bg="blue.100" height={16} width={75}>
+        <Center px={4}>
+          <HStack>
+            <VStack pt={2}>
+              <Tag color="#364D9D" weight="regular" size="22" />
+            </VStack>
 
-                    <VStack>
+            <VStack ml={4} pr={24}>
+              <Heading fontFamily="heading" fontSize="xl" color='gray.800'>
+                4
+              </Heading>
+              <Text fontFamily="body" fontSize="xs" color='gray.800'>
+                Active Adds
+              </Text>
+            </VStack>
 
-                    </VStack>
-                    <HStack>
+            <HStack>
+              <Center>
+                <HStack>
+                  <Heading
+                    pl={4}
+                    pr={2}
+                    fontFamily="heading"
+                    fontSize="xs"
+                    color="blue.900"
+                  >
+                    My Adds
+                  </Heading>
+                  <IconButton
+                    onPress={()=>console.log('do Something')}
+                    _pressed={{ opacity: .5}}
+                    size={4} 
 
-                    </HStack>
-
-                </Center>
+                    _icon={{
+                      as: Feather,
+                      color:'blue.900',
+                      name:'arrow-right',
+                      
+                    }}
+                  />
+                 
+                </HStack>
+              </Center>
             </HStack>
-        </VStack>
-    )
+          </HStack>
+        </Center>
+      </HStack>
+    </VStack>
+  );
 };

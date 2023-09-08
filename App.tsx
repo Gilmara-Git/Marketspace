@@ -12,6 +12,7 @@ import { THEME } from "@themes/index";
 
 import { Loading } from "@components/Loading/index";
 import { Routes } from '@routes/index';
+import { SignIn } from '@screens/SignIn';
 
 import { Home } from '@screens/Home';
 
