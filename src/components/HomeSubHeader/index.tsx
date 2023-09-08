@@ -1,14 +1,15 @@
-import { VStack, HStack, Center, Heading, Text } from "native-base";
-import { Tag, ArrowRight } from "phosphor-react-native";
+import { VStack, HStack, Center, Heading, Text, IconButton } from "native-base";
+import { Tag } from "phosphor-react-native";
+import { Feather } from '@expo/vector-icons';
 
 export const HomeSubHeader = () => {
   return (
     <VStack mt={8}>
-      <Text fontFamily="body" fontSize="sm">
+      <Text fontFamily="body" fontSize="sm" color='gray.600' mb={3}>
         Your Ads listed for sale
       </Text>
 
-      <HStack bg="blue.100" height="66" width="327">
+      <HStack bg="blue.100" height={16} width={75}>
         <Center px={4}>
           <HStack>
             <VStack pt={2}>
@@ -16,10 +17,10 @@ export const HomeSubHeader = () => {
             </VStack>
 
             <VStack ml={4} pr={24}>
-              <Heading fontFamily="heading" fontSize="xl">
+              <Heading fontFamily="heading" fontSize="xl" color='gray.800'>
                 4
               </Heading>
-              <Text fontFamily="body" fontSize="xs">
+              <Text fontFamily="body" fontSize="xs" color='gray.800'>
                 Active Adds
               </Text>
             </VStack>
@@ -36,7 +37,19 @@ export const HomeSubHeader = () => {
                   >
                     My Adds
                   </Heading>
-                  <ArrowRight color="#364D9D" weight="regular" size="16" />
+                  <IconButton
+                    onPress={()=>console.log('do Something')}
+                    _pressed={{ opacity: .5}}
+                    size={4} 
+
+                    _icon={{
+                      as: Feather,
+                      color:'blue.900',
+                      name:'arrow-right',
+                      
+                    }}
+                  />
+                 
                 </HStack>
               </Center>
             </HStack>
