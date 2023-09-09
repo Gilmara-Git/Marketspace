@@ -2,7 +2,11 @@ import { VStack, Text , IconButton, Divider } from 'native-base';
 import { Input } from '@components/Input';
 import { MaterialIcons , MaterialCommunityIcons } from '@expo/vector-icons';
 
-export const HomeFilter =()=>{
+type HomeFilterProps = {
+    filterClick: ()=> void;
+}
+
+export const HomeFilter =({ filterClick}: HomeFilterProps)=>{
     return (
         <VStack mt={8}>
             <Text mb={2} fontFamily='body' fontSize='sm' color='gray.600'>Buy various products</Text>
@@ -27,7 +31,7 @@ export const HomeFilter =()=>{
 
 
                     <IconButton
-                          onPress={()=>console.log('Filter icon on home filter')} 
+                          onPress={()=>filterClick()} 
                         _pressed={{bg: 'gray.200', opacity: .5}}
                         _icon={{
                             as: MaterialCommunityIcons, 
