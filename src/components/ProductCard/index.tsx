@@ -19,8 +19,8 @@ export const ProductCard =( { name, price, description, image,  isNew, ...rest  
         <Pressable 
             pb={6}  
             rounded={8} 
-            px={2}  
-            onPress={()=>console.log('Product Card')}
+            px={2} 
+            onPress={()=>console.log('Open Card Details')} 
             {...rest}
         >
             <Image 
