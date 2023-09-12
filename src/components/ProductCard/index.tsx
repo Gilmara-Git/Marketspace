@@ -1,4 +1,4 @@
-import { Pressable ,IPressableProps, Image, Box, Text, HStack} from 'native-base';
+import { Pressable ,IPressableProps, Image, Box, Text } from 'native-base';
 import { UserPhoto } from '@components/UserPhoto';
 import sneaker from '@assets/red_sneaker.png';
 
@@ -29,8 +29,7 @@ export const ProductCard =( { name, price, description, image,  isNew, ...rest  
                 alt='Product image'
             />
             <UserPhoto  
-                width={6} 
-                height={6} 
+                size={6} 
                 borderColor='gray.50'
                 position='absolute'
                 top={1}

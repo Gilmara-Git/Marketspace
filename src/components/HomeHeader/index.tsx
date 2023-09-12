@@ -9,7 +9,7 @@ export const HomeHeader = ()=>{
     return (
         <HStack>
             <HStack width={50}>
-                <UserPhoto width={13} height={13} borderColor='blue.600'/>
+                <UserPhoto size={13} borderColor='blue.600'/>
                 <VStack ml={3}>
                     <Text fontFamily='body' fontSize='md'>Welcome,</Text>
                     <Heading fontFamily='heading' fontSize='md'>Gilmara !</Heading>
