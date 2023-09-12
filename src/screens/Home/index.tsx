@@ -34,6 +34,7 @@ export const Home =()=>{
                       
                         />
                     <FlatList 
+                        contentContainerStyle={{flex:1, }}
                         ListEmptyComponent={
                             <Text
                             my={6} 
@@ -55,6 +56,7 @@ export const Home =()=>{
                             name={item.name} 
                             price={item.price} 
                             image=''
+                            isNotUserAd={true}
                             />}
                         
                         />
