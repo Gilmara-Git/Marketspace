@@ -23,8 +23,12 @@ export const Button =({title, leftIcon, backColor, color, size, onPressColor, ..
             leftIcon={leftIcon}
             {...rest}
             >
-        
-            <Text fontFamily='heading' color={color}>{title}</Text>
+                 
+            <Text
+                ml={leftIcon ? '1': ''} 
+                fontFamily='heading' 
+                color={color}>{title}
+            </Text>
         </ButtonNativeBase>
     )
 };

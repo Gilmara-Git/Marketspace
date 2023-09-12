@@ -1,19 +1,18 @@
 import { Image, IImageProps} from 'native-base';
 
 type UserPhotoProps = IImageProps &{
-width: number,
-height: number,
+size: number,
 borderColor: string
 
 }
 
-export const UserPhoto = ({width, height,borderColor, ...rest}: UserPhotoProps )=>{
+export const UserPhoto = ({size, borderColor, ...rest}: UserPhotoProps )=>{
     return (
         <Image 
             source={{ uri: 'http://github.com/gilmara-git.png'}}
             alt='User Photo'
-            width={width}
-            height={height}
+            width={size}
+            height={size}
             rounded='full'
             borderWidth={2}
             borderColor={borderColor}
