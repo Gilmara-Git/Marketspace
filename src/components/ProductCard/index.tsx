@@ -32,8 +32,7 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
 
                 <View>
 
-                    <Image 
-                        
+                    <Image  
                         rounded={8}
                         source={chandelier} 
                         alt='Product image'
@@ -42,7 +41,7 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
                     {
                         !isAdActive &&
 
-                        <ImageOverlay width={46} rounded={8} />
+                        <ImageOverlay rounded={8} />
                 }
                 </View>
            

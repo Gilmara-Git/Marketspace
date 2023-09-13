@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { LogBox } from 'react-native';
-import { VStack , HStack, Heading, FlatList, Select , Icon } from 'native-base';
+import { VStack , HStack, Heading, FlatList, Select , Icon , Text } from 'native-base';
 import { my_products } from '@src/utils/my_products';
-import Chandelier from '@assets/chandelier.png';
+
 
 import { Entypo } from '@expo/vector-icons';
-
 import { ProductCard } from '@src/components/ProductCard';
+
 
 export const MyAds = ()=>{
     const [ filterBy, setFilterBy ] = useState('all');
     console.log(filterBy, 'filterBy')
+    // params, mas acho que isso pode vir de product, porque o usuario tem que gravar no banco ativar or desavtivar o ad
+    const isAdActive= true
   
     LogBox.ignoreLogs([''])
 
@@ -47,7 +49,17 @@ export const MyAds = ()=>{
             </HStack>
 
             <FlatList 
-                _contentContainerStyle={{ mt:'6'}} 
+                _contentContainerStyle={{ mt:'6'}}
+                ListEmptyComponent={
+                    <Text
+                    my={6} 
+                        fontFamily='heading'
+                        fontSize='md'
+                        color='blue.900'
+                        >
+                            You have no Ads available!
+                    </Text>
+                } 
                 data={my_products}
                 keyExtractor={(item)=> item.id}
                 numColumns={2}

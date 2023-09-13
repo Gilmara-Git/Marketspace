@@ -15,6 +15,9 @@ import { Routes } from '@routes/index';
 import { SignIn } from '@screens/SignIn';
 
 import { Home } from '@screens/Home';
+import { AdDetails } from "@screens/AdDetails";
+import { MyAds} from '@screens/MyAds';
+import { MyAdsDetails } from '@screens/MyAdsDetails';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -32,7 +35,7 @@ export default function App() {
           translucent
         />
 
-        {!fontsLoaded ? <Loading /> : <Home />}
+        {!fontsLoaded ? <Loading /> : <MyAdsDetails/>}
       </NativeBaseProvider>
     </SafeAreaProvider>
   );

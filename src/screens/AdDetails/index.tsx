@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
-import { VStack, HStack, Image, Heading, Text , Box, Icon, Divider, Center,} from 'native-base';
+import { VStack, HStack, View, Image, Heading, Text , Box, Icon, Divider, Center,} from 'native-base';
+import { Ionicons } from '@expo/vector-icons';
 import Bicycle from '@assets/bicycle.png';
 
-import { UserPhoto } from '@components/UserPhoto';
+import { UserDisplay } from '@components/UserDisplay';
 import { PaymentMethods } from '@components/PaymentMethods';
 import { Button } from '@components/Button';
-import { Ionicons } from '@expo/vector-icons';
-
+import { LineDivider } from '@src/components/LineDivider';
 
 
 
@@ -27,32 +27,21 @@ export const AdDetails = ()=>{
         
          >
             <VStack bg='gray.50'>
-                <Image
-                    width='100%'
-                    source={Bicycle} 
-                    defaultSource={Bicycle}
-                    height='280'  
-                    resizeMode='cover'
-                    alt='Product photo'
-                />
-
+                <View>
+                    <Image
+                        width='100%'
+                        source={Bicycle} 
+                        defaultSource={Bicycle}
+                        height='280'  
+                        resizeMode='cover'
+                        alt='Product photo'
+                        />
+                    <LineDivider/>
+                </View>
 
                 <VStack px={6} mt={6}>
 
-                        <HStack >
-                            <UserPhoto 
-                                mb={5}
-                                borderColor='blue.600'
-                                size={6} 
-                                />
-                                <Text 
-                                    ml={2}
-                                    fontFamily='body' 
-                                    fontSize='sm'
-                                    >
-                                        Gilmara Pimentel
-                                </Text>
-                            </HStack>
+                <UserDisplay />
 
                             <VStack>
                                 <HStack pb={2}>
