@@ -4,7 +4,7 @@ import { Button as ButtonNativeBase, IButtonProps, Text } from 'native-base';
 
 type ButtonProps = IButtonProps & {
     title: string,
-    size: number,
+    size?: number,
     leftIcon?: any,
     rightIcon?: any,
     backColor: string,

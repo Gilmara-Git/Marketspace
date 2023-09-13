@@ -2,6 +2,7 @@ import { extendTheme } from "native-base";
 export const THEME = extendTheme({
   colors: {
     white: '#FFFFFF',
+    transparent: 'rgba(255,255,255,0.3)',
     blue: {
       100: '#E2E6f4',
       600: "#647AC7",

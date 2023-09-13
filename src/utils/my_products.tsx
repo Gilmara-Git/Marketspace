@@ -5,35 +5,40 @@ import couch from '@assets/couch.png';
 
 
 
-export const products = [
+export const my_products = [
     {
         id: '1',
-        name: 'Red Sneaker',
+        name: 'Chandelier',
         image: 'sneaker'
-,       description: 'Red Sneaker',
+,       description: 'Chandelier',
         price: '59.90',
-        isNew: true
+        isNew: true,
+        active: false
     },{
         id: '2',
         name: 'Bicycle',
         image: 'bicycle'
 ,       description: 'Bicycle',
         price: '120.00',
-        isNew: true
+        isNew: true,
+        active: true
     },{
         id: '3',
         name: 'Chest',
         image: 'chest'
 ,       description: 'Chest with 2 drawers',
         price: '79.90',
-        isNew: false
+        isNew: false,
+        active: true
+
     },{
         id: '4',
         name: 'Couch',
         image: 'couch'
 ,       description: 'Sofa Bed' ,
         price: '1,200.00',
-        isNew: true
+        isNew: false,
+        active: false
   },
     {
         id: '5',
@@ -41,7 +46,8 @@ export const products = [
         image: 'couch'
     ,       description: 'Sofa Bed' ,
         price: '1,200.00',
-        isNew: false
+        isNew: false,
+        active: true
     },
     {
         id: '6',
@@ -49,6 +55,7 @@ export const products = [
         image: 'couch'
     ,       description: 'Sofa Bed' ,
         price: '1,200.00',
-        isNew: true
+        isNew: true,
+        active: false
     }
 ];
