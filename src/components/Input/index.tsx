@@ -1,9 +1,9 @@
 import { Input as InputNativeBase, IInputProps,FormControl} from 'native-base';
-import { MaterialIcons } from '@expo/vector-icons';
+
 
 type InputProps = IInputProps & {
 errorMessage?: string | undefined;
-width: number
+width?: number
 }
 export const Input =({ errorMessage, width, isInvalid, ...rest}: InputProps)=>{
  const invalid = !!errorMessage || isInvalid;

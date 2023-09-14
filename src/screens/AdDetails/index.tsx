@@ -126,7 +126,6 @@ export const AdDetails = ()=>{
 
                     <Center pb={2} mt={4} flexShrink={0}>
                         <Divider width={40} p={.5} rounded='full'/>
-
                     </Center>
                 </VStack>
         </ScrollView>

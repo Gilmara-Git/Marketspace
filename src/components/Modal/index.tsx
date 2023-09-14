@@ -25,7 +25,7 @@ type ModalProps = IModalProps & {
 export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
   const [isNew, setIsNew] = useState(true);
   const [acceptsTrade, setIsAcceptsTrade] = useState(false);
-  const [paymentMethods, setPaymentMethods ] = useState<string[]>(['Bank bill','Zelle', 'Cash', 'Credit card','Deposit']);
+  const [paymentMethods, setPaymentMethods ] = useState<string[]>(['Bill','Zelle', 'Cash', 'Credit card','Deposit']);
   const [paymentsSelected, setPaymentsSelected] = useState<string[]>([]); 
   
   LogBox.ignoreLogs([
@@ -150,8 +150,6 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
                 />
             </HStack>
             
-              
-          
           </ModalNativeBase.Footer>
       </ModalNativeBase.Content>
     </ModalNativeBase>

@@ -17,7 +17,7 @@ export const MyAds = ()=>{
     LogBox.ignoreLogs([''])
 
     return (
-        <VStack py={8} bg='gray.50' px={6} flex={1}>
+        <VStack py={8} bg='gray.200' px={6} flex={1}>
             <HStack alignItems='center' justifyContent='space-between'>
                
                         <Heading fontFamily='body' fontSize='sm'>9 Ads</Heading>

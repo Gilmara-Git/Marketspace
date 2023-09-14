@@ -2,8 +2,8 @@ import  { useState } from 'react';
 import { VStack, Center, Text, ScrollView, Image, Heading } from 'native-base';
 
 import * as yup from "yup";
-import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from 'react-hook-form';
 
 
 import Logos from '@assets/logo.png';
@@ -76,6 +76,7 @@ export const SignUp =()=>{
                                     render={({ field: {onChange, value}})=>(
                                        <Input placeholder='Name'
                                             onChangeText={onChange}
+                                            width={69}
                                             value={value}
                                             errorMessage={errors.name?.message}
                                             isInvalid={!!errors.name}
@@ -90,6 +91,7 @@ export const SignUp =()=>{
                                         <Input 
                                             placeholder='E-mail'
                                             onChangeText={onChange}
+                                            width={69}
                                             value={value}
                                             errorMessage={errors.email?.message}
                                             isInvalid={!!errors.email}
@@ -105,6 +107,7 @@ export const SignUp =()=>{
                                         <Input 
                                             placeholder='Phone number ex: 9745631290'
                                             onChangeText={onChange}
+                                            width={69}
                                             value={value}
                                             errorMessage={errors.phone?.message}
                                             isInvalid={!!errors.phone}
@@ -153,6 +156,7 @@ export const SignUp =()=>{
                                     isLoading={isCreating}
                                     onPress={handleSubmit(handleCreateUser)}
                                     _pressed={{bg: 'gray.800'}}
+                                    onPressColor='gray.800'
                                
 
                                 />
@@ -176,6 +180,7 @@ export const SignUp =()=>{
                                         _spinner={{color: 'gray.900'}}
                                         _pressed={{bg: 'gray.500'}}
                                         onPress={handleLogin}
+                                        onPressColor='gray.400'
                                     />
                                 </Center>
                             </VStack>
