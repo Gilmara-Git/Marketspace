@@ -6,8 +6,7 @@ type TextBoxProps = ITextAreaProps & {
 
 export const TextBox = ({ errorMessage, isInvalid, ...rest }: TextBoxProps)=>{
     const invalid = !!errorMessage || isInvalid;
-    console.log(errorMessage, isInvalid, 'linha9')
-
+   
     return (
         <FormControl
         mt={2}
