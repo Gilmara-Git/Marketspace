@@ -43,7 +43,7 @@ export const MyAdsDetails = () => {
     _contentContainerStyle={{paddingBottom: 30}}
     showsVerticalScrollIndicator={false}
      >
-        <VStack>
+        <VStack bg='gray.200'>
             <View>
 
                 <Image
@@ -137,7 +137,7 @@ export const MyAdsDetails = () => {
                                 title={ isAdActive ? 'Deactivate Ad' : 'Reactivate Ad'}
                                 backColor={ isAdActive ? 'gray.900': 'blue.600'}
                                 leftIcon={<Icon as={AntDesign} name='poweroff' size={3} color='gray.50'/>}
-                                onPressColor='blue.900'
+                                onPressColor='gray.800'
                                 onPress={()=>console.log('toggle Add active/inactive')}
                                 />
 
@@ -148,7 +148,7 @@ export const MyAdsDetails = () => {
                                 title='Delete Ad'
                                 backColor='gray.300'
                                 leftIcon={<Icon as={Feather} name='trash' size={4} color='gray.600'/>}
-                                onPressColor='blue.900'
+                                onPressColor='gray.400'
                                 onPress={()=>console.log('Delete Ad')}
                                 />
             

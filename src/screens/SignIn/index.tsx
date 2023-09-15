@@ -55,7 +55,7 @@ export const SignIn =()=>{
     return ( 
         <ScrollView 
             showsVerticalScrollIndicator={false}
-            _contentContainerStyle={{backgroundColor:'gray.50'}}
+            _contentContainerStyle={{backgroundColor:'gray.200'}}
             >
             <Center>
                 <VStack width='100%' py={12} bg='gray.200' borderBottomRadius={18} >
