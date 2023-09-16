@@ -57,6 +57,7 @@ export const Home =()=>{
                             price={item.price} 
                             image=''
                             isNotUserAd={true}
+                            isAdActive={true}
                             />}
                         
                         />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LogBox, Alert } from "react-native";
+import { LogBox } from "react-native";
 import {
   VStack,
   HStack,
@@ -11,45 +11,34 @@ import {
   Switch,
   ScrollView,
   Divider,
-  Skeleton
+  Skeleton,
+  useToast
+ 
 } from "native-base";
-import SelectMultiple from "react-native-select-multiple";
-import * as ImagePicker from 'expo-image-picker';
 
-import { useForm, Controller } from "react-hook-form";
+
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, Controller } from "react-hook-form";
 
 import { Input } from "@components/Input";
+import { Plus } from "phosphor-react-native";
 import { TextBox } from "@components/TextBox";
 import { Button } from '@components/Button';
 import { ButtonsRadio } from "@components/ButtonsRadio";
 import { ProductImage } from "@src/components/ProductImage";
-import { Plus } from "phosphor-react-native";
+import { PaymentsCheckBox } from "@src/components/PaymentsCheckBox"; 
 
+import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
 const AdCreateSchema = yup.object().shape({
   title: yup.string().required("Type a title for your product."),
   description: yup.string().required('Please describe your product.'),
-  product_status: yup.string().required("Please select if product is new or used."),
+  is_product_new: yup.string().required("Please select if product is new or used."),
   accept_trade: yup.boolean().required().default(false),
-  payments: yup.array(yup.object().required('Choose at least one payment type').required('one')),
   price: yup.string().required('Please type your product price'),
-  // price: yup.string().test('is-number', 'Invalid price', (value)=>{
-    
-    
-  //   if(typeof value !== 'undefined'){
-  //     const parsedNumber = parseFloat(value);
-  //     if(!isNaN(parsedNumber)){
-  //       return true
-  //     }
-
-
-  //     return false
-  //   }
-
-  // }).required("Please type your product value."),
+  payments: yup.array().of(yup.string().required('Choose one method of payment.')).default(['credit_card']),
 });
 
 type FormData = yup.InferType<typeof AdCreateSchema>;
@@ -59,19 +48,14 @@ type ImagesType = {
 }[];
 
 export const AdCreate = () => {
-  // these 3 state and handlePaymentsSelected copied from Modal
-  const [paymentMethods, setPaymentMethods] = useState<string[]>([
-    "Bill",
-    "Zelle",
-    "Cash",
-    "Credit card",
-    "Deposit",
+  
+  LogBox.ignoreLogs([
+    "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
   ]);
-  const [acceptsTrade, setIsAcceptsTrade] = useState(false);
-  const [paymentsSelected, setPaymentsSelected] = useState<string[]>([]);
   const [ images, setImages ] = useState<ImagesType>(); 
-  const [ imageLoading, setImageLoading ] = useState(true)
+  const [ imageLoading, setImageLoading ] = useState(false)
 
+const toast = useToast();
 
   const handleImageRemove = (url: string)=>{
     const currentImages = images;
@@ -86,31 +70,18 @@ export const AdCreate = () => {
   } = useForm<FormData>({
     resolver: yupResolver(AdCreateSchema),
   });
-console.log('me da os error', errors)
-  LogBox.ignoreLogs([
-    "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
-  ]);
+
 
   const handleAdCreate = (data : object) =>{
     console.log(data, 'line64')
   };
 
-  // const handlePaymentsSelected = (selections: any, item: any) => {
-  //   if (!paymentsSelected.includes(item.value)) {
-  //     setPaymentsSelected((prev) => [item.value, ...prev]);
-  //   } else {
-  //     let current = paymentsSelected;
-  //     // it did not take filter, I had to find the index and apply splice
-  //     const index = current.indexOf(item.label);
-  //     current.splice(index, 1);
-  //     setPaymentsSelected([...current]);
-  //   }
-  // };
-
+  console.log(errors)
 
   const handlePickedImages = async ()=>{
 
     try{
+      setImageLoading(true);
    
       
       let pickedImages = await ImagePicker.launchImageLibraryAsync({
@@ -127,7 +98,6 @@ console.log('me da os error', errors)
       if(pickedImages.canceled){
         return
       }
-      setImageLoading(true);
          
             const { assets } = pickedImages;
           
@@ -145,7 +115,14 @@ console.log('me da os error', errors)
               const file = await FileSystem.getInfoAsync(image.url, {size: true});
               
               if(file.exists && (file.size /1024/1024) > 3){
-                return Alert.alert('One of more images are too Big')
+                  return toast.show({
+                    title: 'One of more images are bigger than 3MB.',
+                    placement: 'top',
+                    duration: 5000,
+                    bg: 'red.400'
+                  })
+                // return Alert.alert('One of more images are bigger than 3MB.')
+
               }
               
               if(!validatedImages.includes({ url: image.url } )){
@@ -260,16 +237,16 @@ console.log('me da os error', errors)
               )}
             />
             <Controller
-              name="product_status"
+              name="is_product_new"
               control={control}
               render={({ field: { value, onChange } }) => (
                 <ButtonsRadio
                   accessibilityLabel="product status"
-                  name="product_status"
+                  name="is_product_status"
                   onChange={onChange}
                   value={value}
-                  errorMessage={errors.product_status?.message}
-                  isInvalid={!!errors.product_status}
+                  errorMessage={errors.is_product_new?.message}
+                  isInvalid={!!errors.is_product_new}
                 />
               )}
             />
@@ -327,27 +304,28 @@ console.log('me da os error', errors)
             </Heading>
 
             <View>
-              <Controller 
-                name='payments'
-                control={control}
-                render={({field: { value, onChange}})=>(
-                  <SelectMultiple
-                    style={{ showsVerticalScrollIndicator: "false" }}
-                    checkboxStyle={{
-                      backgroundColor: "#d2daf5",
-                      width: 18,
-                      height: 18,
-                    }}
-                    labelStyle={{ color: "#3E3A40", padding: 5 }}
-                    items={paymentMethods}
-                    selectedItems={value}
-                    onSelectionsChange={onChange}
-                    errorMessage={errors.payments?.message}
+                <Controller 
+                  name='payments'
+                  control={control}
+                  rules={{required: true}}
+                  render={({field: { value, onChange}})=>(
+                    <PaymentsCheckBox
+                      value={value}
+                      onChange={onChange}
+                    />
                     
-                  />
-
-                )}
-              />
+                    
+                    )}
+                    />
+                    { errors?.payments && 
+                      <Text
+                        color='red.400'
+                        fontFamily='body'
+                        fontSize='sm'
+                      >
+                        {errors.payments.message}
+                      </Text> }
+                
             </View>
           </View>
         </VStack>

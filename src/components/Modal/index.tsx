@@ -9,12 +9,26 @@ import {
   VStack,
   Switch,
   View,
-  
+  Text
 } from "native-base";
 
 import { TagBox } from "@components/TagBox";
 import { Button } from '@components/Button';
-import SelectMultiple from 'react-native-select-multiple';
+import { PaymentsCheckBox } from '@components/PaymentsCheckBox'; 
+
+
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, Controller } from "react-hook-form";
+
+const ModalSchemed = yup.object().shape({
+  // isNew:  yup.boolean().required().default(true),
+  // is_product_new: yup.string().required("Please select if product is new or used."),
+  // accept_trade: yup.boolean().required().default(false),
+  payments: yup.array().of(yup.string().required('Choose one method of payment.')).default(['credit_card']),
+});
+
+type FormData = yup.InferType<typeof ModalSchemed>; 
 
 
 type ModalProps = IModalProps & {
@@ -25,32 +39,31 @@ type ModalProps = IModalProps & {
 export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
   const [isNew, setIsNew] = useState(true);
   const [acceptsTrade, setIsAcceptsTrade] = useState(false);
-  const [paymentMethods, setPaymentMethods ] = useState<string[]>(['Bill','Zelle', 'Cash', 'Credit card','Deposit']);
-  const [paymentsSelected, setPaymentsSelected] = useState<string[]>([]); 
+  const [paymentMethods, setPaymentMethods ] = useState<string[]>(['Bill','Zelle', 'Credit Card']);
+  const [paymentsSelected, setPaymentsSelected] = useState<string[]>(['Credit Card']); 
   
   LogBox.ignoreLogs([
     'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
   ])
+
+  const {
+    control, handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(ModalSchemed),
+  });
+
   
   const toggleProductNewOrUsed = () => {
     setIsNew((prevSate) => !prevSate);
   };
 
-  const handlePaymentsSelected = (selections: any, item: any) => {
-   
-    if(!paymentsSelected.includes(item.value)){
-        setPaymentsSelected((prev)=>[item.value, ...prev])
-    }else{
-            let current = paymentsSelected;
-            // it did not take filter, I had to find the index and apply splice
-            const index = current.indexOf(item.label);
-            current.splice(index, 1);  
-            setPaymentsSelected([...current])
-    }
-        
+  const handlePaymentsSelected = (item: any) => {  
+    
+    console.log(item, 'linha63')
     };
   
-    console.log(paymentsSelected)
+
 
   return (
     <ModalNativeBase
@@ -116,15 +129,29 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
 
           <View>
 
-            <SelectMultiple
-                style={{ showsVerticalScrollIndicator: 'false'}}
-                checkboxStyle={{backgroundColor: '#d2daf5' , width:18, height: 18}}
-                labelStyle={{ color: '#3E3A40',  padding: 5}}
-                items={paymentMethods}
-                selectedItems={paymentsSelected}
-                onSelectionsChange={handlePaymentsSelected}
-                
-                />
+
+              <Controller 
+                  name='payments'
+                  control={control}
+                  rules={{required: true}}
+                  render={({field: { value, onChange}})=>(
+                    <PaymentsCheckBox
+                      value={value}
+                      onChange={onChange}
+                    />
+                    
+                    
+                    )}
+                    />
+                    { errors?.payments && 
+                      <Text
+                        color='red.400'
+                        fontFamily='body'
+                        fontSize='sm'
+                      >
+                        {errors.payments.message}
+                      </Text> }
+
 
             </View>
             
@@ -146,7 +173,7 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
                     backColor="gray.900"
                     color='gray.50'
                     onPressColor='gray.600'
-                    onPress={()=>console.log('Apply filters')}
+                    onPress={handleSubmit(handlePaymentsSelected)}
                 />
             </HStack>
             
