@@ -27,8 +27,8 @@ export const MyAdsDetails = () => {
   const [payments, setPayments] = useState([
     "Bill",
     "Zelle",
-    "Cash",
-    "Deposit",
+    "Credit Card",
+   ,
   ]);
 
   //params
@@ -124,7 +124,7 @@ export const MyAdsDetails = () => {
                         </Heading>
 
                     {payments.map((method) => {
-                        return <PaymentMethods method={method} />;
+                        return <PaymentMethods  key={method}  method={method} />;
                     })}
                     </VStack>
             </VStack>

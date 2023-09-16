@@ -12,7 +12,7 @@ import { LineDivider } from '@src/components/LineDivider';
 
 
 export const AdDetails = ()=>{
-    const [ payments, setPayments] = useState(['Bill', 'Zelle','Cash', 'Deposit' ]);
+    const [ payments, setPayments] = useState(['Bill', 'Zelle','Credit Card']);
 
     // fake isNew, this will come from products in the AdDetails params 
 
@@ -97,9 +97,8 @@ export const AdDetails = ()=>{
                                         Methods of Payments:
                                 </Heading>
                                 
-                                { payments.map(method =>{
-                                    
-                                    return <PaymentMethods  method={method}/>
+                                { payments.map((method) =>{  
+                                    return <PaymentMethods key={method} method={method}/>
 
                                 })}
                                

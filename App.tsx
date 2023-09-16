@@ -8,7 +8,7 @@ import {
 
 import { NativeBaseProvider } from "native-base";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { THEME } from "@themes/index";
+import { THEME } from '@themes/index';
 
 import { Loading } from "@components/Loading/index";
 import { Routes } from '@routes/index';
@@ -19,6 +19,7 @@ import { AdDetails } from "@screens/AdDetails";
 import { MyAds} from '@screens/MyAds';
 import { MyAdsDetails } from '@screens/MyAdsDetails';
 import { AdCreate } from '@screens/AdCreate';
+
 
 export default function App() {
   const [fontsLoaded] = useFonts({

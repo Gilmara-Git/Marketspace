@@ -31,7 +31,7 @@ export const ButtonsRadio = ({ errorMessage, isInvalid, ...rest }: ButtonsRadio)
           </Radio>
           
           <Radio
-            bgColor="gray.300"
+           bgColor="transparent"
             value="used"
             size={5}
             colorScheme='blue'
