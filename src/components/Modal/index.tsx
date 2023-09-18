@@ -22,9 +22,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 
 const ModalSchemed = yup.object().shape({
-  // isNew:  yup.boolean().required().default(true),
-  // is_product_new: yup.string().required("Please select if product is new or used."),
-  // accept_trade: yup.boolean().required().default(false),
+  accept_trade: yup.boolean().required().default(false),
   payments: yup.array().of(yup.string().required('Choose one method of payment.')).default(['credit_card']),
 });
 
@@ -53,6 +51,8 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
     resolver: yupResolver(ModalSchemed),
   });
 
+
+ 
   
   const toggleProductNewOrUsed = () => {
     setIsNew((prevSate) => !prevSate);
@@ -60,7 +60,7 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
 
   const handlePaymentsSelected = (item: any) => {  
     
-    console.log(item, 'linha63')
+    console.log(item, 'methods of payment',  isNew, 'product isNew', acceptsTrade, 'acceptsTrade')
     };
   
 
@@ -114,11 +114,19 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
             </Heading>
 
             <HStack>
-              <Switch
-                value={acceptsTrade}
-                onValueChange={setIsAcceptsTrade}
-                size="lg"
-                onTrackColor="blue.600"
+              <Controller
+                name='accept_trade'
+                control={control}
+                render={({field: { value, onChange}})=>(
+                  <Switch
+                    value={value}
+                    onValueChange={onChange}
+                    size="lg"
+                    onTrackColor="blue.600"
+                  />
+
+                )}
+
               />
             </HStack>
           </VStack>

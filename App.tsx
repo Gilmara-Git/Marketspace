@@ -37,7 +37,7 @@ export default function App() {
           translucent
         />
 
-        {!fontsLoaded ? <Loading /> : <AdCreate/>}
+        {!fontsLoaded ? <Loading /> : <Home/>}
       </NativeBaseProvider>
     </SafeAreaProvider>
   );
