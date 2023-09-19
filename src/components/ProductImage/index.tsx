@@ -24,7 +24,7 @@ export const ProductImage = ({ url, onRemoveClick, ...rest}: ProductImageProps)=
                     position='absolute' 
                     top={-5} 
                     right={0}
-                    _icon={{ as: Entypo, name:'circle-with-cross', size:3, color: 'red.300'}}
+                    _icon={{ as: Entypo, name:'circle-with-cross', size:3, color: 'red.400'}}
                     onPress={()=>onRemoveClick(url)}
                     />
 

@@ -13,7 +13,7 @@ import {
   Divider,
   Skeleton,
   useToast,
- Alert
+
 } from "native-base";
 
 
@@ -32,7 +32,7 @@ import { PaymentsCheckBox } from "@src/components/PaymentsCheckBox";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
-const AdCreateSchema = yup.object().shape({
+const EditSchema = yup.object().shape({
   title: yup.string().required("Type a title for your product."),
   description: yup.string().required('Please describe your product.'),
   is_product_new: yup.string().required("Please select if product is new or used."),
@@ -41,13 +41,13 @@ const AdCreateSchema = yup.object().shape({
   payments: yup.array().of(yup.string().required('Choose one method of payment.')).default(['credit_card']),
 });
 
-type FormData = yup.InferType<typeof AdCreateSchema>;
+type FormData = yup.InferType<typeof EditSchema>;
 
 type ImagesType = {
   url: string
 }[];
 
-export const AdCreate = () => {
+export const AdEdit = () => {
   
   LogBox.ignoreLogs([
     "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
@@ -70,7 +70,7 @@ const toast = useToast();
     control, handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(AdCreateSchema),
+    resolver: yupResolver(EditSchema),
   });
 
 
@@ -101,19 +101,7 @@ const toast = useToast();
       }
          
             const { assets } = pickedImages;
-        
-
-            // if(assets.length){
-            //   assets.forEach(item =>{
-            //     const arr =  item.fileName?.split('.');
-            //     const imageExt = arr?.pop();
-            //     console.log(imageExt, 'linha 108')
-            //     if(imageExt === 'jpeg'){
-            //       return Alert('jpeg not accepte')
-            //     }
-            //   })
-            // }
-          
+         
             let selectedImages:any = [];
             let validatedImages : any = [];
             
@@ -171,7 +159,7 @@ const toast = useToast();
           Images
         </Heading>
         <Text pb={4} numberOfLines={2} fontFamily="body" fontSize="sm">
-          Choose up to 3 images to show your incredible product!
+          Choose up to 3 images to show your incredible product! So a Edit
         </Text>
         <HStack pb={8}>
 
