@@ -19,6 +19,8 @@ import { AdDetails } from "@screens/AdDetails";
 import { MyAds} from '@screens/MyAds';
 import { MyAdsDetails } from '@screens/MyAdsDetails';
 import { AdCreate } from '@screens/AdCreate';
+import { AdEdit } from '@screens/AdEdit';
+import { AdPreview } from '@screens/AdPreview';
 
 
 export default function App() {
@@ -37,7 +39,7 @@ export default function App() {
           translucent
         />
 
-        {!fontsLoaded ? <Loading /> : <Home/>}
+        {!fontsLoaded ? <Loading /> : <AdPreview/>}
       </NativeBaseProvider>
     </SafeAreaProvider>
   );

@@ -12,8 +12,8 @@ import {
   ScrollView,
   Divider,
   Skeleton,
-  useToast
- 
+  useToast,
+ Alert
 } from "native-base";
 
 
@@ -53,7 +53,9 @@ export const AdCreate = () => {
     "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
   ]);
   const [ images, setImages ] = useState<ImagesType>(); 
-  const [ imageLoading, setImageLoading ] = useState(false)
+  const [ imageLoading, setImageLoading ] = useState(false);
+
+  console.log(images, ' linha58')
 
 const toast = useToast();
 
@@ -76,7 +78,6 @@ const toast = useToast();
     console.log(data, 'line64')
   };
 
-  console.log(errors)
 
   const handlePickedImages = async ()=>{
 
@@ -100,6 +101,18 @@ const toast = useToast();
       }
          
             const { assets } = pickedImages;
+        
+
+            // if(assets.length){
+            //   assets.forEach(item =>{
+            //     const arr =  item.fileName?.split('.');
+            //     const imageExt = arr?.pop();
+            //     console.log(imageExt, 'linha 108')
+            //     if(imageExt === 'jpeg'){
+            //       return Alert('jpeg not accepte')
+            //     }
+            //   })
+            // }
           
             let selectedImages:any = [];
             let validatedImages : any = [];
@@ -121,18 +134,22 @@ const toast = useToast();
                     duration: 5000,
                     bg: 'red.400'
                   })
-                // return Alert.alert('One of more images are bigger than 3MB.')
 
               }
               
+            
               if(!validatedImages.includes({ url: image.url } )){
                 validatedImages.push( { url: image.url})
 
               }
+
             
             }
-            
-              setImages(validatedImages);
+
+            console.log(validatedImages.length, '147', images, images?.length)
+         
+            setImages(validatedImages);
+            console.log(images, 'lina144')
      
 
     }
@@ -144,7 +161,6 @@ const toast = useToast();
       setImageLoading(false);
     }
     
-
   };
     
     //passed isPressed={true} manually for now
