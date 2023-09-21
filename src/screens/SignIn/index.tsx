@@ -1,5 +1,5 @@
 import  { useState } from 'react';
-import { VStack, Center, Text, ScrollView, Image } from 'native-base';
+import { VStack, Center, Text, ScrollView, Image , Divider} from 'native-base';
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -46,10 +46,6 @@ export const SignIn =()=>{
         setIsAccessing(true);
         console.log(data, 'line21')
     }
-
-
-    // console.log(errors.email)
-    console.log(!!errors.password, 'linha43', !!errors.email)
 
       
     return ( 
@@ -135,7 +131,7 @@ export const SignIn =()=>{
                 </VStack>
                 
                      
-                    <VStack pt={20} pb={40} bg= 'gray.50'>
+                    <VStack pt={20} pb={40} bg= 'gray.50' width='100%'>
                        <Center>
 
                                 <Text fontSize='sm' fontFamily='body' mb={4}>No access yet?</Text>
@@ -150,7 +146,8 @@ export const SignIn =()=>{
 
                         </Center>
                     </VStack>
-                    
+
+               
             </Center>
         </ScrollView>
     )
