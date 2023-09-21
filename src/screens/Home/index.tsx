@@ -1,4 +1,5 @@
-import {useState } from 'react';
+import {useState, useEffect } from 'react';
+import { LogBox } from 'react-native';
 import { VStack, Center, FlatList,Text } from 'native-base';
 import { HomeHeader } from '@src/components/HomeHeader';
 import { HomeSubHeader } from '@src/components/HomeSubHeader';
@@ -9,7 +10,7 @@ import { Modal } from '@components/Modal';
 
 
 export const Home =()=>{
- 
+    
     const [ modalVisible, setModalVisible ] = useState(false);
     
     const onFilterClick =()=>{
@@ -21,6 +22,9 @@ export const Home =()=>{
         setModalVisible(false);
     };
    
+    useEffect(()=>{
+        LogBox.ignoreLogs(['In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.']);
+    },[])
     return (
         <VStack bg='gray.200' flex={1}>
             <Center mt={8} py={6}>
@@ -34,7 +38,8 @@ export const Home =()=>{
                       
                         />
                     <FlatList 
-                        contentContainerStyle={{flex:1, }}
+                        _contentContainerStyle={{ marginTop: 2, paddingBottom: 100}}
+                        showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
                             <Text
                             my={6} 
@@ -45,7 +50,6 @@ export const Home =()=>{
                                     There is not Ads available!
                             </Text>
                         }
-                        _contentContainerStyle={{justifyContent: 'space-between', alignItems: 'center', marginTop: 1.5 }}
                         data={products}
                         keyExtractor={(item)=>item.id}
                         numColumns={2}
