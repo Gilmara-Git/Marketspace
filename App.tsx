@@ -39,7 +39,7 @@ export default function App() {
           translucent
         />
 
-        {!fontsLoaded ? <Loading /> : <AdPreview/>}
+        {!fontsLoaded ? <Loading /> : <Routes/>}
       </NativeBaseProvider>
     </SafeAreaProvider>
   );
