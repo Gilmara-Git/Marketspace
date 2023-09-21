@@ -55,7 +55,7 @@ export const AdEdit = () => {
   const [ images, setImages ] = useState<ImagesType>(); 
   const [ imageLoading, setImageLoading ] = useState(false);
 
-  console.log(images, ' linha58')
+
 
 const toast = useToast();
 

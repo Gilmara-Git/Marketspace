@@ -1,4 +1,4 @@
-import { Image, IImageProps, Box, Button } from 'native-base';
+import { Image, Box, Button } from 'native-base';
 import avatarHolder from '@assets/avatarHolder.png';
 import edit from '@assets/edit.png';
 

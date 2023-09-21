@@ -1,5 +1,4 @@
-import { Pressable, IPressableProps, Text, Icon, HStack, Center } from 'native-base';
-import { Fontisto } from '@expo/vector-icons';
+import { Pressable, IPressableProps, Text, HStack } from 'native-base';
 import { XCircle } from 'phosphor-react-native';
 
 type TabBoxProps = IPressableProps & {

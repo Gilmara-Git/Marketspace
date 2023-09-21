@@ -184,7 +184,9 @@ export const SignUp =()=>{
                                     />
                                 </Center>
                             </VStack>
-                        </Center>           
+                        </Center>   
+                        
+                          
             </VStack>
         </ScrollView>
     )
