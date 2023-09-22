@@ -3,8 +3,11 @@ import { UserPhoto } from '@components/UserPhoto';
 import { Button } from '@components/Button';
 import { AntDesign } from '@expo/vector-icons';
 
+type HomeHeaderProps = {
+    uponClicking: ()=> void;
+}
 
-export const HomeHeader = ()=>{
+export const HomeHeader = ({uponClicking}: HomeHeaderProps)=>{
    
     return (
         <HStack>
@@ -22,6 +25,7 @@ export const HomeHeader = ()=>{
                     title='Create Add'
                     onPressColor='gray.800' 
                     leftIcon={<Icon as={AntDesign} name='plus' color='gray.200'/>}
+                    onPress={()=>uponClicking()}
                     />
         </HStack>
     )

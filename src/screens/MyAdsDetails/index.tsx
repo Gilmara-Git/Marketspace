@@ -17,10 +17,15 @@ import { UserDisplay } from "@components/UserDisplay";
 import { PaymentMethods } from "@components/PaymentMethods";
 import { ImageOverlay } from '@components/ImageOverlay';
 import { LineDivider } from "@src/components/LineDivider";
+import { NavigationHeader } from '@components/NavigationHeader';
 
 import { Button } from '@components/Button';
 import { Feather } from '@expo/vector-icons';
 import { AntDesign } from "@expo/vector-icons";
+import { ArrowLeft , PencilSimpleLine} from 'phosphor-react-native';
+
+import { useNavigation } from '@react-navigation/native';
+import { AppRoutesNavigationTabProps } from '@routes/app.routes';
 
 export const MyAdsDetails = () => {
   // this is will come from backend
@@ -30,6 +35,15 @@ export const MyAdsDetails = () => {
     "Credit Card",
    ,
   ]);
+
+  const navigation = useNavigation<AppRoutesNavigationTabProps>();
+  const handleGoback = ()=>{
+    navigation.goBack();
+  };
+
+  const goToEditAd =()=>{
+   navigation.navigate('AdEdit');
+  }
 
   //params
   // if isActive === false product photo is darker and replace button Deactivate Ad to Activate Ad
@@ -43,9 +57,15 @@ export const MyAdsDetails = () => {
     _contentContainerStyle={{paddingBottom: 30}}
     showsVerticalScrollIndicator={false}
      >
+        <NavigationHeader
+            iconLeft={ArrowLeft}
+            iconRight={PencilSimpleLine}
+            leftIconClick={handleGoback}
+            rightIconClick={goToEditAd}
+        />
+
         <VStack bg='gray.200'>
             <View>
-
                 <Image
                     source={chandelier}
                     defaultSource={chandelier}

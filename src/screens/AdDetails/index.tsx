@@ -8,11 +8,27 @@ import { UserDisplay } from '@components/UserDisplay';
 import { PaymentMethods } from '@components/PaymentMethods';
 import { Button } from '@components/Button';
 import { LineDivider } from '@src/components/LineDivider';
+import { NavigationHeader } from '@src/components/NavigationHeader';
+import { ArrowLeft } from 'phosphor-react-native';
+
+import { useNavigation } from '@react-navigation/native';
+import { AppRoutesNavigationTabProps } from '@routes/app.routes';
+
 
 
 
 export const AdDetails = ()=>{
     const [ payments, setPayments] = useState(['Bill', 'Zelle','Credit Card']);
+    const navigation  = useNavigation<AppRoutesNavigationTabProps>();
+
+    const handleBackHome = ()=>{
+        console.log('totootootottt')
+        navigation.goBack();
+    }
+
+const test = ()=>{
+    console.log('teste')
+}
 
     // fake isNew, this will come from products in the AdDetails params 
 
@@ -24,8 +40,14 @@ export const AdDetails = ()=>{
       
         <ScrollView
         showsVerticalScrollIndicator={false}
+       
         
          >
+                <NavigationHeader
+                    iconLeft={ArrowLeft}
+                    leftIconClick={handleBackHome}
+                 
+                />
             <VStack bg='gray.50'>
                 <View>
                     <Image

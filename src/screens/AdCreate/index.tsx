@@ -13,7 +13,6 @@ import {
   Divider,
   Skeleton,
   useToast,
- Alert
 } from "native-base";
 
 
@@ -28,9 +27,15 @@ import { Button } from '@components/Button';
 import { ButtonsRadio } from "@components/ButtonsRadio";
 import { ProductImage } from "@src/components/ProductImage";
 import { PaymentsCheckBox } from "@src/components/PaymentsCheckBox"; 
+import { NavigationHeader } from "@src/components/NavigationHeader";
 
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+
+import { useNavigation } from '@react-navigation/native';
+import {  AppRoutesNavigationTabProps } from '@routes/app.routes';
+import { ArrowLeft } from 'phosphor-react-native';
+import { ProductDTO } from '@src/dtos/ProductDTO';
 
 const AdCreateSchema = yup.object().shape({
   title: yup.string().required("Type a title for your product."),
@@ -43,6 +48,7 @@ const AdCreateSchema = yup.object().shape({
 
 type FormData = yup.InferType<typeof AdCreateSchema>;
 
+// do a interface type
 type ImagesType = {
   url: string
 }[];
@@ -53,10 +59,16 @@ export const AdCreate = () => {
     "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
   ]);
   const [ images, setImages ] = useState<ImagesType>(); 
+  const [product , setProduct ] = useState<ProductDTO>();
   const [ imageLoading, setImageLoading ] = useState(false);
-
+  console.log(images, 'linha63')
 
 const toast = useToast();
+const navigation = useNavigation<AppRoutesNavigationTabProps>();
+
+const handleGoback = ()=>{
+  navigation.goBack();
+}
 
   const handleImageRemove = (url: string)=>{
     const currentImages = images;
@@ -73,8 +85,13 @@ const toast = useToast();
   });
 
 
-  const handleAdCreate = (data : object) =>{
+  const handleAdCreate = (data: any) =>{
     console.log(data, 'line64')
+    data.images = images;
+    
+    setProduct(data)
+    navigation.navigate('AdPreview', data)
+
   };
 
 
@@ -100,19 +117,7 @@ const toast = useToast();
       }
          
             const { assets } = pickedImages;
-        
-
-            // if(assets.length){
-            //   assets.forEach(item =>{
-            //     const arr =  item.fileName?.split('.');
-            //     const imageExt = arr?.pop();
-            //     console.log(imageExt, 'linha 108')
-            //     if(imageExt === 'jpeg'){
-            //       return Alert('jpeg not accepte')
-            //     }
-            //   })
-            // }
-          
+      
             let selectedImages:any = [];
             let validatedImages : any = [];
             
@@ -165,6 +170,11 @@ const toast = useToast();
     //passed isPressed={true} manually for now
   return (
     <ScrollView>
+        <NavigationHeader 
+          iconLeft={ArrowLeft}
+          leftIconClick={handleGoback}
+          title='Create an Ad'
+          />
       <VStack bg="gray.200" px={6} pt={6} flex={1} pb={4}>
         <Heading fontFamily="heading" fontSize="md" pb={2}>
           Images
@@ -353,7 +363,7 @@ const toast = useToast();
                     backColor='gray.300'
                     color='gray.800'
                     onPressColor='gray.400'
-                    onPress={()=>console.log('Cancel')}
+                    onPress={handleGoback}
                 />
                 <Button 
                     title='Next'

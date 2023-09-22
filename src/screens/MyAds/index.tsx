@@ -6,6 +6,11 @@ import { my_products } from '@src/utils/my_products';
 
 import { Entypo } from '@expo/vector-icons';
 import { ProductCard } from '@src/components/ProductCard';
+import { NavigationHeader } from '@components/NavigationHeader';
+
+import { useNavigation } from '@react-navigation/native';
+import { AppRoutesNavigationTabProps } from '@routes/app.routes';
+import { Plus } from 'phosphor-react-native';
 
 
 export const MyAds = ()=>{
@@ -15,11 +20,29 @@ export const MyAds = ()=>{
     const isAdActive= true
   
     LogBox.ignoreLogs([''])
+    const navigation = useNavigation<AppRoutesNavigationTabProps>();
+
+    const handleCreateAd = ()=>{
+        navigation.navigate('AdCreate');
+    };
+
+   const goMyAdDetails = ()=>{
+       navigation.navigate('MyAdsDetails');
+
+   };
+   
 
     return (
-        <VStack py={8} bg='gray.200' px={6} flex={1}>
+        <>
+        <NavigationHeader 
+            title='My Ads'
+            iconRight={Plus}
+            rightIconClick={handleCreateAd}
+            
+        />
+        <VStack py={8} bg='gray.200' px={6} flex={1} width='100%'>
             <HStack alignItems='center' justifyContent='space-between'>
-               
+           
                         <Heading fontFamily='body' fontSize='sm'>9 Ads</Heading>
                         
                         <Select 
@@ -70,7 +93,8 @@ export const MyAds = ()=>{
                         price={item.price}
                         isNew={item.isNew} 
                         isNotUserAd={false} 
-                        isAdActive={item.active}  
+                        isAdActive={item.active} 
+                        onPress={goMyAdDetails} 
                         /> 
                    
                     </>
@@ -78,5 +102,6 @@ export const MyAds = ()=>{
                 
                 />
         </VStack>
+        </>
     );
 };
