@@ -13,6 +13,7 @@ type ProductCardProps = IPressableProps & {
     isNew: boolean,
     isNotUserAd: boolean
     isAdActive?: boolean
+  
 
 }
 
@@ -25,7 +26,7 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
             pb={6}  
             rounded={8} 
             px={2} 
-            onPress={()=>console.log('Open Card Details')} 
+      
             {...rest}
         >
             <>

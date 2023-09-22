@@ -28,9 +28,14 @@ import { Button } from '@components/Button';
 import { ButtonsRadio } from "@components/ButtonsRadio";
 import { ProductImage } from "@src/components/ProductImage";
 import { PaymentsCheckBox } from "@src/components/PaymentsCheckBox"; 
+import { NavigationHeader } from "@src/components/NavigationHeader";
 
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+
+import { useNavigation } from '@react-navigation/native';
+import { AppRoutesNavigationTabProps } from '@routes/app.routes';
+import { ArrowLeft } from 'phosphor-react-native';
 
 const EditSchema = yup.object().shape({
   title: yup.string().required("Type a title for your product."),
@@ -54,10 +59,13 @@ export const AdEdit = () => {
   ]);
   const [ images, setImages ] = useState<ImagesType>(); 
   const [ imageLoading, setImageLoading ] = useState(false);
+  const toast = useToast();
+  const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
-
-
-const toast = useToast();
+  const handleGoback = ()=>{
+    
+    navigation.navigate('MyAdsDetails');
+  };
 
   const handleImageRemove = (url: string)=>{
     const currentImages = images;
@@ -74,8 +82,12 @@ const toast = useToast();
   });
 
 
-  const handleAdCreate = (data : object) =>{
+  const handleAdCreate = (data: any) =>{
     console.log(data, 'line64')
+    data.images = images;
+    
+    navigation.navigate('AdPreview', data)
+
   };
 
 
@@ -154,6 +166,12 @@ const toast = useToast();
     //passed isPressed={true} manually for now
   return (
     <ScrollView>
+        <NavigationHeader 
+          iconLeft={ArrowLeft}
+          leftIconClick={handleGoback}
+          title='Edit Ad'
+          />
+
       <VStack bg="gray.200" px={6} pt={6} flex={1} pb={4}>
         <Heading fontFamily="heading" fontSize="md" pb={2}>
           Images
@@ -342,7 +360,7 @@ const toast = useToast();
                     backColor='gray.300'
                     color='gray.800'
                     onPressColor='gray.400'
-                    onPress={()=>console.log('Cancel')}
+                    onPress={handleGoback}
                 />
                 <Button 
                     title='Next'

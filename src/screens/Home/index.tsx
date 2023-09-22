@@ -7,12 +7,27 @@ import { HomeFilter } from '@src/components/HomeFilter';
 import { products } from '@utils/products';
 import { ProductCard } from '@components/ProductCard';
 import { Modal } from '@components/Modal';
+import { AppRoutesNavigationTabProps } from '@routes/app.routes';
+import { useNavigation } from '@react-navigation/native';
 
 
 export const Home =()=>{
     
     const [ modalVisible, setModalVisible ] = useState(false);
+
+    const navigation = useNavigation<AppRoutesNavigationTabProps>()
+
+    const goToAdDetails =()=>{
+        navigation.navigate('AdDetails');
+    };
     
+    const goToMyAds =()=>{
+        navigation.navigate('MyAds')
+    };
+
+    const handleCreateAd = ()=>{
+        navigation.navigate('AdCreate');
+    };
     const onFilterClick =()=>{
         setModalVisible(true)
       
@@ -28,8 +43,8 @@ export const Home =()=>{
     return (
         <VStack bg='gray.200' flex={1}>
             <Center mt={8} py={6}>
-                    <HomeHeader/>
-                    <HomeSubHeader />
+                    <HomeHeader uponClicking={handleCreateAd}/>
+                    <HomeSubHeader uponClicking={goToMyAds}/>
                     <HomeFilter filterClick={onFilterClick} />
 
                     <Modal 
@@ -42,7 +57,7 @@ export const Home =()=>{
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
                             <Text
-                            my={6} 
+                                my={6} 
                                 fontFamily='heading'
                                 fontSize='md'
                                 color='blue.900'
@@ -62,6 +77,7 @@ export const Home =()=>{
                             image=''
                             isNotUserAd={true}
                             isAdActive={true}
+                            onPress={goToAdDetails}
                             />}
                         
                         />

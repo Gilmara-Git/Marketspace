@@ -11,6 +11,7 @@ import { SignOutScreen } from '@screens/SignOutScreen';
 
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { SignOut } from 'phosphor-react-native';
+import { ArrowLeft } from 'phosphor-react-native';
 
 
 type AppRoutesType = {
@@ -20,12 +21,20 @@ type AppRoutesType = {
     MyAdsDetails: undefined,
     AdCreate: undefined,
     AdEdit: undefined,
-    AdPreview: undefined,
-    SignOut: undefined
+    SignOut: undefined,
+    AdPreview: {
+        title: string,
+        description: string, 
+        accept_trade: boolean, 
+        is_product_new: string, 
+        payments: string[], 
+        price: string, 
+        images: string[]
+    },
 }
 
 
-export type AppRoutesBottomTabProps = BottomTabNavigationProp<AppRoutesType>;
+export type AppRoutesNavigationTabProps = BottomTabNavigationProp<AppRoutesType>;
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutesType>();
 
 
@@ -38,6 +47,7 @@ export const AppRoutes = ()=>{
     return (
     
     <Navigator screenOptions={{
+                headerShown:false,
                 tabBarShowLabel:false,
                 tabBarActiveTintColor:colors.gray[800],
                 tabBarInactiveTintColor: colors.gray[400],
@@ -52,11 +62,10 @@ export const AppRoutes = ()=>{
       }}>
         <Screen 
             options={{ 
-                headerShown:false,
                 tabBarIcon:({color})=>(
                     <Ionicons name='home-outline' size={16} color={color}/>
                 ),   
-            
+                    
             }}
             name='home' 
             component={Home}
@@ -64,7 +73,15 @@ export const AppRoutes = ()=>{
             />
         <Screen 
             options={{
-                tabBarButton:()=> null
+                tabBarButton:()=> null,
+                tabBarStyle: { display: 'none' },
+                // headerLeftLabelVisible: true,
+                // headerLeft:()=> <ArrowLeft />,
+                // headerStyle: {backgroundColor: '#F7F7F8'},
+                // headerTitle: '',
+                
+           
+              
             }}
             name='AdDetails' 
             component={AdDetails}
@@ -76,7 +93,12 @@ export const AppRoutes = ()=>{
             />
         <Screen 
            options={{
-            tabBarButton:()=> null
+            tabBarButton:()=> null,
+            headerStyle: {backgroundColor: '#F7F7F8'},
+            headerTitle: 'My Ads Details',
+            headerTitleAlign: 'center',
+            headerTitleStyle:{ fontFamily: 'Karla_700Bold', fontWeight: 'bold'},
+            headerTintColor: '#1A181B'
         }}
             name='MyAdsDetails' 
             component={MyAdsDetails}

@@ -2,7 +2,13 @@ import { VStack, HStack, Center, Heading, Text, IconButton } from "native-base";
 import { Tag } from "phosphor-react-native";
 import { Feather } from '@expo/vector-icons';
 
-export const HomeSubHeader = () => {
+
+
+type HomeSubHeaderProps = {
+  uponClicking: ()=>void; 
+}
+
+export const HomeSubHeader = ({ uponClicking }: HomeSubHeaderProps) => {
   return (
     <VStack mt={8}>
       <Text fontFamily="body" fontSize="sm" color='gray.600' mb={3}>
@@ -38,7 +44,7 @@ export const HomeSubHeader = () => {
                     My Adds
                   </Heading>
                   <IconButton
-                    onPress={()=>console.log('do Something')}
+                    onPress={uponClicking}
                     _pressed={{ opacity: .5}}
                     size={4} 
 
