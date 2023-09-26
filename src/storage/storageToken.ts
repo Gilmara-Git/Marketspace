@@ -6,3 +6,7 @@ export const storageSaveUSerToken = async ( token: string)=>{
     await AsyncStorage.setItem(USER_AUTH_TOKEN, token)
 };
 
+export const storageGetUserToken = async ()=>{
+    const token = await AsyncStorage.getItem(USER_AUTH_TOKEN);
+    return token;
+};

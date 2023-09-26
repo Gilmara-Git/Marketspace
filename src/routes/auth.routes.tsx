@@ -15,7 +15,10 @@ export const AuthRoutes =()=>{
 
     return (
    
-                <Navigator screenOptions={{headerShown: false}}>
+                <Navigator screenOptions={{
+                        headerShown: false, 
+                        animation:'fade_from_bottom'
+                        }}>
                     <Screen name='signIn' component={SignIn}/>
                     <Screen name='signUp' component={SignUp}/>
                 </Navigator>

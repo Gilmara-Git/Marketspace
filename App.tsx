@@ -21,6 +21,7 @@ import { MyAdsDetails } from '@screens/MyAdsDetails';
 import { AdCreate } from '@screens/AdCreate';
 import { AdEdit } from '@screens/AdEdit';
 import { AdPreview } from '@screens/AdPreview';
+import { AuthContextProvider } from "@src/contexts/AuthContext";
 
 
 export default function App() {
@@ -39,7 +40,12 @@ export default function App() {
           translucent
         />
 
-        {!fontsLoaded ? <Loading /> : <Routes/>}
+
+        <AuthContextProvider >
+
+          {!fontsLoaded ? <Loading /> : <Routes/>}
+
+        </AuthContextProvider>
       </NativeBaseProvider>
     </SafeAreaProvider>
   );
