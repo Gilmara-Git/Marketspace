@@ -3,13 +3,16 @@ import {  useToast } from 'native-base';
 import { UserDTO } from 'src/dtos/UserDTO'
 import { api } from '@services/api';
 import { AppError } from '@utils/AppError';
-import { storageSaveUser, storageGetUser} from '@storage/storageUser';
-import { storageSaveUSerToken, storageGetUserToken } from '@src/storage/storageToken';
+import { storageSaveUser, storageGetUser, storageDeleteUser} from '@storage/storageUser';
+import { storageSaveUSerToken, storageGetUserToken, storageDeleteUserToken } from '@src/storage/storageToken';
 
 type UserContextType = {
     user: UserDTO;
     login: (email: string, password: string)=> Promise<void>;
-}
+    signOut: ()=> Promise<void>;
+};
+
+
 type AuthContextProviderProps = {
     children: ReactNode;
     }
@@ -76,11 +79,30 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
     };
     
 
+    const signOut = async ()=>{
+
+        try{
+            setUser({}as UserDTO);
+            await storageDeleteUser();
+            await storageDeleteUserToken();
+
+        }catch(error){
+            if(error instanceof AppError){
+                const isAppError = error instanceof AppError;
+                toast.show({
+                    title: isAppError ? error.message : 'There was an error during Sign Out.',
+                    placement: 'top',
+                    duration: 5000,
+                    bg: 'red.400'
+                });
+            }
+        }
+
+    };
+
     const loadUserAndTokenStorageData = async()=>{
         const user = await storageGetUser();
         const token = await storageGetUserToken();
-
-        console.log(user, token,  'user and token from storage')
 
         if(user && token){
             userAndTokenUpdate(user, token);
@@ -94,7 +116,7 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
     }, [])
 
     return <AuthContext.Provider value={{ 
-        user, login }}>
+        user, login, signOut }}>
 
             {children } 
       </AuthContext.Provider>
