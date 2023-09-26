@@ -13,6 +13,7 @@ import Marketspace from '@assets/marketspace.svg';
 import { Button }  from '@components/Button/index';
 import { Input } from '@components/Input/index';
 import { InputPassword } from '@components/InputPassword/index';
+import { UserAuthHook } from '@hooks/UserAuthHook';
 
 
 const signInSchema = yup.object({
@@ -24,7 +25,7 @@ const signInSchema = yup.object({
 type FormData = yup.InferType<typeof signInSchema>
 
 export const SignIn =()=>{
-   
+   const { login  }  = UserAuthHook();
     const [ isAccessing, setIsAccessing ] = useState(false);
 
 
@@ -41,10 +42,12 @@ export const SignIn =()=>{
     };
     
     
-    const handleSignIn =(data: FormData)=>{
-    
+    const handleSignIn = async (data: FormData)=>{
         setIsAccessing(true);
-        console.log(data, 'line21')
+
+        await login(data.email, data.password);
+        
+        setIsAccessing(false);
     }
 
       
