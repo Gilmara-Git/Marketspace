@@ -1,38 +1,134 @@
 import  { useState } from 'react';
-import { VStack, Center, Text, ScrollView, Image, Heading } from 'native-base';
+import { VStack, Center, Text, ScrollView, Image, Heading, useToast,} from 'native-base';
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from 'react-hook-form';
 
 
-import Logos from '@assets/logo.png';
+import Logos from '../../../src/assets/logo.png';
 import { AvatarHolder } from '@components/AvatarHolder'
 
 import { Input } from '@components/Input/index';
 import { Button }  from '@components/Button/index';
 import { InputPassword } from '@components/InputPassword/index';
 
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+
 import { useNavigation } from '@react-navigation/native';
+
+import { api } from '@services/api';
+import { AppError } from '@utils/AppError';
+
+import { UserAuthHook } from '@hooks/UserAuthHook';
 
 const signUpSchema = yup.object({
     name: yup.string().required('Type your name'),
     email: yup.string().required('Type your email').email('Type a valid email address'),
-    phone: yup.string().required('Type your phone number in 10 digits').min(10, 'Ex: 974 568 3398'),
-    password: yup.string().required('Type a 6 digits password').min(6, 'Password needs 6 digits.'),
-    confirm_password: yup.string().required('Confirm your password').oneOf([yup.ref('password')], 'Passwords do not match')
+    tel: yup.string().required('Type your phone number in 10 digits').min(10, 'Ex: 974 568 3398'),
+    password: yup.string().required().min(6, 'Password needs 6 digits.'),
+    confirm_password: yup.string().required().oneOf([yup.ref('password')], 'Passwords do not match')
 
 })
 type FormData = yup.InferType<typeof signUpSchema>
 
+
 export const SignUp =()=>{
     const [ isCreating, setIsCreating ] = useState(false);
     const [ isLogin, setIsLogin ] = useState(false);
-    const navigation = useNavigation();
+    const [ userAvatar, setUserAvatar ] = useState('');
+    const [ avatarType, setAvatarType ] = useState('');
+    
+    const {user, login} =  UserAuthHook();
+    console.log(user, 'lina 45')
 
-    const handleCreateUser = (data : FormData)=>{
-        console.log(data, 'line31 signup')
-        setIsCreating(true);
+    const navigation = useNavigation();
+    const toast = useToast();
+
+    const selectUserAvatar = async ()=>{
+        const pickedImage =  await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [5,5],
+            quality: 1
+        });
+
+       if(pickedImage.canceled){
+        return;
+       }
+       const avatar = pickedImage.assets[0].uri;
+       const type = pickedImage.assets[0].type
+       
+
+       const verifyAvatarSize =  await FileSystem.getInfoAsync(avatar, { size: true})
+       if(verifyAvatarSize.exists && (verifyAvatarSize.size /1024/1024) > 3){
+           return toast.show({
+               title: 'The Avatar image you have selected is too big!',
+               placement: 'top',
+               duration: 5000,
+               bg: 'red.400'
+            });
+        }
+        
+        setUserAvatar(avatar);
+        
+        if(type === 'image'){
+            setAvatarType(type)
+
+        }
+
+    };
+
+    const handleCreateUser =  async (data : FormData)=>{
+        console.log(data, 'line31 signup');
+        try{
+            setIsCreating(true);
+            const imgExt = userAvatar.split('.').pop();
+            console.log(imgExt, '85')    
+            
+           const photoFile = {
+            name: `${data.name}.${imgExt}`.toLowerCase(),
+            type:`${avatarType}/${imgExt}`,
+            uri: userAvatar
+
+           }as any;
+      
+                
+            const userForm = new FormData();
+            userForm.append('avatar', photoFile );
+            userForm.append('name', data.name);
+            userForm.append('email', data.email);
+            userForm.append('tel', data.tel);
+            userForm.append('password', data.password);
+
+            console.log(userForm, 'linha101')
+        //    create the api.post sending the 'userForm' , Content-type: multipart/form-data
+            await api.post('/users', userForm, {
+            headers: { 
+                'Content-Type': 'multipart/form-data'
+             }
+           })
+
+         
+
+            await login(data.email, data.password)
+
+        }catch(error){  
+            const isAppError = error instanceof AppError;
+            toast.show({
+                title: isAppError ? error.message :  'There was an error creating your account. Upload your photo and all fields.',
+                placement: 'top',
+                duration: 5000,
+                bg: 'red.400'
+            })
+            
+            console.log(error)
+          
+        }finally{
+        setIsCreating(false)
+      }
+
     };
     
     const handleLogin =()=>{
@@ -66,8 +162,12 @@ export const SignUp =()=>{
                            
                         </Center>
 
-                        <Center py={8} px={12}>
-                            <AvatarHolder />
+                        <Center py={5} px={12}>
+                           
+                            <AvatarHolder 
+                                uponClicking={selectUserAvatar}
+                                imageUrl={userAvatar}
+                                />
 
                             <VStack my={3}>
                                 <Controller
@@ -101,16 +201,16 @@ export const SignUp =()=>{
                                 />
 
                                 <Controller 
-                                    name='phone'
+                                    name='tel'
                                     control={control}
                                     render={({field: { onChange, value}})=>(
                                         <Input 
-                                            placeholder='Phone number ex: 9745631290'
+                                            placeholder='Phone number ex: 19745631290'
                                             onChangeText={onChange}
                                             width={69}
                                             value={value}
-                                            errorMessage={errors.phone?.message}
-                                            isInvalid={!!errors.phone}
+                                            errorMessage={errors.tel?.message}
+                                            isInvalid={!!errors.tel}
                                             />
 
                                     )}
