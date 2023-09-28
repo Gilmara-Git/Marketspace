@@ -5,6 +5,7 @@ import { api } from '@services/api';
 import { AppError } from '@utils/AppError';
 import { storageSaveUser, storageGetUser, storageDeleteUser} from '@storage/storageUser';
 import { storageSaveUSerToken, storageGetUserToken, storageDeleteUserToken } from '@src/storage/storageToken';
+import { storageSaveUserRefreshToken, storageDeleteUserRefreshToken} from '@storage/storageRefreshToken';
 
 type UserContextType = {
     user: UserDTO;
@@ -31,10 +32,11 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
         setUser(user);
     }
 
-    const storageSaveUserAndToken = async (user: UserDTO, token: string) =>{
+    const storageSaveUserTokenAndRefreshToken = async (user: UserDTO, token: string, refresh_token: string) =>{
         try{
             await storageSaveUser(user);
             await storageSaveUSerToken(token);
+            await storageSaveUserRefreshToken(refresh_token);
 
         }catch(error){
             if(error instanceof AppError){
@@ -56,7 +58,7 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
             console.log(data, 'response da api.post sessions');
            
             userAndTokenUpdate(data.user, data.token);
-            storageSaveUserAndToken(data.user, data.token)
+            await storageSaveUserTokenAndRefreshToken(data.user, data.token, data.refresh_token)
 
          
 
@@ -82,9 +84,10 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
     const signOut = async ()=>{
 
         try{
-            setUser({}as UserDTO);
+            setUser({} as UserDTO);
             await storageDeleteUser();
             await storageDeleteUserToken();
+            await storageDeleteUserRefreshToken();
 
         }catch(error){
             if(error instanceof AppError){
@@ -102,7 +105,8 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
 
     const loadUserAndTokenStorageData = async()=>{
         const user = await storageGetUser();
-        const token = await storageGetUserToken();
+        const  token  = await storageGetUserToken();
+      
 
         if(user && token){
             userAndTokenUpdate(user, token);
@@ -113,7 +117,16 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
 
     useEffect(()=>{
         loadUserAndTokenStorageData();
-    }, [])
+    }, []);
+
+    useEffect(()=>{
+        const sendSignOutToApi = api.registerInterceptorTokenValidation(signOut);
+
+        //clearing this function from memory after application loads
+        return ()=>{
+            sendSignOutToApi();
+        }
+    }, [signOut]);
 
     return <AuthContext.Provider value={{ 
         user, login, signOut }}>

@@ -13,7 +13,7 @@ export const SignOutScreen =()=>{
     }
 
     const handleSignOut = async ()=>{
-        await signOut()
+        await signOut();
 ;    };
 
 
@@ -37,7 +37,7 @@ export const SignOutScreen =()=>{
                 <Button 
                     title='No'
                     size={33}
-                    backColor='red.400'
+                    backColor='blue.600'
                     color='white'
                     onPressColor='red.500' 
                     onPress={returnToPreviousPage}
@@ -45,7 +45,7 @@ export const SignOutScreen =()=>{
                 <Button 
                     title='Yes'
                     size={33}
-                    backColor='blue.600'
+                    backColor='red.400'
                     color='white'
                     onPressColor='blue.900' 
                     onPress={handleSignOut}
