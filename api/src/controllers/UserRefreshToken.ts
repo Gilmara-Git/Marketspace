@@ -9,7 +9,7 @@ import { prisma } from "../database";
 export class UserRefreshToken {
   async create(request: Request, response: Response) {
     const { refresh_token } = request.body;
-
+   
     if (!refresh_token) {
       throw new AppError("Informe o refresh token.");
     }
