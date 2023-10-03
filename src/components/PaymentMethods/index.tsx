@@ -2,9 +2,11 @@ import { HStack, Icon, Text } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 
 const iconsType : { [ key: string ]: string} = {
-    'Bill': 'barcode-outline',
     'Zelle': 'qr-code-outline',
     'Credit Card': 'card',  
+    'Deposit': 'ios-wallet-outline',
+    'Cash': 'ios-wallet',
+    'Bill': 'barcode-outline',
 }
 
 type PaymentMethodsProps = {

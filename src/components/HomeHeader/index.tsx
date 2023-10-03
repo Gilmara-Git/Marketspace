@@ -2,12 +2,14 @@ import { HStack, VStack, Heading , Text, Icon } from 'native-base';
 import { UserPhoto } from '@components/UserPhoto';
 import { Button } from '@components/Button';
 import { AntDesign } from '@expo/vector-icons';
+import { UserAuthHook } from '@src/hooks/UserAuthHook';
 
 type HomeHeaderProps = {
     uponClicking: ()=> void;
 }
 
 export const HomeHeader = ({uponClicking}: HomeHeaderProps)=>{
+    const { user } = UserAuthHook();
    
     return (
         <HStack>
@@ -15,7 +17,7 @@ export const HomeHeader = ({uponClicking}: HomeHeaderProps)=>{
                 <UserPhoto size={13} borderColor='blue.600'/>
                 <VStack ml={3}>
                     <Text fontFamily='body' fontSize='md'>Welcome,</Text>
-                    <Heading fontFamily='heading' fontSize='md'>Gilmara !</Heading>
+                    <Heading fontFamily='heading' fontSize='md'>{user.name}</Heading>
                 </VStack>
             </HStack>
                 <Button 

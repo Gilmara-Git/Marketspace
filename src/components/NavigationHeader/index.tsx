@@ -4,6 +4,7 @@ type NavigationHeaderProps = IPressableProps & {
   iconLeft?: any;
   title?: string;
   iconRight?: any;
+  bgColor: string;
   leftIconClick?: () => void;
   rightIconClick?: () => void;
 };
@@ -14,6 +15,7 @@ export const NavigationHeader = ({
   title,
   leftIconClick,
   rightIconClick,
+  bgColor,
   ...rest
  
 }: NavigationHeaderProps) => {
@@ -25,7 +27,7 @@ export const NavigationHeader = ({
        pt={9}
        pb={2}
        px={6}
-       bg="gray.50"
+       bg={bgColor}
       >
         {iconLeft && (
           <Pressable

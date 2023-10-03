@@ -3,11 +3,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 type ButtonsRadio = IRadioGroupProps & {
     errorMessage: string | undefined;
-
+    
 };
 
 export const ButtonsRadio = ({ errorMessage, isInvalid, ...rest }: ButtonsRadio) => {
     const invalid = !!errorMessage || isInvalid
+    
 
   return (
     <FormControl

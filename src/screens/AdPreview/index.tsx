@@ -1,54 +1,111 @@
-import { ScrollView, Platform } from "react-native";
+import { useState } from 'react'
+import { ScrollView, Platform, LogBox, Dimensions } from "react-native";
 import {
   VStack,
   HStack,
-  View,
-  Image,
   Heading,
   Text,
   Box,
   Icon,
   Divider,
   Center,
+
 } from "native-base";
 import { Feather } from "@expo/vector-icons";
-import chandelier from "@assets/chandelier.png";
+
 
 import { UserDisplay } from "@components/UserDisplay";
 import { PaymentMethods } from "@components/PaymentMethods";
 import { Button } from "@components/Button";
-import { LineDivider } from "@src/components/LineDivider";
+import { ImageSlider } from '@components/ImageSlider';
+//  import { ImageSliderReanimatedCarousel } from '@components/ImageSliderReanimatedCarousel';
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppRoutesNavigationTabProps } from "@routes/app.routes";
 import { ProductDTO } from "@src/dtos/ProductDTO";
+import { UserAuthHook } from '@src/hooks/UserAuthHook';
+import { api } from '@services/api';
+
 
 export const AdPreview = () => {
-  // fake isNew, this will come from products in the AdDetails params
+  LogBox.ignoreLogs([
+    "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
+  ]);
+  const { width } = Dimensions.get('window')
+  
+ 
 
-  const isNew = false;
-  const acceptTrade = true;
+  const item_size = width * .072;
+
+
+  const { user }  =  UserAuthHook();
+  const navigation = useNavigation<AppRoutesNavigationTabProps>();
+  
   const { params } = useRoute();
   const {
-    accept_trade,
+    name,
     description,
-    is_product_new,
-    payments,
+    is_new,
+    accept_trade,
+    payments_methods,
     price,
-    title,
     images,
   } = params as ProductDTO;
 
-  console.log(params, "params");
+  // console.log(images, "params");
+  // transform price for database
+  
 
-  const navigation = useNavigation<AppRoutesNavigationTabProps>();
+  const formattedPrice  = new Intl.NumberFormat('en-US',  {
+    style: 'currency', 
+    currency: 'USD',
+  } ).format(Number(price));
+  
 
-  const handleBackEdit = () => {
-    navigation.navigate("AdEdit");
+  
+  const handleGoback = () => {
+    navigation.navigate("AdCreate");
   };
+  
+  const publishItem = async()=>{
+    const priceToDb = Number(price);
+    // console.log(priceToDb * 100, ' linha59', typeof priceToDb);
+
+    // mandar one requisition to crete product
+    // const { userProduct }: any = await api.post('product', { 
+      // name,
+      // description,
+      // is_new,
+      // accept_trade,
+      // payments_methods,
+      // price: priceToDb }
+      
+      // );
+
+      
+    
+
+         // mandar one requisition to create/save product images 
+        
+         const productForm = new FormData();
+          productForm.append('product_id', '10' )
+
+         images.forEach(photoFile =>{
+           return productForm.append('images', photoFile)
+         });
+         
+         //VER COMO ESTA O FORMDATA ANTES DE ENVIAR, VER SE E PRECISO COLOCAR O ID TO PRODUTO EM CADA IMMAGE ATTACHED TO FORMDATA
+     
+
+      // await api.post('products/images', { product_id: userProduct.id, productImagesUploadForm });
+    console.log(productForm,'linha85')
+   
+  }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView
+      showsVerticalScrollIndicator = {false}
+    >
       <VStack bg="blue.600" pt={10} pb={4}>
         <Center pt={4}>
           <Heading fontFamily="heading" fontSize="md" color="gray.50">
@@ -59,21 +116,14 @@ export const AdPreview = () => {
           </Text>
         </Center>
       </VStack>
-      <VStack bg="gray.50">
-        <View>
-          <Image
-            width="100%"
-            source={chandelier}
-            defaultSource={chandelier}
-            height="280"
-            resizeMode="cover"
-            alt="Product photo"
-          />
-          <LineDivider />
-        </View>
+      <VStack bg="gray.50" width='100%'>
+          
+         <ImageSlider productImages={images} />
+      
+      
 
         <VStack px={6} mt={6}>
-          <UserDisplay />
+          <UserDisplay userName={user.name} />
 
           <VStack>
             <HStack pb={2}>
@@ -85,31 +135,29 @@ export const AdPreview = () => {
                   color="gray.800"
                   textTransform="uppercase"
                 >
-                  {isNew ? "New" : "Used"}
+                  { is_new ? "New" : "Used"}
                 </Text>
               </Box>
             </HStack>
 
             <HStack pb={1.5} justifyContent="space-between">
               <Heading fontFamily="heading" fontSize="xl">
-                Chandelier
+                {name}
               </Heading>
               <Text fontFamily="heading" fontSize="xl" color="blue.600">
-                <Text fontSize="sm">u$</Text> 400.00
-              </Text>
+              
+                 {formattedPrice}
+                </Text>
             </HStack>
 
             <Text numberOfLines={4} fontFamily="body" fontSize="sm">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum
-              dicta voluptatibus deleniti. Laudantium est voluptate quae odio
-              quaerat beatae a ad assumenda ducimus minima numquam,
-              consequuntur, iusto quibusdam! Laborum, vero!
+              {description}
             </Text>
 
             <Heading mt={6} mb={5} fontFamily="heading" fontSize="sm">
               Accept Trade ?{" "}
               <Text fontFamily="body" fontSize="sm">
-                {acceptTrade ? "Yes" : "No"}
+                {accept_trade ? "Yes" : "No"}
               </Text>
             </Heading>
 
@@ -117,11 +165,13 @@ export const AdPreview = () => {
               Methods of Payments:
             </Heading>
 
-            {payments.map((method) => {
+            {payments_methods.map((method) => {
               const methodsFormat: { [key: string]: string } = {
-                credit_card: "Credit Card",
-                zelle: "Zelle",
-                bill: "Bill",
+                card: "Credit Card",
+                pix: "Zelle",
+                boleto: "Bill",
+                cash: "Cash",
+                deposit: "Deposit"
               };
 
               return (
@@ -131,6 +181,7 @@ export const AdPreview = () => {
           </VStack>
         </VStack>
       </VStack>
+      
       <VStack
         px={Platform.OS === "ios" ? 3 : 5}
         py={6}
@@ -141,14 +192,14 @@ export const AdPreview = () => {
         <HStack justifyContent="space-between">
           <Button
             color="gray.800"
-            title="Back to edit"
+            title="Back"
             backColor="gray.300"
             leftIcon={
               <Icon as={Feather} name="arrow-left" size={4} color="gray.800" />
             }
             onPressColor="blue.900"
             size={48}
-            onPress={handleBackEdit}
+            onPress={handleGoback}
           />
 
           <Button
@@ -158,7 +209,7 @@ export const AdPreview = () => {
             leftIcon={<Icon as={Feather} name="tag" size={4} color="white" />}
             onPressColor="blue.900"
             size={48}
-            onPress={() => console.log("Publish the Ad")}
+            onPress={publishItem}
           />
         </HStack>
 
@@ -166,6 +217,6 @@ export const AdPreview = () => {
           <Divider width={40} p={0.5} rounded="full" />
         </Center>
       </VStack>
-    </ScrollView>
+      </ScrollView>
   );
 };

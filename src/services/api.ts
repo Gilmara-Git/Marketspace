@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { AppError } from "@utils/AppError";
 import {
-  storageGetUserToken,
   storageSaveUSerToken,
 } from "@src/storage/storageToken";
 
@@ -25,7 +24,7 @@ const api = axios.create({
 api.registerInterceptorTokenValidation = (signOut) => {
   let waitingRequestsQueue: Array<requestTypes> = [];
   let isTokenRefreshing = false; // starts false because the very first time is not refreshing token yet.
-  
+
   const interceptTokenValidation = api.interceptors.response.use(
     (response) => response,
     async (requestError) => {
@@ -37,6 +36,7 @@ api.registerInterceptorTokenValidation = (signOut) => {
           ) {
             console.log('Erro de token =>,', requestError.response.data.message)
             const refresh_token  = await storageGetUserRefreshToken();
+            console.log('Refreshing refresh token', refresh_token, 'na api')
             console.log(signOut, 'signOut chegando na aPI')
 
           if (!refresh_token) {
@@ -75,7 +75,7 @@ api.registerInterceptorTokenValidation = (signOut) => {
               const { data } = await api.post("/sessions/refresh-token", {
                 refresh_token,
               });
-              console.log("DATA=> from refresh token", data);
+              console.log("DATA=> from refresh token", data, 'Codigo não está chegando aqui');
               await storageSaveUSerToken(data.token);
 
              
@@ -87,7 +87,7 @@ api.registerInterceptorTokenValidation = (signOut) => {
 
               //update the original request and the next ones
               originalRequestConfig.headers = {
-                'Authorization': `Bearer ${data.token}`,
+                'authorization': `Bearer ${data.token}`,
               };
               api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
 

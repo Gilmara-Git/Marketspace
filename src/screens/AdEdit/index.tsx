@@ -43,7 +43,7 @@ const EditSchema = yup.object().shape({
   is_product_new: yup.string().required("Please select if product is new or used."),
   accept_trade: yup.boolean().required().default(false),
   price: yup.string().required('Please type your product price'),
-  payments: yup.array().of(yup.string().required('Choose one method of payment.')).default(['credit_card']),
+  payments_methods: yup.array().of(yup.string().required('Choose one method of payment.')).default(['credit_card']),
 });
 
 type FormData = yup.InferType<typeof EditSchema>;
@@ -59,6 +59,7 @@ export const AdEdit = () => {
   ]);
   const [ images, setImages ] = useState<ImagesType>(); 
   const [ imageLoading, setImageLoading ] = useState(false);
+  const [ priceValid, setPriceValid] = useState(false)
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
@@ -81,11 +82,34 @@ export const AdEdit = () => {
     resolver: yupResolver(EditSchema),
   });
 
+// VALIDATE PRICE LIKE ON THE CREATE AD PAGE
+  const ensurePriceHasCents = ( value: string)=>{
+    const containsDot = value.split('').includes('.');
+    if(containsDot){
+      setPriceValid(true)
+    }else{
+      setPriceValid(false);
+    }
+  
+  }
 
   const handleAdCreate = (data: any) =>{
     console.log(data, 'line64')
     data.images = images;
     
+    ensurePriceHasCents(data.price);
+    if(!priceValid) { 
+      toast.show({
+        title: 'Please enter the price with CENTS. Ex: 100.45',
+        placement: 'top',
+        bg: 'red.400',
+        duration: 2000
+      })
+      setPriceValid(true);
+      return;
+    }
+
+
     navigation.navigate('AdPreview', data)
 
   };
@@ -170,6 +194,7 @@ export const AdEdit = () => {
           iconLeft={ArrowLeft}
           leftIconClick={handleGoback}
           title='Edit Ad'
+          bgColor="gray.200"
           />
 
       <VStack bg="gray.200" px={6} pt={6} flex={1} pb={4}>
@@ -287,7 +312,7 @@ export const AdEdit = () => {
                   keyboardType="numeric"
                   onChangeText={onChange}
                   value={value}
-                  placeholder="Product value"
+                  placeholder="Product value ex: 1000.00"
                   placeholderTextColor="gray.400"
                   InputLeftElement={
                     <Text pl={4} fontFamily="body" fontSize="md">
@@ -327,7 +352,7 @@ export const AdEdit = () => {
 
             <View>
                 <Controller 
-                  name='payments'
+                  name='payments_methods'
                   control={control}
                   rules={{required: true}}
                   render={({field: { value, onChange}})=>(
@@ -339,13 +364,13 @@ export const AdEdit = () => {
                     
                     )}
                     />
-                    { errors?.payments && 
+                    { errors?.payments_methods && 
                       <Text
                         color='red.400'
                         fontFamily='body'
                         fontSize='sm'
                       >
-                        {errors.payments.message}
+                        {errors.payments_methods.message}
                       </Text> }
                 
             </View>
