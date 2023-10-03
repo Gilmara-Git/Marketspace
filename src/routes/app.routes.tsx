@@ -12,6 +12,7 @@ import { SignOutScreen } from '@screens/SignOutScreen';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { SignOut } from 'phosphor-react-native';
 import { ArrowLeft } from 'phosphor-react-native';
+import { ProductDTO } from '@src/dtos/ProductDTO';
 
 
 type AppRoutesType = {
@@ -23,13 +24,15 @@ type AppRoutesType = {
     AdEdit: undefined,
     SignOut: undefined,
     AdPreview: {
-        title: string,
-        description: string, 
-        accept_trade: boolean, 
-        is_product_new: string, 
-        payments: string[], 
-        price: string, 
-        images: string[]
+        product: ProductDTO,
+  
+        // title: string,
+        // description: string, 
+        // accept_trade: boolean, 
+        // is_product_new: string, 
+        // payments: string[], 
+        // price: string, 
+        // images: any[]
     },
 }
 
@@ -99,16 +102,19 @@ export const AppRoutes = ()=>{
             headerTitleAlign: 'center',
             headerTitleStyle:{ fontFamily: 'Karla_700Bold', fontWeight: 'bold'},
             headerTintColor: '#1A181B'
+          
         }}
             name='MyAdsDetails' 
             component={MyAdsDetails}
             />
         <Screen 
            options={{
-            tabBarButton:()=> null
+            tabBarButton:()=> null,
+            headerStyle: {backgroundColor: '#EE7070' }
         }}
             name='AdCreate' 
             component={AdCreate}
+            
             />
         <Screen 
         options={{

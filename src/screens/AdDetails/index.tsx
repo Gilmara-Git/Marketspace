@@ -46,6 +46,7 @@ const test = ()=>{
                 <NavigationHeader
                     iconLeft={ArrowLeft}
                     leftIconClick={handleBackHome}
+                    bgColor='gray.50'
                  
                 />
             <VStack bg='gray.50'>

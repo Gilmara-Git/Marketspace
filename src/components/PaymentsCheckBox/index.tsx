@@ -14,27 +14,19 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
     
             <Checkbox.Group
                 colorScheme='blue'
-                defaultValue={['credit_card']}
+                defaultValue={['card']}
                 {...rest}
              
                 >
                 <Checkbox
-                    value='bill'
+                    value='pix'
                     mb={2}
-                    
                     >
-                    Bill
+                Zelle
                 </Checkbox>
 
                 <Checkbox
-                    value='zelle'
-                    mb={2}
-                    >
-                Zelle - 908 976 5433
-                </Checkbox>
-
-                <Checkbox
-                    value='credit_card'
+                    value='card'
                     mb={2}
                     isHovered
                     isFocused
@@ -43,6 +35,31 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
                     >
                     Credit Card
                 </Checkbox>
+
+                <Checkbox
+                    value='deposit'
+                    mb={2}
+                    >
+                     Deposit   
+                </Checkbox>
+
+                <Checkbox
+                    value='cash'
+                    mb={2}
+                    
+                    >
+                    Cash
+                </Checkbox>
+
+
+
+                <Checkbox
+                    value='boleto'
+                    mb={2}
+                    >
+                    Bill
+                </Checkbox>
+
 
             </Checkbox.Group>
 

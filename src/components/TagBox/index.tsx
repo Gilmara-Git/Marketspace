@@ -1,5 +1,5 @@
-import { Pressable, IPressableProps, Text, HStack } from 'native-base';
-import { XCircle } from 'phosphor-react-native';
+import { Pressable, IPressableProps, Text, HStack, Icon } from 'native-base';
+import { Fontisto } from '@expo/vector-icons';
 
 type TabBoxProps = IPressableProps & {
     isActive: boolean,
@@ -37,8 +37,8 @@ export const TagBox =({ isActive, title , setProductState,  ...rest}: TabBoxProp
                           {title}
                     </Text>
                     {isActive && 
-                        // <Icon  as={Fontisto} name='close' size={3} color='white'/>
-                        <XCircle color='white' size={20}/>
+                        <Icon  as={Fontisto} name='close' size={3} color='white' mr={1}/>
+                       
                     }
                
                 </HStack>
