@@ -1,9 +1,9 @@
 export type ProductDTO = {
-        accept_trade: boolean, 
+        name: string
         description: string, 
         is_new: string, 
-        payments_methods: string[], 
+        accept_trade: boolean, 
+        payment_methods: string[], 
         price: string, 
-        name: string
         images: any[]
     };
