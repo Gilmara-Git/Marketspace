@@ -11,6 +11,7 @@ borderColor: string
 
 export const UserPhoto = ({size, borderColor, ...rest}: UserPhotoProps )=>{
     const { user } = UserAuthHook();
+
     
     return (
         <Image 

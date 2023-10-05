@@ -37,6 +37,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AppRoutesNavigationTabProps } from '@routes/app.routes';
 import { ArrowLeft } from 'phosphor-react-native';
 
+//ARRUMAR TODOS OS CCAMPOS NAME I_NEW ETC
 const EditSchema = yup.object().shape({
   title: yup.string().required("Type a title for your product."),
   description: yup.string().required('Please describe your product.'),

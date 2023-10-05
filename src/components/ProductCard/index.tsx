@@ -1,24 +1,29 @@
 import { Pressable ,IPressableProps, Image, Box, Text , Heading, View } from 'native-base';
 import { UserPhoto } from '@components/UserPhoto';
-import sneaker from '@assets/red_sneaker.png';
 import chandelier from '@assets/chandelier.png';
 
 import { ImageOverlay } from '@components/ImageOverlay';
+import { api } from '@services/api';
+
 
 type ProductCardProps = IPressableProps & {
+    id: string,
     name: string;
-    image?: string;
-    description?: string;
     price: string;
-    isNew: boolean,
-    isNotUserAd: boolean
-    isAdActive?: boolean
+    is_new: boolean
+    is_active: boolean
+    imageUrl: string;
+  
   
 
 }
 
 
-export const ProductCard =( { name, price, description, image,  isNew, isNotUserAd, isAdActive, ...rest  }: ProductCardProps)=>{
+
+export const ProductCard =( {name, price, is_new, is_active,imageUrl,  ...rest  }: ProductCardProps)=>{
+
+    price = String(Number(price)/100);
+
 
     return (
       
@@ -31,16 +36,24 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
         >
             <>
 
-                <View>
+                <View 
+                    rounded={8}
+                    borderColor='gray.50'
+                    borderWidth={1} 
+                    shadow={0.5}
+                >
 
-                    <Image  
+                    <Image 
+                        height={28}
+                        width={46} 
+                       
                         rounded={8}
-                        source={chandelier} 
+                        source={imageUrl ? {uri:`${api.defaults.baseURL}/images/${imageUrl}`} : chandelier} 
                         alt='Product image'
                         />
                     
                     {
-                        !isAdActive &&
+                        !is_active &&
 
                         <ImageOverlay rounded={8} />
                 }
@@ -48,7 +61,7 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
            
                     
 
-                    { !isAdActive && 
+                    { !is_active && 
                    
                         <Heading 
                             fontFamily='heading' 
@@ -65,7 +78,7 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
             </>
 
 
-            { isNotUserAd && 
+      
             
                 <UserPhoto  
                     size={6} 
@@ -75,10 +88,10 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
                     left={3}
                 />
             
-            }
+         
       
             <Box 
-                bg={ isNew ? 'blue.900' :'gray.800'} 
+                bg={ is_new ? 'blue.900' :'gray.800'} 
                 rounded='full'
                 position='absolute'
                 top={1.5}
@@ -89,7 +102,7 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
                     <Text 
                         px={1} 
                         fontFamily='heading' 
-                        color='white'>{isNew ?'New'.toUpperCase(): 'Used'.toUpperCase()}
+                        color='white'>{is_new ?'New'.toUpperCase(): 'Used'.toUpperCase()}
                     </Text>
                 
             </Box>

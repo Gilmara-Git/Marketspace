@@ -14,13 +14,14 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
     
             <Checkbox.Group
                 colorScheme='blue'
-                defaultValue={['card']}
+                // defaultValue={['card']}
                 {...rest}
              
                 >
                 <Checkbox
                     value='pix'
                     mb={2}
+               
                     >
                 Zelle
                 </Checkbox>
@@ -28,10 +29,7 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
                 <Checkbox
                     value='card'
                     mb={2}
-                    isHovered
-                    isFocused
-                    isPressed
-                    isChecked
+                   
                     >
                     Credit Card
                 </Checkbox>

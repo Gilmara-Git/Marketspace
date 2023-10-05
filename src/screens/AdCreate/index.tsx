@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect , useCallback} from "react";
 import { LogBox } from "react-native";
 import {
   VStack,
@@ -31,7 +31,7 @@ import { NavigationHeader } from "@src/components/NavigationHeader";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { AppRoutesNavigationTabProps } from "@routes/app.routes";
 import { ArrowLeft } from "phosphor-react-native";
 import { AppError } from "@utils/AppError";
@@ -45,7 +45,7 @@ const AdCreateSchema = yup.object().shape({
   // is_new: yup.boolean().required().default(false),
   price: yup.string().required("Please type your product price"),
   accept_trade: yup.boolean().required().default(false),
-  payments_methods: yup
+  payment_methods: yup
     .array()
     .of(yup.string().required("Choose one method of payment."))
     .default(["card"]),
@@ -57,9 +57,7 @@ type FormData = yup.InferType<typeof AdCreateSchema>;
 
 
 export const AdCreate = () => {
-  LogBox.ignoreLogs([
-    "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
-  ]);
+ 
   const [images, setImages] = useState<any[]>([]);
   const [imageLoading, setImageLoading] = useState(false);
   const [ imagesInPhotoFile,  setImagesInPhotoFile ] = useState<any[]>([]);
@@ -80,6 +78,7 @@ export const AdCreate = () => {
   };
 
   const {
+    reset,
     control,
     handleSubmit,
     formState: { errors },
@@ -89,11 +88,6 @@ export const AdCreate = () => {
 
   const ensurePriceHasCents = async ( value: string)=>{
     const containsDot = value.split('').includes('.');
-
-    // if(containsDot){
-    //   setPriceValid(true);
-    // }
-
     return containsDot;
   }
 
@@ -126,6 +120,8 @@ export const AdCreate = () => {
       data.is_new = data.is_new === "new" ? true : false;
       data.price = Number(data.price);
       data.images = imagesInPhotoFile;
+
+      reset();
 
       navigation.navigate("AdPreview", data);
 
@@ -174,12 +170,12 @@ export const AdCreate = () => {
 
       for (let image of selectedImages) {
         const file = await FileSystem.getInfoAsync(image.url, { size: true });
-
-        if (file.exists && file.size / 1024 / 1024 > 3) {
+     
+        if (file.exists && file.size / 1024 / 1024 > 5) {
           return toast.show({
-            title: "Error, one of more images are bigger than 3MB.",
+            title: "Error, one of more images are bigger than 5MB.",
             placement: "top",
-            duration: 5000,
+            duration: 3000,
             bg: "red.400",
           });
         }
@@ -215,6 +211,17 @@ export const AdCreate = () => {
     }
   };
 
+ useFocusEffect(useCallback(()=>{
+  reset();
+  setImagesInPhotoFile([]);
+  setImages([]);
+ },[]));
+
+ useEffect(()=>{
+  LogBox.ignoreLogs([
+    "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
+  ]);
+ }, [])
 
   return (
     <ScrollView>
@@ -373,16 +380,16 @@ export const AdCreate = () => {
 
             <View>
               <Controller
-                name="payments_methods"
+                name="payment_methods"
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
                   <PaymentsCheckBox value={value} onChange={onChange} />
                 )}
               />
-              {errors?.payments_methods && (
+              {errors?.payment_methods && (
                 <Text color="red.400" fontFamily="body" fontSize="sm">
-                  {errors.payments_methods.message}
+                  {errors.payment_methods.message}
                 </Text>
               )}
             </View>

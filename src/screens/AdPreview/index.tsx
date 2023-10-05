@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { ScrollView, Platform, LogBox, Dimensions } from "react-native";
+import { useState } from 'react';
+import { ScrollView, Platform, LogBox } from "react-native";
 import {
   VStack,
   HStack,
@@ -9,6 +9,7 @@ import {
   Icon,
   Divider,
   Center,
+  useToast
 
 } from "native-base";
 import { Feather } from "@expo/vector-icons";
@@ -18,25 +19,25 @@ import { UserDisplay } from "@components/UserDisplay";
 import { PaymentMethods } from "@components/PaymentMethods";
 import { Button } from "@components/Button";
 import { ImageSlider } from '@components/ImageSlider';
-//  import { ImageSliderReanimatedCarousel } from '@components/ImageSliderReanimatedCarousel';
+import  { Loading } from '@components/Loading';
+
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppRoutesNavigationTabProps } from "@routes/app.routes";
 import { ProductDTO } from "@src/dtos/ProductDTO";
 import { UserAuthHook } from '@src/hooks/UserAuthHook';
-import { api } from '@services/api';
+import { api } from '@services/api'; 
+import { AppError } from '@utils/AppError';
+
 
 
 export const AdPreview = () => {
   LogBox.ignoreLogs([
     "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
   ]);
-  const { width } = Dimensions.get('window')
   
- 
-
-  const item_size = width * .072;
-
+  const [ isCreatingProduct, setIsCreatingProduct ] = useState(false);
+  const toast = useToast();
 
   const { user }  =  UserAuthHook();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
@@ -47,15 +48,11 @@ export const AdPreview = () => {
     description,
     is_new,
     accept_trade,
-    payments_methods,
+    payment_methods,
     price,
     images,
   } = params as ProductDTO;
-
-  // console.log(images, "params");
-  // transform price for database
   
-
   const formattedPrice  = new Intl.NumberFormat('en-US',  {
     style: 'currency', 
     currency: 'USD',
@@ -64,42 +61,59 @@ export const AdPreview = () => {
 
   
   const handleGoback = () => {
-    navigation.navigate("AdCreate");
+    navigation.navigate('AdCreate');
   };
   
-  const publishItem = async()=>{
-    const priceToDb = Number(price);
-    // console.log(priceToDb * 100, ' linha59', typeof priceToDb);
+  const handlePublishProduct = async()=>{
+    const priceToDb = Number(price) * 100;
 
-    // mandar one requisition to crete product
-    // const { userProduct }: any = await api.post('product', { 
-      // name,
-      // description,
-      // is_new,
-      // accept_trade,
-      // payments_methods,
-      // price: priceToDb }
+  try{
+    setIsCreatingProduct(true)
+    const { data } : any = await api.post('/products', { 
+      name,
+      description,
+      is_new,
+      price: priceToDb, 
+      accept_trade,
+      payment_methods,
+    }
       
-      // );
-
+      );
+  
+      console.log('PRODUCT CREATED', data, data.id, data.user_id, data.is_active)
       
-    
-
-         // mandar one requisition to create/save product images 
+      const productForm = new FormData();
+      productForm.append('product_id', data.id )
+      
+      images.forEach(photoFile =>{
+        return productForm.append('images', photoFile)
+      });
+      
+      const prodImages = await api.post('/products/images', 
+        productForm, 
+        { headers:{ 
+          'Content-Type': 'multipart/form-data'}
+      }, 
         
-         const productForm = new FormData();
-          productForm.append('product_id', '10' )
+      );
+     console.log(prodImages, 'linha99')
+  
+      navigation.navigate('MyAds');
 
-         images.forEach(photoFile =>{
-           return productForm.append('images', photoFile)
-         });
-         
-         //VER COMO ESTA O FORMDATA ANTES DE ENVIAR, VER SE E PRECISO COLOCAR O ID TO PRODUTO EM CADA IMMAGE ATTACHED TO FORMDATA
-     
+  }catch(error){
 
-      // await api.post('products/images', { product_id: userProduct.id, productImagesUploadForm });
-    console.log(productForm,'linha85')
-   
+    const isAppError =  error instanceof AppError;
+    toast.show({
+      title: isAppError ? error.message: 'An error occurred while creating your product',
+      placement: 'top',
+      bg: 'red.400',
+      duration: 3000
+    })
+    console.log(error)
+
+  }finally{
+    setIsCreatingProduct(false);
+  }
   }
 
   return (
@@ -117,11 +131,15 @@ export const AdPreview = () => {
         </Center>
       </VStack>
       <VStack bg="gray.50" width='100%'>
+
+        { isCreatingProduct ? 
+        
+          <Loading /> :
           
          <ImageSlider productImages={images} />
+        }
       
-      
-
+    
         <VStack px={6} mt={6}>
           <UserDisplay userName={user.name} />
 
@@ -165,7 +183,7 @@ export const AdPreview = () => {
               Methods of Payments:
             </Heading>
 
-            {payments_methods.map((method) => {
+            {payment_methods.map((method) => {
               const methodsFormat: { [key: string]: string } = {
                 card: "Credit Card",
                 pix: "Zelle",
@@ -209,7 +227,7 @@ export const AdPreview = () => {
             leftIcon={<Icon as={Feather} name="tag" size={4} color="white" />}
             onPressColor="blue.900"
             size={48}
-            onPress={publishItem}
+            onPress={handlePublishProduct}
           />
         </HStack>
 

@@ -25,14 +25,6 @@ type AppRoutesType = {
     SignOut: undefined,
     AdPreview: {
         product: ProductDTO,
-  
-        // title: string,
-        // description: string, 
-        // accept_trade: boolean, 
-        // is_product_new: string, 
-        // payments: string[], 
-        // price: string, 
-        // images: any[]
     },
 }
 

@@ -28,15 +28,29 @@ export const Home =()=>{
     const handleCreateAd = ()=>{
         navigation.navigate('AdCreate');
     };
-    const onFilterClick =()=>{
-        setModalVisible(true)
-      
+
+   
+    const retrieveFiltersSelected = (is_new: boolean, accept_trade: boolean, payment_methods: any[])=>{
+        console.log(is_new, accept_trade, payment_methods, 'linha34 na home')
     };
     
+    const onSearchString =( query: string)=>{
+        console.log(query, 'query na linha 32 da HOME')
+        
+    };
+    const openModalCommand = ()=>{
+        setModalVisible(true)
+
+    };
+
     const closeModalCommand =()=>{
         setModalVisible(false);
     };
    
+    useEffect(()=>{
+
+    },[])
+
     useEffect(()=>{
         LogBox.ignoreLogs(['In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.']);
     },[])
@@ -45,11 +59,17 @@ export const Home =()=>{
             <Center mt={8} py={6}>
                     <HomeHeader uponClicking={handleCreateAd}/>
                     <HomeSubHeader uponClicking={goToMyAds}/>
-                    <HomeFilter filterClick={onFilterClick} />
+                    <HomeFilter 
+                        getQuery={onSearchString}
+                        onOpenClick={openModalCommand}
+                        />
 
                     <Modal 
                         isOpen={modalVisible}
                         onCloseClick={closeModalCommand}
+                        retrieveFilters={retrieveFiltersSelected}
+                        onOpenClick={openModalCommand}
+                      
                       
                         />
                     <FlatList 
