@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useCallback, useEffect } from "react";
 import {
   VStack,
   HStack,
@@ -10,47 +10,118 @@ import {
   Divider,
   ScrollView,
   Icon,
-  View
+  View,
+  useToast
 } from "native-base";
-import chandelier from "@assets/chandelier.png";
+
 import { UserDisplay } from "@components/UserDisplay";
 import { PaymentMethods } from "@components/PaymentMethods";
 import { ImageOverlay } from '@components/ImageOverlay';
-import { LineDivider } from "@src/components/LineDivider";
 import { NavigationHeader } from '@components/NavigationHeader';
 
 import { Button } from '@components/Button';
 import { Feather } from '@expo/vector-icons';
 import { AntDesign } from "@expo/vector-icons";
+import { ImageSlider } from '@components/ImageSlider';
+import { Loading } from '@components/Loading';
 import { ArrowLeft , PencilSimpleLine} from 'phosphor-react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute , useFocusEffect} from '@react-navigation/native';
 import { AppRoutesNavigationTabProps } from '@routes/app.routes';
 
+import { api} from '@services/api'
+import { AppError } from '@utils/AppError';
+import { AllProductsDTO } from "@src/dtos/AllProductsDTO";
+
+
+interface MyAdsDetailsParams {
+    productId: string
+}
+
+
 export const MyAdsDetails = () => {
-  // this is will come from backend
-  const [payments, setPayments] = useState([
-    "Bill",
-    "Zelle",
-    "Credit Card",
-   ,
-  ]);
+
+  const [ myProd, setMyProd ] = useState<AllProductsDTO>({} as AllProductsDTO);
+  const [ isLoading, setIsLoading ] = useState(true);
+  const toast = useToast();
+  const route =  useRoute();
+  const { productId }  = route.params as MyAdsDetailsParams;
+
 
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
-  const handleGoback = ()=>{
-    navigation.goBack();
+
+ const fetchMyAdsDetails = async()=>{
+    try{
+        setIsLoading(true);
+        const { data } = await api.get(`/products/${productId}`);
+        
+        setMyProd({
+            ...data,
+            price: new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(data.price /100)
+
+        })
+
+
+    }catch(error){
+        const isAppError = error instanceof AppError;
+        toast.show({
+            title: isAppError ? error.message: 'There was an error to search your products. Try again later.',
+            placement: 'top',
+            bg: 'red.400',
+            duration: 3000
+        })
+
+    }finally{
+        setIsLoading(false);
+    };
+ };
+  
+ const handleDeactivateActivateAd = async()=>{
+    try{ 
+        
+        setIsLoading(true);
+        
+       
+        await api.patch(`/products/${productId}`, { is_active: !myProd.is_active});
+       
+
+        fetchMyAdsDetails();
+       
+        toast.show({
+            title: 'Your Ad has been updated!',
+            placement: 'top',
+            bg: 'tertiary.600',
+            duration: 3000
+        })
+
+    }catch(error){
+        const isAppError = error instanceof AppError;
+        
+        toast.show({
+            title: isAppError ? error.message: 'There was an error to update your Ad',
+            placement: 'top',
+            bg: 'red.400',
+            duration: 3000
+
+        });
+    }finally{
+        setIsLoading(false);
+    }
+
+
+ };
+ const handleGoback = ()=>{
+    navigation.navigate('MyAds');
   };
 
   const goToEditAd =()=>{
    navigation.navigate('AdEdit');
   }
 
-  //params
-  // if isActive === false product photo is darker and replace button Deactivate Ad to Activate Ad
-  const isActive = true;
-  const isNew = true;
-  const acceptTrade = true;
-  const isAdActive = true;
+
+useFocusEffect((useCallback(()=>{
+    fetchMyAdsDetails()
+}, [productId, myProd.is_active])));
 
   return (
     <ScrollView
@@ -62,20 +133,18 @@ export const MyAdsDetails = () => {
             iconRight={PencilSimpleLine}
             leftIconClick={handleGoback}
             rightIconClick={goToEditAd}
+            bgColor='gray.200'
         />
 
         <VStack bg='gray.200'>
+            { isLoading ? <Loading/>  : 
             <View>
-                <Image
-                    source={chandelier}
-                    defaultSource={chandelier}
-                    alt="product"
-                    width="100%"
-                    resizeMode="cover"
-                    height="280"
+                <ImageSlider
+                    productImages={myProd.product_images}
+                    
                     />
                     
-                    { !isAdActive && 
+                    { !myProd.is_active && 
                     
                     <Heading 
                     fontFamily='heading' 
@@ -90,17 +159,20 @@ export const MyAdsDetails = () => {
                     </Heading>
 
                     }
-                    <LineDivider/>
+           
 
 
-                    { !isAdActive && 
+                    { !myProd.is_active && 
                         <ImageOverlay />
                     
                     }
 
             </View>
+            }
             <VStack px={6} pt={6}>
-                <UserDisplay />
+                <UserDisplay 
+                    userAvatar={myProd?.user?.avatar}
+                    userName={myProd?.user?.name} />
                     <VStack>
                         <HStack pb={2}>
                             <Box bg="gray.300" rounded="full" px={1.5} py={1}>
@@ -111,31 +183,29 @@ export const MyAdsDetails = () => {
                                 color="gray.800"
                                 textTransform="uppercase"
                             >
-                                {isNew ? "New" : "Used"}
+                                { myProd.is_new ? "New" : "Used"}
                             </Text>
                             </Box>
                         </HStack>
 
                         <HStack pb={1.5} justifyContent="space-between">
                             <Heading fontFamily="heading" fontSize="xl">
-                            Chandelier
+                            {myProd.name}
                             </Heading>
                             <Text fontFamily="heading" fontSize="xl" color="blue.600">
-                            <Text fontSize="sm">u$</Text> 345.00
+                                {myProd.price}
                             </Text>
                         </HStack>
 
                         <Text numberOfLines={4} fontFamily="body" fontSize="sm">
-                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum
-                            dicta voluptatibus deleniti. Laudantium est voluptate quae odio
-                            quaerat beatae a ad assumenda ducimus minima numquam, consequuntur,
-                            iusto quibusdam! Laborum, vero!
+                            {myProd.description}
                         </Text>
 
                         <Heading mt={6} mb={5} fontFamily="heading" fontSize="sm">
-                            Accept Trade ?{" "}
+                            Accept Trade ?  {myProd.accept_trade}
+                            
                             <Text fontFamily="body" fontSize="sm">
-                            {acceptTrade ? "Yes" : "No"}
+                            {myProd.accept_trade ? "Yes" : "No"}
                             </Text>
                         </Heading>
 
@@ -143,8 +213,8 @@ export const MyAdsDetails = () => {
                             Methods of Payments:
                         </Heading>
 
-                    {payments.map((method) => {
-                        return <PaymentMethods  key={method}  method={method} />;
+                    { myProd.payment_methods?.map((method) => {
+                        return <PaymentMethods  key={method.key}  method={method.key} />;
                     })}
                     </VStack>
             </VStack>
@@ -154,11 +224,11 @@ export const MyAdsDetails = () => {
                          
                             <Button
                                 color='gray.50' 
-                                title={ isAdActive ? 'Deactivate Ad' : 'Reactivate Ad'}
-                                backColor={ isAdActive ? 'gray.900': 'blue.600'}
+                                title={ myProd.is_active ? 'Deactivate Ad' : 'Reactivate Ad'}
+                                backColor={ myProd.is_active ? 'gray.900': 'blue.600'}
                                 leftIcon={<Icon as={AntDesign} name='poweroff' size={3} color='gray.50'/>}
                                 onPressColor='gray.800'
-                                onPress={()=>console.log('toggle Add active/inactive')}
+                                onPress={handleDeactivateActivateAd}
                                 />
 
                                 <View mb={2}/>
