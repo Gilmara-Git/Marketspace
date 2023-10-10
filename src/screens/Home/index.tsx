@@ -98,7 +98,7 @@ export const Home =()=>{
 
     useFocusEffect(useCallback(()=>{
         fetchAllProducts();
-    }, [is_newFilter, accept_trade, payment_methods, query]))
+    }, [is_newFilter, accept_trade, payment_methods, query]));
     
     return (
         <VStack bg='gray.200' flex={1}>
@@ -150,7 +150,7 @@ export const Home =()=>{
                                         fontSize='md'
                                         color='blue.900'
                                         >
-                                            There is not Ads available!
+                                            There are not ADs to show!
                                     </Text>
                                 }
                                 data={products}

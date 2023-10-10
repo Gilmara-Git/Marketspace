@@ -15,22 +15,13 @@ type ImageSliderProps = {
 
 export const ImageSlider = ({ productImages }: ImageSliderProps)=> {
   const [imageIndex, setImageIndex] = useState(0);
+  
+  const width = Dimensions.get('window').width;
 
   const indexChanged = useRef((info: ItemsChangedProps) => {
     setImageIndex(info.viewableItems[0].index!)
   })
 
-
-  console.log(productImages, 'productImages, linha23')
-  if(productImages){
-    productImages.forEach(item => console.log(`${api.defaults.baseURL}/images/${item.path}`), 'linha26262662')
-
-    
-
-  }
-
-
-  const width = Dimensions.get('window').width;
 
 
   return (
@@ -57,9 +48,9 @@ export const ImageSlider = ({ productImages }: ImageSliderProps)=> {
         {productImages?.map((_, index) => (
           <Box
             key={index}
-            bg={imageIndex === index ? 'gray.400' : 'gray.800'}
+            bg={imageIndex === index ? 'gray.200' : 'gray.800'}
             rounded="full"
-            w={width / 1.07 / productImages.length}
+            w={width / 2 / productImages.length}
             h={1}
           />
         ))}

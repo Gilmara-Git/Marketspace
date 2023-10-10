@@ -22,7 +22,9 @@ type AppRoutesType = {
         productId:  string
     },
     MyAds: undefined,
-    MyAdsDetails: undefined,
+    MyAdsDetails: { 
+        productId: string 
+    },
     AdCreate: undefined,
     AdEdit: undefined,
     SignOut: undefined,

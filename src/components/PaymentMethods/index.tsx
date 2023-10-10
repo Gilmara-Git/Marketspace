@@ -16,8 +16,7 @@ type PaymentMethodsProps = {
 
 
 export const PaymentMethods = ({ method  }: PaymentMethodsProps)=>{
-    console.log(method, 'linha19')
-   
+
     return (
         <HStack>
         <Icon 

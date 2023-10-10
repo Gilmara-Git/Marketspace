@@ -31,8 +31,8 @@ export const MyAds = ()=>{
         navigation.navigate('AdCreate');
     };
 
-   const goMyAdDetails = ()=>{
-       navigation.navigate('MyAdsDetails');
+   const goMyAdDetails = ( id: string)=>{
+       navigation.navigate('MyAdsDetails', { productId: id });
 
    };
    
@@ -130,7 +130,7 @@ useFocusEffect(useCallback(()=>{
                         is_active={item.is_active}
                         imageUrl={item.product_images[0]?.path}
                         productOwnerAvatar={user.avatar}
-                        onPress={goMyAdDetails} 
+                        onPress={()=>goMyAdDetails(item.id)} 
                         /> 
                    
                     </>

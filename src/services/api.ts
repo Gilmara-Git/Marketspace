@@ -44,7 +44,7 @@ api.registerInterceptorTokenValidation = (signOut) => {
             return Promise.reject(requestError);
           }
 
-          // if there is refresh_token we push a requisition to a queue to wait while we request a new token and refresh_token
+          // if there is refresh_token we push a requisition to the waitingRequestsQueue while we request a new token and refresh_token
           // But first we get the original requisition config and update the header with the token
           const originalRequestConfig = requestError.response.config;
           // console.log("Original request config", originalRequestConfig);

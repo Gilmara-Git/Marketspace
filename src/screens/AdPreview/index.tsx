@@ -80,8 +80,7 @@ export const AdPreview = () => {
       
       );
   
-      console.log('PRODUCT CREATED', data, data.id, data.user_id, data.is_active)
-      
+    
       const productForm = new FormData();
       productForm.append('product_id', data.id )
       
@@ -96,7 +95,7 @@ export const AdPreview = () => {
       }, 
         
       );
-     console.log(prodImages, 'linha99')
+  
   
       navigation.navigate('MyAds');
 
@@ -141,7 +140,10 @@ export const AdPreview = () => {
       
     
         <VStack px={6} mt={6}>
-          <UserDisplay userName={user.name} />
+          <UserDisplay 
+            userName={user.name}
+            userAvatar={user.avatar}
+            />
 
           <VStack>
             <HStack pb={2}>
