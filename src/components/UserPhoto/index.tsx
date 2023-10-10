@@ -5,17 +5,18 @@ import { api } from '@services/api';
 
 type UserPhotoProps = IImageProps &{
 size: number,
-borderColor: string
+borderColor: string;
+userAvatar: string;
 
 }
 
-export const UserPhoto = ({size, borderColor, ...rest}: UserPhotoProps )=>{
+export const UserPhoto = ({size, borderColor,userAvatar,  ...rest}: UserPhotoProps )=>{
     const { user } = UserAuthHook();
 
     
     return (
         <Image 
-            source={user.avatar? { uri: `${api.defaults.baseURL}/images/${user.avatar}`} : avatarHolder}
+            source={userAvatar? { uri: `${api.defaults.baseURL}/images/${userAvatar}`} : avatarHolder}
             alt='User Photo'
             width={size}
             height={size}

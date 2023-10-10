@@ -14,7 +14,7 @@ export const HomeHeader = ({uponClicking}: HomeHeaderProps)=>{
     return (
         <HStack>
             <HStack width={50}>
-                <UserPhoto size={13} borderColor='blue.600'/>
+                <UserPhoto size={13} borderColor='blue.600' userAvatar={user.avatar}/>
                 <VStack ml={3}>
                     <Text fontFamily='body' fontSize='md'>Welcome,</Text>
                     <Heading fontFamily='heading' fontSize='md'>{user.name}</Heading>

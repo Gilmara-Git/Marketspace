@@ -50,7 +50,7 @@ export const AdPreview = () => {
     accept_trade,
     payment_methods,
     price,
-    images,
+    product_images,
   } = params as ProductDTO;
   
   const formattedPrice  = new Intl.NumberFormat('en-US',  {
@@ -85,7 +85,7 @@ export const AdPreview = () => {
       const productForm = new FormData();
       productForm.append('product_id', data.id )
       
-      images.forEach(photoFile =>{
+      product_images.forEach(photoFile =>{
         return productForm.append('images', photoFile)
       });
       
@@ -136,7 +136,7 @@ export const AdPreview = () => {
         
           <Loading /> :
           
-         <ImageSlider productImages={images} />
+         <ImageSlider productImages={product_images} />
         }
       
     

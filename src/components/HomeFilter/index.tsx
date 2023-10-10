@@ -16,8 +16,6 @@ export const HomeFilter =({ getQuery,  onOpenClick }: HomeFilterProps)=>{
         setQuery(value);
     };
 
-    console.log(query, 'query to search')
-
     return (
         <VStack mt={8}>
             <Text mb={2} fontFamily='body' fontSize='sm' color='gray.600'>Buy various products</Text>

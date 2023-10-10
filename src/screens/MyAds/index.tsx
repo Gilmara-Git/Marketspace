@@ -12,16 +12,19 @@ import { Plus } from 'phosphor-react-native';
 import { api } from '@services/api';
 import { AppError } from '@src/utils/AppError';
 import { MyProductsDTO } from '@src/dtos/MyProductsDTO';
+import { UserAuthHook } from '@hooks/UserAuthHook';
 
 
 export const MyAds = ()=>{
     const [ filterBy, setFilterBy ] = useState('all');
     const toast = useToast();
     const [myProducts, setMyProducts] = useState<MyProductsDTO[]>([]as MyProductsDTO[]);
+    const { user } =  UserAuthHook();
+    
     
     // criar uma funcao para passar para o contexto, quantos Ads ativos do usuario, para que  rota HOME possa consumir
     // console.log(myProducts, 'filterBy')
-   
+ 
     const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
     const handleCreateAd = ()=>{
@@ -36,7 +39,7 @@ export const MyAds = ()=>{
    const getCurrentUser = async()=>{
     try{
         const currentUser = await api.get('/users/me');
-        // console.log(currentUser, 'Current User on MyAdsssss')
+       
 
     }catch(error){
         const isAppError =  error instanceof AppError;
@@ -123,9 +126,10 @@ useFocusEffect(useCallback(()=>{
                         id={item.id}
                         name ={item.name}
                         price={item.price}
-                        is_new={item.is_new}
+                        is_new={String(item.is_new)}
                         is_active={item.is_active}
                         imageUrl={item.product_images[0]?.path}
+                        productOwnerAvatar={user.avatar}
                         onPress={goMyAdDetails} 
                         /> 
                    

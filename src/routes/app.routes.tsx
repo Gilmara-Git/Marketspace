@@ -15,9 +15,12 @@ import { ArrowLeft } from 'phosphor-react-native';
 import { ProductDTO } from '@src/dtos/ProductDTO';
 
 
+
 type AppRoutesType = {
     home: undefined,
-    AdDetails: undefined,
+    AdDetails: { 
+        productId:  string
+    },
     MyAds: undefined,
     MyAdsDetails: undefined,
     AdCreate: undefined,

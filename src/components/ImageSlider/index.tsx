@@ -1,9 +1,8 @@
-/* eslint-disable camelcase */
-import { useRef, useState } from 'react'
-import { Dimensions, FlatList, ViewToken } from 'react-native'
-import { Box, HStack, Image, VStack } from 'native-base'
 
-import { api } from '@services/api'
+import { useRef, useState } from 'react';
+import { Dimensions, FlatList, ViewToken } from 'react-native';
+import { Box, HStack, Image, VStack } from 'native-base';
+import { api } from '@services/api';
 
 type ItemsChangedProps = {
   viewableItems: ViewToken[]
@@ -21,11 +20,18 @@ export const ImageSlider = ({ productImages }: ImageSliderProps)=> {
     setImageIndex(info.viewableItems[0].index!)
   })
 
-  // console.log(indexChanged.current, 'linha25', imageIndex)
+
+  console.log(productImages, 'productImages, linha23')
+  if(productImages){
+    productImages.forEach(item => console.log(`${api.defaults.baseURL}/images/${item.path}`), 'linha26262662')
+
+    
+
+  }
+
 
   const width = Dimensions.get('window').width;
 
-  
 
   return (
     <VStack>
@@ -35,7 +41,7 @@ export const ImageSlider = ({ productImages }: ImageSliderProps)=> {
         renderItem={({ item }) => (
           <Image
             alt="Product image"
-            source={{ uri: item.uri }}
+            source={{ uri: item.uri || `${api.defaults.baseURL}/images/${item.path}` }}
             w={width}
             h={width / 1}
             resizeMode="cover"

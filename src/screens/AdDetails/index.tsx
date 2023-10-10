@@ -1,155 +1,201 @@
-import { useState } from 'react';
-import { ScrollView } from 'react-native';
-import { VStack, HStack, View, Image, Heading, Text , Box, Icon, Divider, Center,} from 'native-base';
-import { Ionicons } from '@expo/vector-icons';
-import Bicycle from '@assets/bicycle.png';
+import { useState, useCallback } from "react";
+import { ScrollView, Linking } from "react-native";
+import {
+  VStack,
+  HStack,
+  View,
+  Heading,
+  Text,
+  Box,
+  Icon,
+  Divider,
+  Center,
+  useToast,
+} from "native-base";
+import { Ionicons } from "@expo/vector-icons";
 
-import { UserDisplay } from '@components/UserDisplay';
-import { PaymentMethods } from '@components/PaymentMethods';
-import { Button } from '@components/Button';
-import { LineDivider } from '@src/components/LineDivider';
-import { NavigationHeader } from '@src/components/NavigationHeader';
-import { ArrowLeft } from 'phosphor-react-native';
+import { UserDisplay } from "@components/UserDisplay";
+import { PaymentMethods } from "@components/PaymentMethods";
+import { Button } from "@components/Button";
 
-import { useNavigation } from '@react-navigation/native';
-import { AppRoutesNavigationTabProps } from '@routes/app.routes';
+import { NavigationHeader } from "@src/components/NavigationHeader";
+import { ImageSlider } from "@components/ImageSlider";
+import { ArrowLeft } from "phosphor-react-native";
 
 
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
+import { AppRoutesNavigationTabProps } from "@routes/app.routes";
+import { AllProductsDTO } from "@src/dtos/AllProductsDTO";
 
+import { AppError } from "@utils/AppError";
+import { api } from "@services/api";
 
-export const AdDetails = ()=>{
-    const [ payments, setPayments] = useState(['Bill', 'Zelle','Credit Card']);
-    const navigation  = useNavigation<AppRoutesNavigationTabProps>();
-
-    const handleBackHome = ()=>{
-        console.log('totootootottt')
-        navigation.goBack();
-    }
-
-const test = ()=>{
-    console.log('teste')
+interface AdDetailsParams {
+  productId: string;
 }
 
-    // fake isNew, this will come from products in the AdDetails params 
 
-    const isNew =  true
-    const acceptTrade =  false;
-  
+export const AdDetails = () => {
+  const [productDetails, setProductDetails] = useState<AllProductsDTO>(
+    {} as AllProductsDTO
+  );
+  const [isFetchingProduct, setIsFetchingProduct] = useState(false);
+  const navigation = useNavigation<AppRoutesNavigationTabProps>();
+  const route = useRoute();
+  const toast = useToast();
 
-    return (
-      
-        <ScrollView
-        showsVerticalScrollIndicator={false}
-       
-        
-         >
-                <NavigationHeader
-                    iconLeft={ArrowLeft}
-                    leftIconClick={handleBackHome}
-                    bgColor='gray.50'
-                 
-                />
-            <VStack bg='gray.50'>
-                <View>
-                    <Image
-                        width='100%'
-                        source={Bicycle} 
-                        defaultSource={Bicycle}
-                        height='280'  
-                        resizeMode='cover'
-                        alt='Product photo'
-                        />
-                    <LineDivider/>
-                </View>
+  const { productId } = route.params as AdDetailsParams;
 
-                <VStack px={6} mt={6}>
+  const fetchProduct = async () => {
+    try {
+      setIsFetchingProduct(true);
+      const { data } = await api.get(`/products/${productId}`);
 
-                <UserDisplay />
+      setProductDetails({
+        ...data,
+        price: new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(data.price / 100),
+        tel: Number(data.user.tel),
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      toast.show({
+        title: isAppError
+          ? error.message
+          : "There was an error fetching product.",
+        placement: "top",
+        bg: "red.400",
+        duration: 3000,
+      });
+    } finally {
+      setIsFetchingProduct(false);
+    }
+  };
 
-                            <VStack>
-                                <HStack pb={2}>
-                                    <Box 
-                                        bg='gray.300' 
-                                        rounded='full'
-                                        px={1.5}
-                                        py={1}
-                                        
-                                        >
-                                            <Text 
-                                                px={1} 
-                                                fontFamily='heading'
-                                                fontSize='2xs' 
-                                                color='gray.800'
-                                                textTransform='uppercase'
-                                                >
-                                                    {isNew ? 'New': 'Used'}
+  const whatsAppUrl = `https://wa.me/${productDetails?.user?.tel}`;
 
-                                            </Text>
-                                        
-                                    </Box>
-                                </HStack>
+  const handleWhatAppButtonPress = useCallback(
+    async (url: string) => {
+      const supportedURL = await Linking.canOpenURL(whatsAppUrl);
 
-                                <HStack pb={1.5} justifyContent='space-between'>
-                                    <Heading fontFamily='heading' fontSize='xl'>Bicycle</Heading>
-                                    <Text fontFamily='heading' fontSize='xl' color='blue.600'><Text fontSize='sm'>u$</Text> 120.00</Text>
-                                </HStack>
-                                
-                                <Text  
-                                    numberOfLines={4} 
-                                    fontFamily='body'
-                                    fontSize='sm'
-                                    >
-                                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum dicta voluptatibus deleniti. 
-                                        Laudantium est voluptate quae odio quaerat beatae a ad assumenda ducimus minima numquam, consequuntur, 
-                                        iusto quibusdam! Laborum, vero!
-                                </Text>
+      if (supportedURL) {
+        await Linking.openURL(url);
+      } else {
+        toast.show({
+          title: "There was an error: Unable to direct your to WhatsApp",
+          placement: "top",
+          bg: "red.400",
+          duration: 3000,
+        });
+      }
+    },
+    [whatsAppUrl]
+  );
 
-                                <Heading 
-                                    mt={6}
-                                    mb={5}
-                                    fontFamily='heading'
-                                    fontSize='sm'
-                                    >
-                                        Accept Trade ?  <Text fontFamily='body'fontSize='sm'>{acceptTrade? 'Yes': 'No'}</Text>
-                                </Heading>
+  const handleBackHome = () => {
+    navigation.goBack();
+  };
 
-                                <Heading
-                                    mb={2} 
-                                    fontFamily='heading' 
-                                    fontSize='sm'>
-                                        Methods of Payments:
-                                </Heading>
-                                
-                                { payments.map((method) =>{  
-                                    return <PaymentMethods key={method} method={method}/>
+  useFocusEffect(
+    useCallback(() => {
+      fetchProduct();
+    }, [productId])
+  );
 
-                                })}
-                               
-                            </VStack>
+  return (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <NavigationHeader
+        iconLeft={ArrowLeft}
+        leftIconClick={handleBackHome}
+        bgColor="gray.50"
+      />
 
-                
-                    </VStack>
-                
+      <VStack bg="gray.50">
+        <View>
+          <ImageSlider productImages={productDetails.product_images} />
+        </View>
 
-            </VStack>
-                <VStack px={6} py={6} bg='white' width='full' maxHeight={28}>
-                    <HStack justifyContent='space-between'>
-                        <Heading color='blue.900' fontFamily='body'><Text>u$</Text> 120.00</Heading>
-                        <Button
-                           color='gray.50' 
-                            title='Contact us'
-                            backColor='blue.600'
-                            leftIcon={<Icon as={Ionicons} name='logo-whatsapp' size={4} color='white'/>}
-                            onPressColor='blue.900'
-                            size={48}
-                            onPress={()=>console.log('Contact us button')}
-                            />
-                    </HStack>
+        <VStack px={6} mt={6}>
+          <UserDisplay
+            userName={productDetails?.user?.name}
+            userAvatar={productDetails?.user?.avatar}
+          />
 
-                    <Center pb={2} mt={4} flexShrink={0}>
-                        <Divider width={40} p={.5} rounded='full'/>
-                    </Center>
-                </VStack>
-        </ScrollView>
-    )
+          <VStack>
+            <HStack pb={2}>
+              <Box bg="gray.300" rounded="full" px={1.5} py={1}>
+                <Text
+                  px={1}
+                  fontFamily="heading"
+                  fontSize="2xs"
+                  color="gray.800"
+                  textTransform="uppercase"
+                >
+                  {productDetails?.is_new ? "New" : "Used"}
+                </Text>
+              </Box>
+            </HStack>
+
+            <HStack pb={1.5} justifyContent="space-between">
+              <Heading fontFamily="heading" fontSize="xl">
+                {productDetails?.name}
+              </Heading>
+              <Text fontFamily="heading" fontSize="xl" color="blue.600">
+                <Text fontSize="sm">{productDetails.price}</Text>
+                {}
+              </Text>
+            </HStack>
+
+            <Text numberOfLines={4} fontFamily="body" fontSize="sm">
+              {productDetails?.description}
+            </Text>
+
+            <Heading mt={6} mb={5} fontFamily="heading" fontSize="sm">
+              Accept Trade ?{" "}
+              <Text fontFamily="body" fontSize="sm">
+                {productDetails?.accept_trade ? "Yes" : "No"}
+              </Text>
+            </Heading>
+
+            <Heading mb={2} fontFamily="heading" fontSize="sm">
+              Methods of Payments:
+            </Heading>
+
+            {productDetails?.payment_methods?.map((method) => {
+              return <PaymentMethods key={method.key} method={method.key} />;
+            })}
+          </VStack>
+        </VStack>
+      </VStack>
+
+      <VStack px={6} py={6} bg="white" width="full" maxHeight={28}>
+        <HStack justifyContent="space-between">
+          <Heading color="blue.900" fontFamily="body">
+            {productDetails.price}
+          </Heading>
+          <Button
+            color="gray.50"
+            title="Contact us"
+            backColor="blue.600"
+            leftIcon={
+              <Icon as={Ionicons} name="logo-whatsapp" size={4} color="white" />
+            }
+            onPressColor="blue.900"
+            size={48}
+            onPress={handleWhatAppButtonPress.bind(null, whatsAppUrl)}
+          />
+        </HStack>
+
+        <Center pb={2} mt={4} flexShrink={0}>
+          <Divider width={40} p={0.5} rounded="full" />
+        </Center>
+      </VStack>
+    </ScrollView>
+  );
 };

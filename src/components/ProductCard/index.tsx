@@ -10,21 +10,18 @@ type ProductCardProps = IPressableProps & {
     id: string,
     name: string;
     price: string;
-    is_new: boolean
+    is_new: string
     is_active: boolean
     imageUrl: string;
-  
-  
-
+    productOwnerAvatar: string
 }
 
 
 
-export const ProductCard =( {name, price, is_new, is_active,imageUrl,  ...rest  }: ProductCardProps)=>{
+export const ProductCard =( {name, price, is_new, is_active,imageUrl, productOwnerAvatar,  ...rest  }: ProductCardProps)=>{
 
     price = String(Number(price)/100);
-
-
+ 
     return (
       
         <Pressable 
@@ -86,12 +83,13 @@ export const ProductCard =( {name, price, is_new, is_active,imageUrl,  ...rest  
                     position='absolute'
                     top={1}
                     left={3}
+                    userAvatar={productOwnerAvatar}
                 />
             
          
       
             <Box 
-                bg={ is_new ? 'blue.900' :'gray.800'} 
+                bg={ is_new === 'true' ? 'blue.900' :'gray.800'} 
                 rounded='full'
                 position='absolute'
                 top={1.5}
@@ -102,7 +100,7 @@ export const ProductCard =( {name, price, is_new, is_active,imageUrl,  ...rest  
                     <Text 
                         px={1} 
                         fontFamily='heading' 
-                        color='white'>{is_new ?'New'.toUpperCase(): 'Used'.toUpperCase()}
+                        color='white'>{is_new === 'true' ?'New'.toUpperCase(): 'Used'.toUpperCase()}
                     </Text>
                 
             </Box>

@@ -13,8 +13,8 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
     return (
     
             <Checkbox.Group
+                defaultValue={value}
                 colorScheme='blue'
-                // defaultValue={['card']}
                 {...rest}
              
                 >
