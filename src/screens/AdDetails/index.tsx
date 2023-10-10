@@ -22,7 +22,6 @@ import { NavigationHeader } from "@src/components/NavigationHeader";
 import { ImageSlider } from "@components/ImageSlider";
 import { ArrowLeft } from "phosphor-react-native";
 
-
 import {
   useNavigation,
   useRoute,
