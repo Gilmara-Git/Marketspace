@@ -1,10 +1,14 @@
-import { Center, Spinner} from 'native-base';
+import { Center, Spinner, View} from 'native-base';
 
 
 export const Loading =()=>{
-    return (<
-        Center flex={1} bg='gray.200'>
+    return (
+        <Center
+            mt={80}
+            justifyContent='center'
+            >
             <Spinner color='blue.900'/>
         </Center>
+           
     )
 };
