@@ -65,6 +65,10 @@ export const AdCreate = () => {
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
+  console.log('images in photofile', imagesInPhotoFile)
+  console.log('---------------')
+  console.log('images',images)
+
   const handleGoback = () => {
     navigation.goBack();
   };
@@ -158,32 +162,33 @@ export const AdCreate = () => {
       }
 
       const { assets } = pickedImages;
-
+      
       let selectedImages: any = [];
       let validatedImages: any = [];
-
+      
       if (assets.length) {
         assets.forEach((asset) => {
           return selectedImages.push({ url: asset.uri, type: asset.type });
         });
       }
-
+      
       for (let image of selectedImages) {
         const file = await FileSystem.getInfoAsync(image.url, { size: true });
-     
+        
         if (file.exists && file.size / 1024 / 1024 > 5) {
           return toast.show({
             title: "Error, one of more images are bigger than 5MB.",
             placement: "top",
-            duration: 3000,
+            duration: 2000,
             bg: "red.400",
           });
         }
-
+        
         if (!validatedImages.includes({ url: image.url })) {
           validatedImages.push({ url: image.url, type: image.type });
         }
       }
+      console.log(validatedImages, 'linha 161')
 
       validatedImages.forEach((image:any) => {
         const imageExt =  image.url.split('.').pop();

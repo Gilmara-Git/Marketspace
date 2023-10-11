@@ -107,6 +107,7 @@ useFocusEffect(useCallback(()=>{
 
             <FlatList 
                 _contentContainerStyle={{ mt:'6'}}
+                showsVerticalScrollIndicator={false}
                 ListEmptyComponent={
                     <Text
                     my={6} 
@@ -120,8 +121,9 @@ useFocusEffect(useCallback(()=>{
                 data={myProducts}
                 keyExtractor={(item)=> item.id}
                 numColumns={2}
+                columnWrapperStyle={{ justifyContent: 'space-around' }}
                 renderItem={({item})=> 
-                    <>
+                
                     <ProductCard 
                         id={item.id}
                         name ={item.name}
@@ -133,7 +135,7 @@ useFocusEffect(useCallback(()=>{
                         onPress={()=>goMyAdDetails(item.id)} 
                         /> 
                    
-                    </>
+                    
                     }
                 
                 />

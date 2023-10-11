@@ -26,7 +26,7 @@ export const ProductCard =( {name, price, is_new, is_active,imageUrl, productOwn
       
         <Pressable 
             pb={6}  
-            rounded={8} 
+            rounded={8}
             px={2} 
       
             {...rest}

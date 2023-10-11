@@ -53,6 +53,7 @@ export const AdPreview = () => {
     product_images,
   } = params as ProductDTO;
   
+  // console.log(product_images, 'linha56 na AdPreview')
   const formattedPrice  = new Intl.NumberFormat('en-US',  {
     style: 'currency', 
     currency: 'USD',
@@ -186,16 +187,16 @@ export const AdPreview = () => {
             </Heading>
 
             {payment_methods.map((method) => {
-              const methodsFormat: { [key: string]: string } = {
-                card: "Credit Card",
-                pix: "Zelle",
-                boleto: "Bill",
-                cash: "Cash",
-                deposit: "Deposit"
-              };
+              // const methodsFormat: { [key: string]: string } = {
+              //   card: "Credit Card",
+              //   pix: "Zelle",
+              //   boleto: "Bill",
+              //   cash: "Cash",
+              //   deposit: "Deposit"
+              // };
 
               return (
-                <PaymentMethods key={method} method={methodsFormat[method]} />
+                <PaymentMethods key={method} method={method} />
               );
             })}
           </VStack>
