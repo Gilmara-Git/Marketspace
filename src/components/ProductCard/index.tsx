@@ -20,7 +20,7 @@ type ProductCardProps = IPressableProps & {
 
 export const ProductCard =( {name, price, is_new, is_active,imageUrl, productOwnerAvatar,  ...rest  }: ProductCardProps)=>{
 
-    price = String(Number(price)/100);
+    price = Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'} ).format(Number(price)/100);
  
     return (
       
@@ -105,7 +105,7 @@ export const ProductCard =( {name, price, is_new, is_active,imageUrl, productOwn
                 
             </Box>
                     <Text pt={.5} fontFamily='body'fontSize='sm'>{name}</Text>
-                    <Text fontFamily='heading' fontSize='md'><Text fontSize='xs'>U$</Text> {price}</Text>
+                    <Text fontFamily='heading' fontSize='md'>{price}</Text>
 
         </Pressable>
       

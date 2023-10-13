@@ -89,7 +89,7 @@ export const AdCreate = () => {
   };
 
   const handleAdCreate = async (data: any) => {
-    console.log(data, 'line114')
+
     try {
       if (!imagesInPhotoFile.length) {
         return toast.show({
@@ -104,21 +104,20 @@ export const AdCreate = () => {
 
       if (isNaN(data.price) || !validPrice) {
         return toast.show({
-          title: "Please enter the price with CENTS such as : 100.45",
+          title: "Please enter a price showing CENTS. Ex: 1000.45",
           placement: "top",
           bg: "red.400",
-          duration: 2000,
+          duration: 1000,
         });
       }
 
       data.is_new = data.is_new === "new" ? true : false;
       data.price = Number(data.price);
       data.product_images = imagesInPhotoFile;
- 
-
-
-
+      
       navigation.navigate("AdPreview", data);
+
+      
     } catch (error) {
       const isAppError = error instanceof AppError;
 
@@ -212,13 +211,12 @@ export const AdCreate = () => {
 
   useFocusEffect(
     useCallback(() => {
-      // compartilhar reset no context para usar quando publicar um item
-
-      // reset();
+      reset();
       setImagesInPhotoFile([]);
    
     }, [])
   );
+
 
   useEffect(() => {
     LogBox.ignoreLogs([

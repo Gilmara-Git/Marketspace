@@ -26,7 +26,7 @@ type AppRoutesType = {
         productId: string 
     },
     AdCreate: undefined,
-    AdEdit: undefined,
+    AdEdit: { productId: string}
     SignOut: undefined,
     AdPreview: {
         product: ProductDTO,

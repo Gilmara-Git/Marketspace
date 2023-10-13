@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { LogBox } from "react-native";
 import {
   VStack,
@@ -33,21 +33,30 @@ import { NavigationHeader } from "@src/components/NavigationHeader";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { AppRoutesNavigationTabProps } from '@routes/app.routes';
 import { ArrowLeft } from 'phosphor-react-native';
 
-//ARRUMAR TODOS OS CCAMPOS NAME I_NEW ETC
+import { api } from '@services/api';
+import { UserAuthHook } from "@src/hooks/UserAuthHook";
+import { AppError } from '@utils/AppError';
+
+
 const EditSchema = yup.object().shape({
-  title: yup.string().required("Type a title for your product."),
+  name: yup.string().required("Type a title for your product."),
   description: yup.string().required('Please describe your product.'),
-  is_product_new: yup.string().required("Please select if product is new or used."),
-  accept_trade: yup.boolean().required().default(false),
+  is_new: yup.string().required("Please select if product is new or used."),
   price: yup.string().required('Please type your product price'),
-  payments_methods: yup.array().of(yup.string().required('Choose one method of payment.')).default(['credit_card']),
+  accept_trade: yup.boolean().required().default(false),
+  payment_methods: yup.array().of(yup.string()
+  .required('Choose one method of payment.')).default(['card']),
 });
 
 type FormData = yup.InferType<typeof EditSchema>;
+
+interface AdEditParams {
+  productId: string;
+}
 
 type ImagesType = {
   url: string
@@ -55,63 +64,105 @@ type ImagesType = {
 
 export const AdEdit = () => {
   
-  LogBox.ignoreLogs([
-    "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
-  ]);
-  const [ images, setImages ] = useState<ImagesType>(); 
+  const [imagesInPhotoFile, setImagesInPhotoFile] = useState<any[]>([]);
+  const [ adInfo, setAdInfo ] = useState();
+
   const [ imageLoading, setImageLoading ] = useState(false);
-  const [ priceValid, setPriceValid] = useState(false)
+  const { user } = UserAuthHook();
+
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
-
-  const handleGoback = ()=>{
-    
-    navigation.navigate('MyAdsDetails');
-  };
-
-  const handleImageRemove = (url: string)=>{
-    const currentImages = images;
-    const filteredImages = currentImages?.filter(images => images.url !== url);
-    setImages(filteredImages);
-   
-  };
-
+  const route = useRoute();
+  const { productId }  =  route.params as AdEditParams;
+  
   const {
-    control, handleSubmit,
+    reset,
+    control, 
+    handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(EditSchema),
   });
 
-// VALIDATE PRICE LIKE ON THE CREATE AD PAGE
-  const ensurePriceHasCents = ( value: string)=>{
+
+  const loadAdToBeEdited = async()=>{
+    const { data } = await api.get(`/products/${productId}`);
+    console.log(typeof data.price, 'linha88')
+
+    setAdInfo({
+      ...data,
+      price: Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'}).format(data.price/100)
+    })
+
+  };
+
+
+  const handleGoback = ()=>{
+    
+    navigation.navigate('MyAdsDetails', { productId });
+  };
+
+  const handleImageRemove = (uri: string)=>{
+    const currentImages = imagesInPhotoFile;
+    const filteredImages = currentImages?.filter(images => images.url !== uri);
+    setImagesInPhotoFile(filteredImages);
+   
+  };
+
+
+
+  const ensurePriceHasCents = async( value: string)=>{
     const containsDot = value.split('').includes('.');
-    if(containsDot){
-      setPriceValid(true)
-    }else{
-      setPriceValid(false);
-    }
+   return containsDot;
   
   }
 
-  const handleAdCreate = (data: any) =>{
-    console.log(data, 'line64')
-    data.images = images;
+  const handleAdCreate = async(data: any) =>{
+
+      try{
+        
+        if (!imagesInPhotoFile.length) {
+          return toast.show({
+            title: "Please select at least one image for your product.",
+            placement: "top",
+            bg: "red.400",
+            duration: 1000,
+          });
+        }
+
+
+        const validPrice = await ensurePriceHasCents(data.price);
     
-    ensurePriceHasCents(data.price);
-    if(!priceValid) { 
+        if (isNaN(data.price) || !validPrice) {
+          return toast.show({
+            title: "Please enter a price showing CENTS. Ex: 1000.45",
+            placement: "top",
+            bg: "red.400",
+            duration: 1000,
+          });
+        };
+    
+        data.is_new = data.is_new === "new" ? true : false;
+        data.price = Number(data.price);
+        data.product_images = imagesInPhotoFile;
+    
+        navigation.navigate('AdPreview', data)
+
+
+      }catch(error){
+        const isAppError = error instanceof AppError;
+
       toast.show({
-        title: 'Please enter the price with CENTS. Ex: 100.45',
-        placement: 'top',
-        bg: 'red.400',
-        duration: 2000
-      })
-      setPriceValid(true);
-      return;
-    }
+        title: isAppError
+          ? error.message
+          : "An error occurred, Ad not created!",
+        placement: "top",
+        bg: "red.400",
+        duration: 2000,
+      });
 
+      }
 
-    navigation.navigate('AdPreview', data)
 
   };
 
@@ -152,11 +203,11 @@ export const AdEdit = () => {
             for( let image of selectedImages){
               const file = await FileSystem.getInfoAsync(image.url, {size: true});
               
-              if(file.exists && (file.size /1024/1024) > 3){
+              if(file.exists && (file.size /1024/1024) > 5){
                   return toast.show({
-                    title: 'One of more images are bigger than 3MB.',
+                    title: 'One of more images are bigger than 5MB.',
                     placement: 'top',
-                    duration: 5000,
+                    duration: 2000,
                     bg: 'red.400'
                   })
 
@@ -168,13 +219,23 @@ export const AdEdit = () => {
 
               }
 
-            
             }
 
-            console.log(validatedImages.length, '147', images, images?.length)
-         
-            setImages(validatedImages);
-            console.log(images, 'lina144')
+            const imagesToStorage = validatedImages.map((image: any) => {
+              const imageExt = image.url.split(".").pop();
+      
+              const photoFile = {
+                name: `${user.name}.${imageExt}`.toLowerCase(),
+                type: `${image.type}/${imageExt}`,
+                uri: `${image.url}`,
+              };
+      
+              return photoFile;
+            });
+          
+
+            setImagesInPhotoFile((prev)=>[...prev, ...imagesToStorage]);
+    
      
 
     }
@@ -188,6 +249,17 @@ export const AdEdit = () => {
     
   };
     
+    useEffect(()=>{
+      
+      loadAdToBeEdited();
+
+    },[productId])
+
+    useEffect(()=>{
+      LogBox.ignoreLogs([
+        "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
+      ]);
+    },[])
     //passed isPressed={true} manually for now
   return (
     <ScrollView>
@@ -208,7 +280,7 @@ export const AdEdit = () => {
         <HStack pb={8}>
 
      
-          { (images?.length === undefined || images.length <=2) &&
+          { (imagesInPhotoFile?.length === undefined || imagesInPhotoFile.length <=2) &&
           
                 <Pressable
                 rounded={16}
@@ -240,7 +312,7 @@ export const AdEdit = () => {
 
 )}
 
-      { images?.map(item=>(
+      { imagesInPhotoFile?.map(item=>(
 
         <ProductImage
           key={item.url}
@@ -260,14 +332,14 @@ export const AdEdit = () => {
           <View>
             <Controller
               control={control}
-              name="title"
+              name="name"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Product Title"
+                  placeholder="Product name"
                   onChangeText={onChange}
                   value={value}
-                  errorMessage={errors.title?.message}
-                  isInvalid={!!errors.title}
+                  errorMessage={errors.name?.message}
+                  isInvalid={!!errors.name}
                 />
               )}
             />
@@ -285,7 +357,7 @@ export const AdEdit = () => {
               )}
             />
             <Controller
-              name="is_product_new"
+              name="is_new"
               control={control}
               render={({ field: { value, onChange } }) => (
                 <ButtonsRadio
@@ -293,8 +365,8 @@ export const AdEdit = () => {
                   name="is_product_status"
                   onChange={onChange}
                   value={value}
-                  errorMessage={errors.is_product_new?.message}
-                  isInvalid={!!errors.is_product_new}
+                  errorMessage={errors.is_new?.message}
+                  isInvalid={!!errors.is_new}
                 />
               )}
             />
@@ -353,7 +425,7 @@ export const AdEdit = () => {
 
             <View>
                 <Controller 
-                  name='payments_methods'
+                  name='payment_methods'
                   control={control}
                   rules={{required: true}}
                   render={({field: { value, onChange}})=>(
@@ -365,13 +437,13 @@ export const AdEdit = () => {
                     
                     )}
                     />
-                    { errors?.payments_methods && 
+                    { errors?.payment_methods && 
                       <Text
                         color='red.400'
                         fontFamily='body'
                         fontSize='sm'
                       >
-                        {errors.payments_methods.message}
+                        {errors.payment_methods.message}
                       </Text> }
                 
             </View>

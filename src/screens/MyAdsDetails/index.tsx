@@ -5,7 +5,6 @@ import {
   Box,
   Heading,
   Text,
-  Image,
   Center,
   Divider,
   ScrollView,
@@ -91,7 +90,7 @@ export const MyAdsDetails = () => {
             title: 'Your Ad has been updated!',
             placement: 'top',
             bg: 'tertiary.600',
-            duration: 3000
+            duration: 1000
         })
 
     }catch(error){
@@ -140,7 +139,7 @@ const handleDeleteAdImages = async() => {
         setIsLoading(true);
       
         const prodImages= myProd.product_images.map(image => image.id);
-        console.log(prodImages,  '==>', productId);
+      
 
         await api.delete('/products/images/', {  
             data: { productImagesIds: prodImages} 
@@ -177,7 +176,7 @@ const handleDeleteAdImages = async() => {
   };
 
   const goToEditAd =()=>{
-   navigation.navigate('AdEdit');
+   navigation.navigate('AdEdit', { productId}  );
   }
 
 

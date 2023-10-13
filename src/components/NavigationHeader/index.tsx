@@ -1,4 +1,5 @@
 import { HStack, Box, Icon, Heading, Pressable, IPressableProps} from "native-base";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type NavigationHeaderProps = IPressableProps & {
   iconLeft?: any;
@@ -22,9 +23,10 @@ export const NavigationHeader = ({
 
 
   return (
+ 
     <HStack justifyContent="space-between"
        width="100%"
-       pt={9}
+       pt={12}
        pb={2}
        px={6}
        bg={bgColor}
@@ -65,5 +67,6 @@ export const NavigationHeader = ({
         </Pressable>
         )}
       </HStack>
+    
   );
 };

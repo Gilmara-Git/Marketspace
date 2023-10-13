@@ -7,4 +7,5 @@ export type ProductDTO = {
         payment_methods: string[], 
         price: string, 
         product_images: any[]
+        
     };

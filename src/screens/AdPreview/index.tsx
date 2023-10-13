@@ -39,7 +39,7 @@ export const AdPreview = () => {
   const [ isCreatingProduct, setIsCreatingProduct ] = useState(false);
   const toast = useToast();
 
-  const { user }  =  UserAuthHook();
+  const { user  }  =  UserAuthHook();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
   
   const { params } = useRoute();
@@ -51,8 +51,9 @@ export const AdPreview = () => {
     payment_methods,
     price,
     product_images,
+
   } = params as ProductDTO;
-  
+   console.log(params, 'linha56 na ADPreview')
 
   const formattedPrice  = new Intl.NumberFormat('en-US',  {
     style: 'currency', 
@@ -96,20 +97,19 @@ export const AdPreview = () => {
       }, 
         
       );
-  
-  
+     
       navigation.navigate('MyAds');
 
   }catch(error){
 
     const isAppError =  error instanceof AppError;
     toast.show({
-      title: isAppError ? error.message: 'An error occurred while creating your product',
+      title: isAppError ? error.message: 'An error occurred while creating your item.',
       placement: 'top',
       bg: 'red.400',
       duration: 3000
     })
-    console.log(error)
+    console.log(error, ' Error originated on AdPreview Screen')
 
   }finally{
     setIsCreatingProduct(false);
@@ -187,14 +187,7 @@ export const AdPreview = () => {
             </Heading>
 
             {payment_methods.map((method) => {
-              // const methodsFormat: { [key: string]: string } = {
-              //   card: "Credit Card",
-              //   pix: "Zelle",
-              //   boleto: "Bill",
-              //   cash: "Cash",
-              //   deposit: "Deposit"
-              // };
-
+             
               return (
                 <PaymentMethods key={method} method={method} />
               );
@@ -213,7 +206,7 @@ export const AdPreview = () => {
         <HStack justifyContent="space-between">
           <Button
             color="gray.800"
-            title="Back"
+            title="Start over"
             backColor="gray.300"
             leftIcon={
               <Icon as={Feather} name="arrow-left" size={4} color="gray.800" />
