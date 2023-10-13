@@ -11,7 +11,6 @@ import { Modal } from '@components/Modal';
 import { AppRoutesNavigationTabProps } from '@routes/app.routes';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-
 import  { api } from '@services/api';
 import { AppError } from '@utils/AppError';
 import  { AllProductsDTO } from '@src/dtos/AllProductsDTO';
@@ -91,13 +90,17 @@ export const Home =()=>{
         setModalVisible(false);
     };
    
-   
+   const deleteImages = async()=>{
+        await storageDeleteProductImages();
+   }
     useEffect(()=>{
+        deleteImages()
         LogBox.ignoreLogs(['In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.']);
     },[])
 
     useFocusEffect(useCallback(()=>{
         fetchAllProducts();
+        
     }, [is_newFilter, accept_trade, payment_methods, query]));
     
     return (
