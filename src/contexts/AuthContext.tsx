@@ -28,7 +28,7 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
   
 
     const userAndTokenUpdate = ( user: UserDTO, token: string,)=>{
-        console.log(token, 'token indo para o cabecalho da requisicao')
+        // console.log(token, 'token indo para o cabecalho da requisicao')
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setUser(user);
     }

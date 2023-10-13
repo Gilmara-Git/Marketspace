@@ -13,7 +13,6 @@ userAvatar: string;
 export const UserPhoto = ({size, borderColor,userAvatar,  ...rest}: UserPhotoProps )=>{
     const { user } = UserAuthHook();
 
-    
     return (
         <Image 
             source={userAvatar? { uri: `${api.defaults.baseURL}/images/${userAvatar}`} : avatarHolder}

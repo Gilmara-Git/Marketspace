@@ -22,7 +22,7 @@ export const ImageSlider = ({ productImages }: ImageSliderProps)=> {
     setImageIndex(info.viewableItems[0].index!)
   })
 
-
+// console.log(productImages, 'linha25 no image slider')
 
   return (
     <VStack>

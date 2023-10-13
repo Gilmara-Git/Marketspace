@@ -5,8 +5,8 @@ type ProductImageProps = IImageProps & {
     onRemoveClick: (url: string)=> void;
     url: string
 }
-
 export const ProductImage = ({ url, onRemoveClick, ...rest}: ProductImageProps)=>{
+  
     return(
         <HStack ml={2}>
                 <Image 

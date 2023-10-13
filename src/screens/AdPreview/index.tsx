@@ -53,7 +53,7 @@ export const AdPreview = () => {
     product_images,
   } = params as ProductDTO;
   
-  // console.log(product_images, 'linha56 na AdPreview')
+
   const formattedPrice  = new Intl.NumberFormat('en-US',  {
     style: 'currency', 
     currency: 'USD',
