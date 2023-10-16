@@ -16,10 +16,10 @@ import { Feather } from "@expo/vector-icons";
 
 
 import { UserDisplay } from "@components/UserDisplay";
-import { PaymentMethods } from "@components/PaymentMethods";
 import { Button } from "@components/Button";
 import { ImageSlider } from '@components/ImageSlider';
 import  { Loading } from '@components/Loading';
+import { Ionicons } from '@expo/vector-icons'
 
 
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -59,8 +59,15 @@ export const AdPreview = () => {
     style: 'currency', 
     currency: 'USD',
   } ).format(Number(price));
-  
 
+  
+  const iconsType : { [ key: string ]: string} = {
+    'Zelle': 'qr-code-outline',
+    'Credit card': 'card',  
+    'Deposit': 'ios-wallet-outline',
+    'Cash': 'ios-wallet',
+    'Bill': 'barcode-outline',
+}
   
   const handleGoback = () => {
     navigation.navigate('AdCreate');
@@ -187,9 +194,42 @@ export const AdPreview = () => {
             </Heading>
 
             {payment_methods.map((method) => {
-             
+              if(method === 'pix'){
+                method = 'Zelle'
+              }
+              if(method === 'card'){
+                method = 'Credit card'
+              }
+              if(method === 'boleto'){
+                method = 'Bill'
+              }
+              if(method === 'deposit'){
+                method = 'Deposit'
+              }
+              if(method === 'cash'){
+                method = 'Cash'
+              }
+
               return (
-                <PaymentMethods key={method} method={method} />
+                <HStack>
+                <Icon 
+                    as={Ionicons} 
+                    name={iconsType[method]} 
+                    size={5}
+                    />
+                    <Text 
+                        ml={3}
+                        mb={2}
+                        fontFamily='body'
+                        fontSize='sm'
+                        >
+                            
+                        {method}
+                            
+                            
+                    </Text>
+        
+            </HStack>
               );
             })}
           </VStack>
