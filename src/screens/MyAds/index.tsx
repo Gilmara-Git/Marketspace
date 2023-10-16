@@ -1,8 +1,5 @@
 import { useState , useCallback } from 'react';
-import { LogBox } from 'react-native';
 import { VStack , HStack, Heading, FlatList, Select , Icon , Text, useToast } from 'native-base';
-import { my_products } from '@src/utils/my_products';
-
 
 import { Entypo } from '@expo/vector-icons';
 import { ProductCard } from '@src/components/ProductCard';
@@ -14,32 +11,35 @@ import { Plus } from 'phosphor-react-native';
 
 import { api } from '@services/api';
 import { AppError } from '@src/utils/AppError';
+import { MyProductsDTO } from '@src/dtos/MyProductsDTO';
+import { UserAuthHook } from '@hooks/UserAuthHook';
 
 
 export const MyAds = ()=>{
     const [ filterBy, setFilterBy ] = useState('all');
     const toast = useToast();
-
-    console.log(filterBy, 'filterBy')
-    // params, mas acho que isso pode vir de product, porque o usuario tem que gravar no banco ativar or desavtivar o ad
-    const isAdActive= true
-  
-    LogBox.ignoreLogs([''])
+    const [myProducts, setMyProducts] = useState<MyProductsDTO[]>([]as MyProductsDTO[]);
+    const { user } =  UserAuthHook();
+    
+    
+    // criar uma funcao para passar para o contexto, quantos Ads ativos do usuario, para que  rota HOME possa consumir
+    // console.log(myProducts, 'filterBy')
+ 
     const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
     const handleCreateAd = ()=>{
         navigation.navigate('AdCreate');
     };
 
-   const goMyAdDetails = ()=>{
-       navigation.navigate('MyAdsDetails');
+   const goMyAdDetails = ( id: string)=>{
+       navigation.navigate('MyAdsDetails', { productId: id });
 
    };
    
    const getCurrentUser = async()=>{
     try{
         const currentUser = await api.get('/users/me');
-        console.log(currentUser, 'Current User on MyAdsssss')
+       
 
     }catch(error){
         const isAppError =  error instanceof AppError;
@@ -52,8 +52,16 @@ export const MyAds = ()=>{
     }
    }
 
+const getUserProducts = async()=>{
+    const  { data } = await api.get('/users/products');
+    setMyProducts(data);
+
+}
+
+
 useFocusEffect(useCallback(()=>{
         getCurrentUser();
+        getUserProducts();
 }, []))
 
 
@@ -69,7 +77,7 @@ useFocusEffect(useCallback(()=>{
         <VStack py={8} bg='gray.200' px={6} flex={1} width='100%'>
             <HStack alignItems='center' justifyContent='space-between'>
            
-                        <Heading fontFamily='body' fontSize='sm'>9 Ads</Heading>
+                        <Heading fontFamily='body' fontSize='sm'>{myProducts?.length} Ad(s)</Heading>
                         
                         <Select 
                             dropdownOpenIcon={<Icon as={Entypo} name='chevron-small-up' />}
@@ -99,6 +107,7 @@ useFocusEffect(useCallback(()=>{
 
             <FlatList 
                 _contentContainerStyle={{ mt:'6'}}
+                showsVerticalScrollIndicator={false}
                 ListEmptyComponent={
                     <Text
                     my={6} 
@@ -109,21 +118,24 @@ useFocusEffect(useCallback(()=>{
                             You have no Ads available!
                     </Text>
                 } 
-                data={my_products}
+                data={myProducts}
                 keyExtractor={(item)=> item.id}
                 numColumns={2}
+                columnWrapperStyle={{ justifyContent: 'space-around' }}
                 renderItem={({item})=> 
-                    <>
+                
                     <ProductCard 
-                        name={item.name}
+                        id={item.id}
+                        name ={item.name}
                         price={item.price}
-                        isNew={item.isNew} 
-                        isNotUserAd={false} 
-                        isAdActive={item.active} 
-                        onPress={goMyAdDetails} 
+                        is_new={String(item.is_new)}
+                        is_active={item.is_active}
+                        imageUrl={item.product_images[0]?.path}
+                        productOwnerAvatar={user.avatar}
+                        onPress={()=>goMyAdDetails(item.id)} 
                         /> 
                    
-                    </>
+                    
                     }
                 
                 />

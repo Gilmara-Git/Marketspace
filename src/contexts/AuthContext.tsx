@@ -11,6 +11,7 @@ type UserContextType = {
     user: UserDTO;
     login: (email: string, password: string)=> Promise<void>;
     signOut: ()=> Promise<void>;
+    resetFormFieldsToEmpty: (reset: any)=>void;
 };
 
 
@@ -28,7 +29,7 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
   
 
     const userAndTokenUpdate = ( user: UserDTO, token: string,)=>{
-        console.log(token, 'token indo para o cabecalho da requisicao')
+        // console.log(token, 'token indo para o cabecalho da requisicao')
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setUser(user);
     }
@@ -116,6 +117,12 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
 
     }
 
+    const resetFormFieldsToEmpty =(reset:any)=>{
+        console.log('me diz se reset esta passando por aqui', reset)
+        reset();
+    };
+
+
     useEffect(()=>{
         loadUserAndTokenStorageData();
     }, []);
@@ -130,7 +137,7 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
     }, [signOut]);
 
     return <AuthContext.Provider value={{ 
-        user, login, signOut }}>
+        user, login, signOut, resetFormFieldsToEmpty }}>
 
             {children } 
       </AuthContext.Provider>

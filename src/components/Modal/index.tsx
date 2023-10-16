@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useCallback } from "react";
+import {  useFocusEffect } from '@react-navigation/native';
 import { LogBox } from 'react-native';
 import {
   Modal as ModalNativeBase,
@@ -9,7 +10,6 @@ import {
   VStack,
   Switch,
   View,
-  Text
 } from "native-base";
 
 import { TagBox } from "@components/TagBox";
@@ -17,52 +17,46 @@ import { Button } from '@components/Button';
 import { PaymentsCheckBox } from '@components/PaymentsCheckBox'; 
 
 
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm, Controller } from "react-hook-form";
-
-const ModalSchemed = yup.object().shape({
-  accept_trade: yup.boolean().required().default(false),
-  payments: yup.array().of(yup.string().required('Choose one method of payment.')).default(['credit_card']),
-});
-
-type FormData = yup.InferType<typeof ModalSchemed>; 
-
-
 type ModalProps = IModalProps & {
   isOpen: boolean;
   onCloseClick: () => void;
+  onOpenClick: () => void;
+  onIsNewChanged: ( value: boolean | undefined )=>void;
+  isNewFilter: boolean | undefined;
+  onAcceptTradeChange: ( value: boolean | undefined )=>void;
+  acceptTrade: boolean | undefined;
+  onPaymentMethodsChanged: (value: string[]) =>void;
+  paymentMethods: string[] | undefined;
+ 
 };
 
-export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
-  const [isNew, setIsNew] = useState(true);
-  const [acceptsTrade, setIsAcceptsTrade] = useState(false);
-  const [paymentMethods, setPaymentMethods ] = useState<string[]>(['Bill','Zelle', 'Credit Card']);
-  const [paymentsSelected, setPaymentsSelected] = useState<string[]>(['Credit Card']); 
+export const Modal = ({ 
+  isOpen, 
+  onCloseClick, 
+  onOpenClick, 
+  onIsNewChanged,
+  isNewFilter, 
+  onAcceptTradeChange,
+  acceptTrade, 
+  onPaymentMethodsChanged,
+  paymentMethods,
+  ...rest }: ModalProps) => {
+
+
+    const resetFilters = ()=>{
+      onIsNewChanged(undefined);
+      onAcceptTradeChange(undefined);
+      onPaymentMethodsChanged([]);
   
-  LogBox.ignoreLogs([
-    'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
-  ])
 
-  const {
-    control, handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(ModalSchemed),
-  });
+    }
 
 
- 
-  
-  const toggleProductNewOrUsed = () => {
-    setIsNew((prevSate) => !prevSate);
-  };
-
-  const handlePaymentsSelected = (item: any) => {  
-    
-    console.log(item, 'methods of payment',  isNew, 'product isNew', acceptsTrade, 'acceptsTrade')
-    };
-  
+    useEffect(()=>{
+      LogBox.ignoreLogs([
+        'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
+      ])
+    }, []);
 
 
   return (
@@ -98,13 +92,13 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
           <HStack>
             <TagBox
               title="new"
-              isActive={isNew}
-              setProductState={toggleProductNewOrUsed}
+              isActive={isNewFilter}
+              setProductState={()=>onIsNewChanged(true)}
             />
             <TagBox
               title="used"
-              isActive={!isNew}
-              setProductState={toggleProductNewOrUsed}
+              isActive={!isNewFilter}
+              setProductState={()=>onIsNewChanged(false)}
             />
           </HStack>
 
@@ -114,20 +108,14 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
             </Heading>
 
             <HStack>
-              <Controller
-                name='accept_trade'
-                control={control}
-                render={({field: { value, onChange}})=>(
-                  <Switch
-                    value={value}
-                    onValueChange={onChange}
-                    size="lg"
-                    onTrackColor="blue.600"
-                  />
-
-                )}
-
-              />
+             
+              <Switch 
+                defaultIsChecked={false}
+                value={acceptTrade}
+                onValueChange={()=>onAcceptTradeChange(!acceptTrade) }
+                size='lg'
+                onTrackColor='blue.600'
+                />
             </HStack>
           </VStack>
 
@@ -137,29 +125,11 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
 
           <View>
 
-
-              <Controller 
-                  name='payments'
-                  control={control}
-                  rules={{required: true}}
-                  render={({field: { value, onChange}})=>(
                     <PaymentsCheckBox
-                      value={value}
-                      onChange={onChange}
+                      defaultValue={paymentMethods}
+                      value={paymentMethods}
+                      onChange={onPaymentMethodsChanged}
                     />
-                    
-                    
-                    )}
-                    />
-                    { errors?.payments && 
-                      <Text
-                        color='red.400'
-                        fontFamily='body'
-                        fontSize='sm'
-                      >
-                        {errors.payments.message}
-                      </Text> }
-
 
             </View>
             
@@ -173,7 +143,7 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
                     backColor='gray.300'
                     color='gray.800'
                     onPressColor='gray.400'
-                    onPress={()=>console.log('Reset filters')}
+                    onPress={resetFilters}
                 />
                 <Button 
                     title='Apply filters'
@@ -181,7 +151,7 @@ export const Modal = ({ isOpen, onCloseClick, ...rest }: ModalProps) => {
                     backColor="gray.900"
                     color='gray.50'
                     onPressColor='gray.600'
-                    onPress={handleSubmit(handlePaymentsSelected)}
+                    onPress={onCloseClick}
                 />
             </HStack>
             

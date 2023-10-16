@@ -2,8 +2,8 @@ import { Pressable, IPressableProps, Text, HStack, Icon } from 'native-base';
 import { Fontisto } from '@expo/vector-icons';
 
 type TabBoxProps = IPressableProps & {
-    isActive: boolean,
     title: string,
+    isActive: boolean | undefined,
     setProductState: ()=>void;
    
 }

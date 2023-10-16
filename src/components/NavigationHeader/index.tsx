@@ -22,9 +22,10 @@ export const NavigationHeader = ({
 
 
   return (
+ 
     <HStack justifyContent="space-between"
        width="100%"
-       pt={9}
+       pt={12}
        pb={2}
        px={6}
        bg={bgColor}
@@ -65,5 +66,6 @@ export const NavigationHeader = ({
         </Pressable>
         )}
       </HStack>
+    
   );
 };

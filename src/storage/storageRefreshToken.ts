@@ -3,7 +3,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export const storageSaveUserRefreshToken = async ( refresh_token: string)=>{
-    console.log('refresh token entrando no storage')
     await AsyncStorage.setItem(USER_AUTH_REFRESH_TOKEN, refresh_token );
 };
 

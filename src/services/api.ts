@@ -34,23 +34,23 @@ api.registerInterceptorTokenValidation = (signOut) => {
           requestError.response.data?.message === "token.invalid" ||
           requestError?.response.data?.message === "token.expired"
           ) {
-            console.log('Erro de token =>,', requestError.response.data.message)
+            // console.log('Erro de token =>,', requestError.response.data.message)
             const refresh_token  = await storageGetUserRefreshToken();
-            console.log('Refreshing refresh token', refresh_token, 'na api')
-            console.log(signOut, 'signOut chegando na aPI')
+            // console.log('Refreshing refresh token', refresh_token, 'na api')
+            // console.log(signOut, 'signOut chegando na aPI')
 
           if (!refresh_token) {
             signOut();
             return Promise.reject(requestError);
           }
 
-          // if there is refresh_token we push a requisition to a queue to wait while we request a new token and refresh_token
+          // if there is refresh_token we push a requisition to the waitingRequestsQueue while we request a new token and refresh_token
           // But first we get the original requisition config and update the header with the token
           const originalRequestConfig = requestError.response.config;
-          console.log("Original request config", originalRequestConfig);
+          // console.log("Original request config", originalRequestConfig);
 
           if (isTokenRefreshing) {
-            console.log(isTokenRefreshing, 'TOKEN REFRESHING')
+            // console.log(isTokenRefreshing, 'TOKEN REFRESHING')
             return new Promise((resolve, reject) => {
               waitingRequestsQueue.push({
                 onSuccess: (token: string) => {
@@ -75,7 +75,7 @@ api.registerInterceptorTokenValidation = (signOut) => {
               const { data } = await api.post("/sessions/refresh-token", {
                 refresh_token,
               });
-              console.log("DATA=> from refresh token", data, 'Codigo não está chegando aqui');
+              console.log("DATA=> from refresh token", data);
               await storageSaveUSerToken(data.token);
 
              

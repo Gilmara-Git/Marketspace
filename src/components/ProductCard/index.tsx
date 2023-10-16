@@ -1,46 +1,56 @@
 import { Pressable ,IPressableProps, Image, Box, Text , Heading, View } from 'native-base';
 import { UserPhoto } from '@components/UserPhoto';
-import sneaker from '@assets/red_sneaker.png';
 import chandelier from '@assets/chandelier.png';
 
 import { ImageOverlay } from '@components/ImageOverlay';
+import { api } from '@services/api';
+
 
 type ProductCardProps = IPressableProps & {
+    id: string,
     name: string;
-    image?: string;
-    description?: string;
     price: string;
-    isNew: boolean,
-    isNotUserAd: boolean
-    isAdActive?: boolean
-  
-
+    is_new: string
+    is_active: boolean
+    imageUrl: string;
+    productOwnerAvatar: string
 }
 
 
-export const ProductCard =( { name, price, description, image,  isNew, isNotUserAd, isAdActive, ...rest  }: ProductCardProps)=>{
 
+export const ProductCard =( {name, price, is_new, is_active,imageUrl, productOwnerAvatar,  ...rest  }: ProductCardProps)=>{
+
+    price = Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'} ).format(Number(price)/100);
+ 
     return (
       
         <Pressable 
             pb={6}  
-            rounded={8} 
+            rounded={8}
             px={2} 
       
             {...rest}
         >
             <>
 
-                <View>
+                <View 
+                    rounded={8}
+                    borderColor='gray.50'
+                    borderWidth={1} 
+                    shadow={0.5}
+                >
 
-                    <Image  
+                    <Image 
+                        height={28}
+                        width={46} 
+                       
                         rounded={8}
-                        source={chandelier} 
+                        source={imageUrl ? {uri:`${api.defaults.baseURL}/images/${imageUrl}`} : chandelier} 
                         alt='Product image'
                         />
                     
                     {
-                        !isAdActive &&
+                        !is_active &&
 
                         <ImageOverlay rounded={8} />
                 }
@@ -48,7 +58,7 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
            
                     
 
-                    { !isAdActive && 
+                    { !is_active && 
                    
                         <Heading 
                             fontFamily='heading' 
@@ -65,7 +75,7 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
             </>
 
 
-            { isNotUserAd && 
+      
             
                 <UserPhoto  
                     size={6} 
@@ -73,12 +83,13 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
                     position='absolute'
                     top={1}
                     left={3}
+                    userAvatar={productOwnerAvatar}
                 />
             
-            }
+         
       
             <Box 
-                bg={ isNew ? 'blue.900' :'gray.800'} 
+                bg={ is_new === 'true' ? 'blue.900' :'gray.800'} 
                 rounded='full'
                 position='absolute'
                 top={1.5}
@@ -89,12 +100,12 @@ export const ProductCard =( { name, price, description, image,  isNew, isNotUser
                     <Text 
                         px={1} 
                         fontFamily='heading' 
-                        color='white'>{isNew ?'New'.toUpperCase(): 'Used'.toUpperCase()}
+                        color='white'>{is_new === 'true' ?'New'.toUpperCase(): 'Used'.toUpperCase()}
                     </Text>
                 
             </Box>
                     <Text pt={.5} fontFamily='body'fontSize='sm'>{name}</Text>
-                    <Text fontFamily='heading' fontSize='md'><Text fontSize='xs'>U$</Text> {price}</Text>
+                    <Text fontFamily='heading' fontSize='md'>{price}</Text>
 
         </Pressable>
       

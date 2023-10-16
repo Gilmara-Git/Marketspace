@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { ScrollView, Platform, LogBox, Dimensions } from "react-native";
+import { useState } from 'react';
+import { ScrollView, Platform, LogBox } from "react-native";
 import {
   VStack,
   HStack,
@@ -9,6 +9,7 @@ import {
   Icon,
   Divider,
   Center,
+  useToast
 
 } from "native-base";
 import { Feather } from "@expo/vector-icons";
@@ -18,27 +19,27 @@ import { UserDisplay } from "@components/UserDisplay";
 import { PaymentMethods } from "@components/PaymentMethods";
 import { Button } from "@components/Button";
 import { ImageSlider } from '@components/ImageSlider';
-//  import { ImageSliderReanimatedCarousel } from '@components/ImageSliderReanimatedCarousel';
+import  { Loading } from '@components/Loading';
+
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppRoutesNavigationTabProps } from "@routes/app.routes";
 import { ProductDTO } from "@src/dtos/ProductDTO";
 import { UserAuthHook } from '@src/hooks/UserAuthHook';
-import { api } from '@services/api';
+import { api } from '@services/api'; 
+import { AppError } from '@utils/AppError';
+
 
 
 export const AdPreview = () => {
   LogBox.ignoreLogs([
     "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
   ]);
-  const { width } = Dimensions.get('window')
   
- 
+  const [ isCreatingProduct, setIsCreatingProduct ] = useState(false);
+  const toast = useToast();
 
-  const item_size = width * .072;
-
-
-  const { user }  =  UserAuthHook();
+  const { user  }  =  UserAuthHook();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
   
   const { params } = useRoute();
@@ -47,14 +48,12 @@ export const AdPreview = () => {
     description,
     is_new,
     accept_trade,
-    payments_methods,
+    payment_methods,
     price,
-    images,
-  } = params as ProductDTO;
+    product_images,
 
-  // console.log(images, "params");
-  // transform price for database
-  
+  } = params as ProductDTO;
+   console.log(params, 'linha56 na ADPreview')
 
   const formattedPrice  = new Intl.NumberFormat('en-US',  {
     style: 'currency', 
@@ -64,42 +63,57 @@ export const AdPreview = () => {
 
   
   const handleGoback = () => {
-    navigation.navigate("AdCreate");
+    navigation.navigate('AdCreate');
   };
   
-  const publishItem = async()=>{
-    const priceToDb = Number(price);
-    // console.log(priceToDb * 100, ' linha59', typeof priceToDb);
+  const handlePublishProduct = async()=>{
+    const priceToDb = Number(price) * 100;
 
-    // mandar one requisition to crete product
-    // const { userProduct }: any = await api.post('product', { 
-      // name,
-      // description,
-      // is_new,
-      // accept_trade,
-      // payments_methods,
-      // price: priceToDb }
+  try{
+    setIsCreatingProduct(true)
+    const { data } : any = await api.post('/products', { 
+      name,
+      description,
+      is_new,
+      price: priceToDb, 
+      accept_trade,
+      payment_methods,
+    }
       
-      // );
-
-      
+      );
+  
     
-
-         // mandar one requisition to create/save product images 
+      const productForm = new FormData();
+      productForm.append('product_id', data.id )
+      
+      product_images.forEach(photoFile =>{
+        return productForm.append('images', photoFile)
+      });
+      
+      const prodImages = await api.post('/products/images', 
+        productForm, 
+        { headers:{ 
+          'Content-Type': 'multipart/form-data'}
+      }, 
         
-         const productForm = new FormData();
-          productForm.append('product_id', '10' )
-
-         images.forEach(photoFile =>{
-           return productForm.append('images', photoFile)
-         });
-         
-         //VER COMO ESTA O FORMDATA ANTES DE ENVIAR, VER SE E PRECISO COLOCAR O ID TO PRODUTO EM CADA IMMAGE ATTACHED TO FORMDATA
+      );
      
+      navigation.navigate('MyAds');
 
-      // await api.post('products/images', { product_id: userProduct.id, productImagesUploadForm });
-    console.log(productForm,'linha85')
-   
+  }catch(error){
+
+    const isAppError =  error instanceof AppError;
+    toast.show({
+      title: isAppError ? error.message: 'An error occurred while creating your item.',
+      placement: 'top',
+      bg: 'red.400',
+      duration: 3000
+    })
+    console.log(error, ' Error originated on AdPreview Screen')
+
+  }finally{
+    setIsCreatingProduct(false);
+  }
   }
 
   return (
@@ -117,13 +131,20 @@ export const AdPreview = () => {
         </Center>
       </VStack>
       <VStack bg="gray.50" width='100%'>
-          
-         <ImageSlider productImages={images} />
-      
-      
 
+        { isCreatingProduct ? 
+        
+          <Loading /> :
+          
+         <ImageSlider productImages={product_images} />
+        }
+      
+    
         <VStack px={6} mt={6}>
-          <UserDisplay userName={user.name} />
+          <UserDisplay 
+            userName={user.name}
+            userAvatar={user.avatar}
+            />
 
           <VStack>
             <HStack pb={2}>
@@ -165,17 +186,10 @@ export const AdPreview = () => {
               Methods of Payments:
             </Heading>
 
-            {payments_methods.map((method) => {
-              const methodsFormat: { [key: string]: string } = {
-                card: "Credit Card",
-                pix: "Zelle",
-                boleto: "Bill",
-                cash: "Cash",
-                deposit: "Deposit"
-              };
-
+            {payment_methods.map((method) => {
+             
               return (
-                <PaymentMethods key={method} method={methodsFormat[method]} />
+                <PaymentMethods key={method} method={method} />
               );
             })}
           </VStack>
@@ -192,7 +206,7 @@ export const AdPreview = () => {
         <HStack justifyContent="space-between">
           <Button
             color="gray.800"
-            title="Back"
+            title="Start over"
             backColor="gray.300"
             leftIcon={
               <Icon as={Feather} name="arrow-left" size={4} color="gray.800" />
@@ -209,7 +223,7 @@ export const AdPreview = () => {
             leftIcon={<Icon as={Feather} name="tag" size={4} color="white" />}
             onPressColor="blue.900"
             size={48}
-            onPress={publishItem}
+            onPress={handlePublishProduct}
           />
         </HStack>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { LogBox } from "react-native";
 import {
   VStack,
@@ -31,21 +31,19 @@ import { NavigationHeader } from "@src/components/NavigationHeader";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { AppRoutesNavigationTabProps } from "@routes/app.routes";
 import { ArrowLeft } from "phosphor-react-native";
 import { AppError } from "@utils/AppError";
 import { UserAuthHook } from "@src/hooks/UserAuthHook";
 
-
 const AdCreateSchema = yup.object().shape({
   name: yup.string().required("Type a title for your product."),
   description: yup.string().required("Please describe your product."),
   is_new: yup.string().required("Please select if product is new or used."),
-  // is_new: yup.boolean().required().default(false),
   price: yup.string().required("Please type your product price"),
   accept_trade: yup.boolean().required().default(false),
-  payments_methods: yup
+  payment_methods: yup
     .array()
     .of(yup.string().required("Choose one method of payment."))
     .default(["card"]),
@@ -53,83 +51,79 @@ const AdCreateSchema = yup.object().shape({
 
 type FormData = yup.InferType<typeof AdCreateSchema>;
 
-// do a interface type
-
-
 export const AdCreate = () => {
-  LogBox.ignoreLogs([
-    "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
-  ]);
-  const [images, setImages] = useState<any[]>([]);
+
   const [imageLoading, setImageLoading] = useState(false);
-  const [ imagesInPhotoFile,  setImagesInPhotoFile ] = useState<any[]>([]);
+  const [imagesInPhotoFile, setImagesInPhotoFile] = useState<any[]>([]);
+
+  
   const { user } = UserAuthHook();
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
-  const handleGoback = () => {
+  const handleGoback = async() => {
+    setImagesInPhotoFile([]);
+
     navigation.goBack();
   };
 
-  const handleImageRemove = (url: string) => {
-    const currentImages = images;
-    const filteredImages = currentImages?.filter(
-      (images) => images.url !== url
-    );
-    setImages(filteredImages);
+  const handleImageRemove = async (uri: string) => {
+    const currentImages = imagesInPhotoFile;
+    const filteredImages = currentImages?.filter((image) => image.uri !== uri);
+    setImagesInPhotoFile(filteredImages);
+   
   };
 
   const {
+    reset,
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(AdCreateSchema),
+    defaultValues: {
+      is_new: '',
+      payment_methods: [],
+      accept_trade: false
+    }
   });
 
-  const ensurePriceHasCents = async ( value: string)=>{
-    const containsDot = value.split('').includes('.');
-
-    // if(containsDot){
-    //   setPriceValid(true);
-    // }
-
+  const ensurePriceHasCents = async (value: string) => {
+    const containsDot = value.split("").includes(".");
     return containsDot;
-  }
+  };
 
   const handleAdCreate = async (data: any) => {
-    try {
 
-      if(!images.length){
-       return toast.show({
-          title: 'Please select at least one image for your product.',
-          placement: 'top',
-          bg: 'red.400',
-          duration: 2000
-        })
+    try {
+      if (!imagesInPhotoFile.length) {
+        return toast.show({
+          title: "Please select at least one image for your product.",
+          placement: "top",
+          bg: "red.400",
+          duration: 2000,
+        });
       }
 
-     const validPrice =  await ensurePriceHasCents(data.price);
+      const validPrice = await ensurePriceHasCents(data.price);
 
-
-      if(isNaN(data.price) || !validPrice) { 
-       return toast.show({
-          title: 'Please enter the price with CENTS such as : 100.45',
-          placement: 'top',
-          bg: 'red.400',
-          duration: 2000
-        })
-       
-       
+      if (isNaN(data.price) || !validPrice) {
+        return toast.show({
+          title: "Please enter a price showing CENTS. Ex: 1000.45",
+          placement: "top",
+          bg: "red.400",
+          duration: 1000,
+        });
       }
 
       data.is_new = data.is_new === "new" ? true : false;
       data.price = Number(data.price);
-      data.images = imagesInPhotoFile;
-
+      data.product_images = imagesInPhotoFile;
+      
       navigation.navigate("AdPreview", data);
 
-    }catch(error) {
+      
+    } catch (error) {
       const isAppError = error instanceof AppError;
 
       toast.show({
@@ -143,17 +137,16 @@ export const AdCreate = () => {
     }
   };
 
+
+
   const handlePickedImages = async () => {
     try {
       setImageLoading(true);
 
       let pickedImages = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
-        selectionLimit: 3,
-        orderedSelection: true,
+        allowsEditing: true,
         aspect: [5, 5],
-        allowsMultipleSelection: true,
         quality: 1,
       });
 
@@ -175,11 +168,11 @@ export const AdCreate = () => {
       for (let image of selectedImages) {
         const file = await FileSystem.getInfoAsync(image.url, { size: true });
 
-        if (file.exists && file.size / 1024 / 1024 > 3) {
+        if (file.exists && file.size / 1024 / 1024 > 5) {
           return toast.show({
-            title: "Error, one of more images are bigger than 3MB.",
+            title: "Error, one of more images are bigger than 5MB.",
             placement: "top",
-            duration: 5000,
+            duration: 2000,
             bg: "red.400",
           });
         }
@@ -189,32 +182,52 @@ export const AdCreate = () => {
         }
       }
 
-      validatedImages.forEach((image:any) => {
-        const imageExt =  image.url.split('.').pop();
-        
+
+
+      const imagesToStorage = validatedImages.map((image: any) => {
+        const imageExt = image.url.split(".").pop();
+
         const photoFile = {
           name: `${user.name}.${imageExt}`.toLowerCase(),
           type: `${image.type}/${imageExt}`,
-          uri: `${image.url}`
-        }
-        setImagesInPhotoFile(prev =>[...prev, photoFile]);
-        
-      })
+          uri: `${image.url}`,
+        };
 
-      setImages(validatedImages);
+        return photoFile;
+      });
+    
+    
+  
+      setImagesInPhotoFile((prev)=>[...prev, ...imagesToStorage]);
+    
+
     } catch (error) {
       toast.show({
-        title: 'There was an error loading  one or more images, please select another image.',
+        title:
+          "There was an error loading one or more images, please select another image.",
         placement: "top",
         bg: "red.400",
         duration: 2000,
-      })
-      
+      });
     } finally {
       setImageLoading(false);
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      reset();
+      setImagesInPhotoFile([]);
+   
+    }, [])
+  );
+
+
+  useEffect(() => {
+    LogBox.ignoreLogs([
+      "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
+    ]);
+  }, []);
 
   return (
     <ScrollView>
@@ -232,20 +245,17 @@ export const AdCreate = () => {
           Choose 3 images to show your incredible product!
         </Text>
         <HStack pb={8}>
-          {(images?.length === undefined || images.length <= 2) && (
+          {(imagesInPhotoFile?.length === undefined ||
+            imagesInPhotoFile.length <= 2) && (
             <Pressable
               rounded={16}
               onPress={handlePickedImages}
               _pressed={{ bg: "gray.400" }}
-            
             >
               <Center width={28} height={28} bg="gray.300" rounded={4}>
-                <HStack alignItems='center'>
-                  <Text 
-                    color='gray.400' 
-                    fontFamily='body'
-                    fontSize='md'>
-                      3
+                <HStack alignItems="center">
+                  <Text color="gray.400" fontFamily="body" fontSize="md">
+                    3
                   </Text>
                   <UploadSimple color="#9F9BA1" size={15} />
                 </HStack>
@@ -266,10 +276,10 @@ export const AdCreate = () => {
             />
           )}
 
-          {images?.map((item) => (
+          {imagesInPhotoFile?.map((item, index) => (
             <ProductImage
-              key={item.url}
-              url={item.url}
+              key={item.uri + index}
+              url={item.uri}
               onRemoveClick={handleImageRemove}
             />
           ))}
@@ -373,16 +383,16 @@ export const AdCreate = () => {
 
             <View>
               <Controller
-                name="payments_methods"
+                name="payment_methods"
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
                   <PaymentsCheckBox value={value} onChange={onChange} />
                 )}
               />
-              {errors?.payments_methods && (
+              {errors?.payment_methods && (
                 <Text color="red.400" fontFamily="body" fontSize="sm">
-                  {errors.payments_methods.message}
+                  {errors.payment_methods.message}
                 </Text>
               )}
             </View>

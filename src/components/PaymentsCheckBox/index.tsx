@@ -1,9 +1,8 @@
 import { LogBox } from 'react-native';
 import { Checkbox, ICheckboxGroupProps,   } from 'native-base';
 
-
-
-export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
+export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
+  
 
     LogBox.ignoreLogs([
         'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
@@ -13,14 +12,15 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
     return (
     
             <Checkbox.Group
-                colorScheme='blue'
-                defaultValue={['card']}
                 {...rest}
              
                 >
                 <Checkbox
                     value='pix'
                     mb={2}
+                    colorScheme='blue'
+                    defaultIsChecked
+                    
                     >
                 Zelle
                 </Checkbox>
@@ -28,10 +28,8 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
                 <Checkbox
                     value='card'
                     mb={2}
-                    isHovered
-                    isFocused
-                    isPressed
-                    isChecked
+                    colorScheme='blue'
+                    defaultIsChecked
                     >
                     Credit Card
                 </Checkbox>
@@ -39,6 +37,8 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
                 <Checkbox
                     value='deposit'
                     mb={2}
+                    colorScheme='blue'
+                    defaultIsChecked
                     >
                      Deposit   
                 </Checkbox>
@@ -46,7 +46,8 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
                 <Checkbox
                     value='cash'
                     mb={2}
-                    
+                    colorScheme='blue'
+                    defaultIsChecked
                     >
                     Cash
                 </Checkbox>
@@ -56,6 +57,8 @@ export const PaymentsCheckBox = ({ value,...rest}: ICheckboxGroupProps)=>{
                 <Checkbox
                     value='boleto'
                     mb={2}
+                    colorScheme='blue'
+                    defaultIsChecked
                     >
                     Bill
                 </Checkbox>
