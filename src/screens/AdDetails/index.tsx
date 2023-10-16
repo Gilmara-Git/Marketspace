@@ -53,10 +53,20 @@ export const AdDetails = () => {
     try {
       setIsFetchingProduct(true);
       const { data } = await api.get(`/products/${productId}`);
+      data.payment_methods.forEach((item:{key: string, name: string})=>{
+        if(item.key === 'pix'){
+            item.key = 'Zelle'
+          
+        }
+        if(item.key === 'boleto'){
+            item.key = 'bill'
+        }
+    
+    })
 
       setProductDetails({
         ...data,
-        price: new Intl.NumberFormat("en-US", {
+          price: new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
         }).format(data.price / 100),
@@ -167,7 +177,7 @@ export const AdDetails = () => {
             </Heading>
 
             {productDetails?.payment_methods?.map((method) => {
-              return <PaymentMethods key={method.key} method={method.key} />;
+              return <PaymentMethods key={method.key} method={method} />;
             })}
           </VStack>
         </VStack>

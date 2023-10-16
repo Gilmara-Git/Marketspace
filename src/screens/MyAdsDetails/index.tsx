@@ -53,6 +53,17 @@ export const MyAdsDetails = () => {
     try{
         setIsLoading(true);
         const { data } = await api.get(`/products/${productId}`);
+   
+        data.payment_methods.forEach((item:{key: string, name: string})=>{
+            if(item.key === 'pix'){
+                item.key = 'Zelle'
+              
+            }
+            if(item.key === 'boleto'){
+                item.key = 'bill'
+            }
+        
+        })
         
         setMyProd({
             ...data,
@@ -275,7 +286,7 @@ useFocusEffect((useCallback(()=>{
                             </Heading>
 
                         { myProd.payment_methods?.map((method) => {
-                            return <PaymentMethods  key={method.key}  method={method.key} />;
+                            return <PaymentMethods  key={method.key}  method={method} />;
                         })}
                         </VStack>
                 </VStack>
