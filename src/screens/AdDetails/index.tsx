@@ -55,7 +55,7 @@ export const AdDetails = () => {
       const { data } = await api.get(`/products/${productId}`);
       data.payment_methods.forEach((item:{key: string, name: string})=>{
         if(item.key === 'pix'){
-            item.key = 'Zelle'
+            item.key = 'zelle'
           
         }
         if(item.key === 'boleto'){
