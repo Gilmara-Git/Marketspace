@@ -45,7 +45,8 @@ export const Home =()=>{
 
         );
              
-            setProducts(data);
+    
+        setProducts(data);
 
         }catch(error){
             const isAppError = error instanceof AppError;

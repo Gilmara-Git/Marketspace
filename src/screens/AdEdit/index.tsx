@@ -33,14 +33,13 @@ import { NavigationHeader } from "@src/components/NavigationHeader";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute , useFocusEffect } from '@react-navigation/native';
 import { AppRoutesNavigationTabProps } from '@routes/app.routes';
 import { ArrowLeft } from 'phosphor-react-native';
 
 import { api } from '@services/api';
 import { UserAuthHook } from "@src/hooks/UserAuthHook";
 import { AppError } from '@utils/AppError';
-
 
 const EditSchema = yup.object().shape({
   name: yup.string().required("Type a title for your product."),
@@ -58,22 +57,20 @@ interface AdEditParams {
   productId: string;
 }
 
-type ImagesType = {
-  url: string
-}[];
 
 export const AdEdit = () => {
   
   const [imagesInPhotoFile, setImagesInPhotoFile] = useState<any[]>([]);
-  const [ adInfo, setAdInfo ] = useState();
+  const [ imagesLoaded, setImagesLoaded ] = useState<any[]>([]);
 
   const [ imageLoading, setImageLoading ] = useState(false);
   const { user } = UserAuthHook();
-
+  
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
   const route = useRoute();
   const { productId }  =  route.params as AdEditParams;
+  
   
   const {
     reset,
@@ -82,24 +79,37 @@ export const AdEdit = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(EditSchema),
+    defaultValues: {
+      is_new: '',
+      payment_methods: [],
+      accept_trade: false
+    }
   });
+  
 
 
   const loadAdToBeEdited = async()=>{
     const { data } = await api.get(`/products/${productId}`);
-    console.log(typeof data.price, 'linha88')
 
-    setAdInfo({
-      ...data,
-      price: Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'}).format(data.price/100)
-    })
+    const methods = data.payment_methods.map((method:{key:string, name: string})=>{return method.key});
+
+    const productInfo = 
+    { ...data,
+      is_new: data.is_new ? 'new' : 'used',
+      payment_methods: methods,
+      price: Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'}).format(data.price/100),
+    }
+
+    reset(productInfo)
+
+    setImagesLoaded(data.product_images);
 
   };
 
 
   const handleGoback = ()=>{
-    
     navigation.navigate('MyAdsDetails', { productId });
+  
   };
 
   const handleImageRemove = (uri: string)=>{
@@ -248,21 +258,21 @@ export const AdEdit = () => {
     }
     
   };
-    
-    useEffect(()=>{
-      
-      loadAdToBeEdited();
 
-    },[productId])
+  useEffect(()=>{
+    loadAdToBeEdited();
+  },[productId, reset]);
 
     useEffect(()=>{
       LogBox.ignoreLogs([
         "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
       ]);
     },[])
-    //passed isPressed={true} manually for now
+   
   return (
-    <ScrollView>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+    >
         <NavigationHeader 
           iconLeft={ArrowLeft}
           leftIconClick={handleGoback}
@@ -280,7 +290,7 @@ export const AdEdit = () => {
         <HStack pb={8}>
 
      
-          { (imagesInPhotoFile?.length === undefined || imagesInPhotoFile.length <=2) &&
+          { (imagesLoaded?.length === undefined || imagesLoaded.length <=2) &&
           
                 <Pressable
                 rounded={16}
@@ -312,11 +322,11 @@ export const AdEdit = () => {
 
 )}
 
-      { imagesInPhotoFile?.map(item=>(
+      { imagesLoaded?.map(item=>(
 
         <ProductImage
-          key={item.url}
-          url={item.url}
+          key={item.id}
+          url={`${api.defaults.baseURL}/images/${item.path}`}
           onRemoveClick={handleImageRemove}
         />
       ))}
@@ -362,7 +372,7 @@ export const AdEdit = () => {
               render={({ field: { value, onChange } }) => (
                 <ButtonsRadio
                   accessibilityLabel="product status"
-                  name="is_product_status"
+                  name="is_new"
                   onChange={onChange}
                   value={value}
                   errorMessage={errors.is_new?.message}
@@ -428,15 +438,16 @@ export const AdEdit = () => {
                   name='payment_methods'
                   control={control}
                   rules={{required: true}}
-                  render={({field: { value, onChange}})=>(
+                  render={ ( {field: { value, onChange }})=>(
                     <PaymentsCheckBox
                       value={value}
                       onChange={onChange}
                     />
                     
                     
-                    )}
+                  )}
                     />
+
                     { errors?.payment_methods && 
                       <Text
                         color='red.400'

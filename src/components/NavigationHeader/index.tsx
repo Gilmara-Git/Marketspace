@@ -1,5 +1,4 @@
 import { HStack, Box, Icon, Heading, Pressable, IPressableProps} from "native-base";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type NavigationHeaderProps = IPressableProps & {
   iconLeft?: any;

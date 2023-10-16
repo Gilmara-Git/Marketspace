@@ -8,5 +8,6 @@ export type MyProductsDTO = {
     user_id: string,
     is_active: boolean, 
     payment_methods: string[], 
-    product_images: any[]
+    product_images: any[],
+    path: string
 };
