@@ -81,6 +81,11 @@ export const AdCreate = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(AdCreateSchema),
+    defaultValues: {
+      is_new: '',
+      payment_methods: [],
+      accept_trade: false
+    }
   });
 
   const ensurePriceHasCents = async (value: string) => {
