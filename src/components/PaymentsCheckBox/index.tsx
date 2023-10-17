@@ -1,7 +1,7 @@
 import { LogBox } from 'react-native';
 import { Checkbox, ICheckboxGroupProps,   } from 'native-base';
 
-export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
+export const PaymentsCheckBox = ({value, ...rest}: ICheckboxGroupProps)=>{
   
 
     LogBox.ignoreLogs([
@@ -12,14 +12,14 @@ export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
     return (
     
             <Checkbox.Group
+            defaultValue={value}
                 {...rest}
-             
                 >
                 <Checkbox
                     value='pix'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+                 
                     
                     >
                 Zelle
@@ -29,7 +29,7 @@ export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
                     value='card'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+                  
                     >
                     Credit Card
                 </Checkbox>
@@ -38,7 +38,7 @@ export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
                     value='deposit'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+                 
                     >
                      Deposit   
                 </Checkbox>
@@ -47,7 +47,7 @@ export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
                     value='cash'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+            
                     >
                     Cash
                 </Checkbox>
@@ -58,7 +58,7 @@ export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
                     value='boleto'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+        
                     >
                     Bill
                 </Checkbox>
