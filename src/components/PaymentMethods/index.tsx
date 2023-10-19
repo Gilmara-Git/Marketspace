@@ -2,7 +2,7 @@ import { HStack, Icon, Text } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 
 const iconsType : { [ key: string ]: string} = {
-    'Zelle': 'qr-code-outline',
+    'zelle': 'qr-code-outline',
     'card': 'card',  
     'deposit': 'ios-wallet-outline',
     'cash': 'ios-wallet',
@@ -32,7 +32,10 @@ export const PaymentMethods = ({ method  }: PaymentMethodsProps)=>{
         if(method[key] === 'Cartão de Crédito'){
             method[key] = 'Credit Card'
         }
-  
+        
+        if(method[key] === 'Boleto'){
+            method[key] = 'Bill'
+        }
     }
 
 

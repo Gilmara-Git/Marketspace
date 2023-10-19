@@ -56,7 +56,7 @@ export const MyAdsDetails = () => {
    
         data.payment_methods.forEach((item:{key: string, name: string})=>{
             if(item.key === 'pix'){
-                item.key = 'Zelle'
+                item.key = 'zelle'
               
             }
             if(item.key === 'boleto'){

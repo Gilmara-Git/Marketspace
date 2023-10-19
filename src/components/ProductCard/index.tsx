@@ -1,6 +1,6 @@
 import { Pressable ,IPressableProps, Image, Box, Text , Heading, View } from 'native-base';
 import { UserPhoto } from '@components/UserPhoto';
-import chandelier from '@assets/chandelier.png';
+import  avatarHolder from  '@assets/avatarHolder.png';
 
 import { ImageOverlay } from '@components/ImageOverlay';
 import { api } from '@services/api';
@@ -45,7 +45,7 @@ export const ProductCard =( {name, price, is_new, is_active,imageUrl, productOwn
                         width={46} 
                        
                         rounded={8}
-                        source={imageUrl ? {uri:`${api.defaults.baseURL}/images/${imageUrl}`} : chandelier} 
+                        source={imageUrl ? {uri:`${api.defaults.baseURL}/images/${imageUrl}`} : avatarHolder} 
                         alt='Product image'
                         />
                     
@@ -104,7 +104,10 @@ export const ProductCard =( {name, price, is_new, is_active,imageUrl, productOwn
                     </Text>
                 
             </Box>
-                    <Text pt={.5} fontFamily='body'fontSize='sm'>{name}</Text>
+                    <View width={46}>
+                    <Text numberOfLines={1} pt={.5} fontFamily='body'fontSize='sm'>{name}</Text>
+
+                    </View>
                     <Text fontFamily='heading' fontSize='md'>{price}</Text>
 
         </Pressable>

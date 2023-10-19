@@ -1,25 +1,28 @@
+import { useEffect } from 'react';
 import { LogBox } from 'react-native';
 import { Checkbox, ICheckboxGroupProps,   } from 'native-base';
 
-export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
+export const PaymentsCheckBox = ({...rest}: ICheckboxGroupProps)=>{
   
 
+useEffect(()=>{
     LogBox.ignoreLogs([
-        'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
-        'A component changed from uncontrolled to controlled'
-    ]);
+            'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
+            'A component changed from uncontrolled to controlled'
+        ]);
+
+},[])
 
     return (
     
             <Checkbox.Group
+                colorScheme='blue'
                 {...rest}
-             
                 >
                 <Checkbox
                     value='pix'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
                     
                     >
                 Zelle
@@ -29,7 +32,8 @@ export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
                     value='card'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+                   
+                
                     >
                     Credit Card
                 </Checkbox>
@@ -38,7 +42,7 @@ export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
                     value='deposit'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+              
                     >
                      Deposit   
                 </Checkbox>
@@ -47,23 +51,21 @@ export const PaymentsCheckBox = ({ ...rest}: ICheckboxGroupProps)=>{
                     value='cash'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+             
+            
                     >
                     Cash
                 </Checkbox>
-
-
 
                 <Checkbox
                     value='boleto'
                     mb={2}
                     colorScheme='blue'
-                    defaultIsChecked
+              
+        
                     >
                     Bill
                 </Checkbox>
-
-
             </Checkbox.Group>
 
 )

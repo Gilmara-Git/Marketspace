@@ -11,9 +11,9 @@ export class ProductImagesController {
     const userId = request.user.id;
     const productId = request.body.product_id;
     const productFiles = request.files
-
+      
     const diskStorage = new DiskStorage();
-
+ 
     const product = await prisma.products.findUnique({
       where: {
         id: productId,
@@ -62,6 +62,7 @@ export class ProductImagesController {
   async delete(request: Request, response: Response) {
     const userId = request.user.id;
     const productImagesIds = request.body.productImagesIds;
+
 
     const diskStorage = new DiskStorage();
 
