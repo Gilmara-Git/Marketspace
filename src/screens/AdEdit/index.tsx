@@ -33,7 +33,7 @@ import { NavigationHeader } from "@src/components/NavigationHeader";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
-import { useNavigation, useRoute , useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { AppRoutesNavigationTabProps } from '@routes/app.routes';
 import { ArrowLeft } from 'phosphor-react-native';
 
@@ -60,9 +60,7 @@ interface AdEditParams {
 
 export const AdEdit = () => {
   
-  const [imagesInPhotoFile, setImagesInPhotoFile] = useState<any[]>([]);
   const [ imagesLoaded, setImagesLoaded ] = useState<any[]>([]);
-
   const [ imageLoading, setImageLoading ] = useState(false);
   const { user } = UserAuthHook();
   
@@ -70,7 +68,7 @@ export const AdEdit = () => {
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
   const route = useRoute();
   const { productId }  =  route.params as AdEditParams;
-  
+
   
   const {
     reset,
@@ -97,7 +95,7 @@ export const AdEdit = () => {
     { ...data,
       is_new: data.is_new ? 'new' : 'used',
       payment_methods: methods,
-      price: Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'}).format(data.price/100),
+      price: String(Number(data.price)/100)
     }
 
     reset(productInfo)
@@ -112,10 +110,49 @@ export const AdEdit = () => {
   
   };
 
-  const handleImageRemove = (uri: string)=>{
-    const currentImages = imagesInPhotoFile;
-    const filteredImages = currentImages?.filter(images => images.url !== uri);
-    setImagesInPhotoFile(filteredImages);
+  const handleImageRemove = async(id: string, uri: string)=>{
+
+    try{
+
+      if(imagesLoaded.length === 1){
+        return toast.show({
+          title: 'You must keep at least one image!',
+          placement: 'top',
+          bg: 'red.400',
+          duration: 1000
+        })
+      }
+  
+    if(id){
+     setImagesLoaded(prevState => prevState.filter(image => image.id !== id));
+     const imageToRemove = [];
+     imageToRemove.push(id);
+
+    //  Needs to send the body { data: { } }
+     await api.delete('products/images/', { 
+      data: { 
+        productImagesIds: imageToRemove }
+     });
+
+    }
+    
+    if(uri){
+      setImagesLoaded(prevState => prevState.filter(image => image.uri !== uri));
+    }
+
+
+
+    }catch(error){
+
+      const isAppError =  error instanceof AppError;
+
+      toast.show({
+        title: isAppError ?  error.message : 'Could not delete one or more images.',
+        placement: 'top',
+        bg: 'red.400',
+        duration: 1000
+      })
+    }
    
   };
 
@@ -127,39 +164,70 @@ export const AdEdit = () => {
   
   }
 
-  const handleAdCreate = async(data: any) =>{
+  const handleAdEdit = async(data: any) =>{ 
+    try{
 
-      try{
-        
-        if (!imagesInPhotoFile.length) {
-          return toast.show({
-            title: "Please select at least one image for your product.",
-            placement: "top",
-            bg: "red.400",
-            duration: 1000,
-          });
-        }
+    if(!data.payment_methods.length){
+      return toast.show({
+        title: 'You must provide at least one payment method!',
+        placement: 'top',
+        bg: 'red.400',
+        duration: 1000
+      })
+    }
+   
+    if(!data.product_images.length && !imagesLoaded.length){
+      return toast.show({
+        title: 'You must provide at least one Image!',
+        placement: 'top',
+        bg: 'red.400',
+        duration: 1000
+      })
+    }
+   
+        const photoForm = new FormData();
+        photoForm.append('product_id', productId);
 
+        imagesLoaded.forEach(async item =>{
+          if(!item.id){
+            return photoForm.append('images', item);
+            
+          }
+        })
+        await api.post('/products/images',
+          photoForm,
+          { headers: { 
+            'Content-Type': 'multipart/form-data'}
+        },
+        )
+      
+   
+      const validPrice = await ensurePriceHasCents(data.price);
+      
+      if (isNaN(data.price) || !validPrice) {
+        return toast.show({
+          title: "Only submit a Value and its Cents like:  345.66",
+          placement: "top",
+          bg: "red.400",
+          duration: 3000,
+        });
+      };
+      
+      
+       await api.put(`products/${productId}`, {
+        name: data.name,
+        description: data.description,
+        is_new: data.is_new === 'new'? true: false,
+        price: data.price * 100,
+        accept_trade: data.accept_trade,
+        payment_methods: data.payment_methods
+       });
 
-        const validPrice = await ensurePriceHasCents(data.price);
-    
-        if (isNaN(data.price) || !validPrice) {
-          return toast.show({
-            title: "Please enter a price showing CENTS. Ex: 1000.45",
-            placement: "top",
-            bg: "red.400",
-            duration: 1000,
-          });
-        };
-    
-        data.is_new = data.is_new === "new" ? true : false;
-        data.price = Number(data.price);
-        data.product_images = imagesInPhotoFile;
-    
-        navigation.navigate('AdPreview', data)
+        navigation.navigate('MyAds')
 
 
       }catch(error){
+        console.log(error)
         const isAppError = error instanceof AppError;
 
       toast.show({
@@ -182,14 +250,10 @@ export const AdEdit = () => {
     try{
       setImageLoading(true);
    
-      
       let pickedImages = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
-        selectionLimit: 3,
-        orderedSelection:true,
+        allowsEditing: true,
         aspect: [5,5],
-        allowsMultipleSelection: true,
         quality: 1
         
       });
@@ -199,13 +263,12 @@ export const AdEdit = () => {
       }
          
             const { assets } = pickedImages;
-         
             let selectedImages:any = [];
             let validatedImages : any = [];
             
             if(assets.length){
               assets.forEach((asset)=>{
-                return selectedImages.push({ url: asset.uri})
+                return selectedImages.push({ url: asset.uri, type: asset.type})
               })
 
             }
@@ -223,28 +286,26 @@ export const AdEdit = () => {
 
               }
               
-            
-              if(!validatedImages.includes({ url: image.url } )){
-                validatedImages.push( { url: image.url})
-
+              if(!validatedImages.includes({ url: image.url} )){
+                validatedImages.push( { url: image.url, type: image.type})
+                
               }
-
+              
             }
-
+            
             const imagesToStorage = validatedImages.map((image: any) => {
               const imageExt = image.url.split(".").pop();
-      
+              
               const photoFile = {
                 name: `${user.name}.${imageExt}`.toLowerCase(),
                 type: `${image.type}/${imageExt}`,
-                uri: `${image.url}`,
+                uri:  `${image.url}`,
               };
       
               return photoFile;
             });
           
-
-            setImagesInPhotoFile((prev)=>[...prev, ...imagesToStorage]);
+            setImagesLoaded((prev)=>[...prev, ...imagesToStorage]);
     
      
 
@@ -322,12 +383,12 @@ export const AdEdit = () => {
 
 )}
 
-      { imagesLoaded?.map(item=>(
+      { imagesLoaded?.map((item, index)=>(
 
         <ProductImage
-          key={item.id}
-          url={`${api.defaults.baseURL}/images/${item.path}`}
-          onRemoveClick={handleImageRemove}
+          key={index}
+          url={ item.uri || `${api.defaults.baseURL}/images/${item.path}`}
+          onRemoveClick={()=>handleImageRemove(item.id, item.uri)}
         />
       ))}
     
@@ -442,6 +503,8 @@ export const AdEdit = () => {
                     <PaymentsCheckBox
                       value={value}
                       onChange={onChange}
+                      defaultValue={value}
+                      
                     />
                     
                     
@@ -477,7 +540,7 @@ export const AdEdit = () => {
                     backColor="gray.900"
                     color='gray.50'
                     onPressColor='gray.600'
-                    onPress={handleSubmit(handleAdCreate)}
+                    onPress={handleSubmit(handleAdEdit)}
                 />
             </HStack>
 
