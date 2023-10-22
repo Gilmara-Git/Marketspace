@@ -63,6 +63,7 @@ export const AdEdit = () => {
   const [ imagesLoaded, setImagesLoaded ] = useState<any[]>([]);
   const [ imageLoading, setImageLoading ] = useState(false);
   const { user } = UserAuthHook();
+
   
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
@@ -111,6 +112,7 @@ export const AdEdit = () => {
   };
 
   const handleImageRemove = async(id: string, uri: string)=>{
+  
 
     try{
 
@@ -122,16 +124,18 @@ export const AdEdit = () => {
           duration: 1000
         })
       }
+
+
   
     if(id){
      setImagesLoaded(prevState => prevState.filter(image => image.id !== id));
-     const imageToRemove = [];
-     imageToRemove.push(id);
+    //  const imageToRemove = [];
+    //  imageToRemove.push(id);
 
     //  Needs to send the body { data: { } }
      await api.delete('products/images/', { 
       data: { 
-        productImagesIds: imageToRemove }
+        productImagesIds: [id]}
      });
 
     }
@@ -156,8 +160,6 @@ export const AdEdit = () => {
    
   };
 
-
-
   const ensurePriceHasCents = async( value: string)=>{
     const containsDot = value.split('').includes('.');
    return containsDot;
@@ -176,7 +178,8 @@ export const AdEdit = () => {
       })
     }
    
-    if(!data.product_images.length && !imagesLoaded.length){
+
+    if(!imagesLoaded.length){
       return toast.show({
         title: 'You must provide at least one Image!',
         placement: 'top',
@@ -189,18 +192,18 @@ export const AdEdit = () => {
         photoForm.append('product_id', productId);
 
         imagesLoaded.forEach(async item =>{
-          if(!item.id){
-            return photoForm.append('images', item);
+          if(item.uri){
+            photoForm.append('images', item);
+          
+            await api.post('/products/images',
+              photoForm,
+              { headers: { 
+                'Content-Type': 'multipart/form-data'}
+            },
+            )
             
           }
-        })
-        await api.post('/products/images',
-          photoForm,
-          { headers: { 
-            'Content-Type': 'multipart/form-data'}
-        },
-        )
-      
+        }); 
    
       const validPrice = await ensurePriceHasCents(data.price);
       
@@ -220,7 +223,8 @@ export const AdEdit = () => {
         is_new: data.is_new === 'new'? true: false,
         price: data.price * 100,
         accept_trade: data.accept_trade,
-        payment_methods: data.payment_methods
+        payment_methods: data.payment_methods,
+        product_images: imagesLoaded
        });
 
         navigation.navigate('MyAds')
@@ -263,49 +267,40 @@ export const AdEdit = () => {
       }
          
             const { assets } = pickedImages;
-            let selectedImages:any = [];
-            let validatedImages : any = [];
+           
             
             if(assets.length){
-              assets.forEach((asset)=>{
-                return selectedImages.push({ url: asset.uri, type: asset.type})
-              })
+              
+                  const file = await FileSystem.getInfoAsync(assets[0].uri, {size: true});
+                  
+                  if(file.exists && (file.size /1024/1024) > 5){
+                      return toast.show({
+                        title: 'One of more images are bigger than 5MB.',
+                        placement: 'top',
+                        duration: 2000,
+                        bg: 'red.400'
+                      })
+                  
+                }
+                
+              
+                  const imageExt = assets[0].uri.split(".").pop();
+      
+                  const photoFile = {
+                    name: `${user.name}.${imageExt}`.toLowerCase(),
+                    type: `${assets[0].type}/${imageExt}`,
+                    uri:  `${assets[0].uri}`,
+                  } as any;
+                  
+              
+           
+                  setImagesLoaded((prev)=>[...prev, photoFile]);
 
             }
            
-            for( let image of selectedImages){
-              const file = await FileSystem.getInfoAsync(image.url, {size: true});
-              
-              if(file.exists && (file.size /1024/1024) > 5){
-                  return toast.show({
-                    title: 'One of more images are bigger than 5MB.',
-                    placement: 'top',
-                    duration: 2000,
-                    bg: 'red.400'
-                  })
-
-              }
-              
-              if(!validatedImages.includes({ url: image.url} )){
-                validatedImages.push( { url: image.url, type: image.type})
-                
-              }
-              
-            }
-            
-            const imagesToStorage = validatedImages.map((image: any) => {
-              const imageExt = image.url.split(".").pop();
-              
-              const photoFile = {
-                name: `${user.name}.${imageExt}`.toLowerCase(),
-                type: `${image.type}/${imageExt}`,
-                uri:  `${image.url}`,
-              };
-      
-              return photoFile;
-            });
+        
+   
           
-            setImagesLoaded((prev)=>[...prev, ...imagesToStorage]);
     
      
 
@@ -322,7 +317,7 @@ export const AdEdit = () => {
 
   useEffect(()=>{
     loadAdToBeEdited();
-  },[productId, reset]);
+  },[productId, reset ]);
 
     useEffect(()=>{
       LogBox.ignoreLogs([

@@ -386,8 +386,8 @@ export const AdCreate = () => {
                 name="payment_methods"
                 control={control}
                 rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <PaymentsCheckBox value={value} onChange={onChange} />
+                render={({ field: {  onChange, value } }) => (
+                  <PaymentsCheckBox onChange={onChange} value={value} defaultValue={value}/>
                 )}
               />
               {errors?.payment_methods && (

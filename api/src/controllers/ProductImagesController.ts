@@ -11,6 +11,7 @@ export class ProductImagesController {
     const userId = request.user.id;
     const productId = request.body.product_id;
     const productFiles = request.files
+    console.log(request.files, 'linha14 no controller de images')
       
     const diskStorage = new DiskStorage();
  
@@ -63,7 +64,7 @@ export class ProductImagesController {
     const userId = request.user.id;
     const productImagesIds = request.body.productImagesIds;
 
-
+    console.log('Images to be deleted no Controller', productImagesIds)
     const diskStorage = new DiskStorage();
 
     if (productImagesIds.length === 0) {

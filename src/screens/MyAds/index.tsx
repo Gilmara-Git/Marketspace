@@ -1,4 +1,4 @@
-import { useState , useCallback } from 'react';
+import { useState , useCallback, useEffect } from 'react';
 import { VStack , HStack, Heading, FlatList, Select , Icon , Text, useToast } from 'native-base';
 
 import { Entypo } from '@expo/vector-icons';
@@ -19,11 +19,12 @@ export const MyAds = ()=>{
     const [ filterBy, setFilterBy ] = useState('all');
     const toast = useToast();
     const [myProducts, setMyProducts] = useState<MyProductsDTO[]>([]as MyProductsDTO[]);
+    const [ myFilteredProducts , setMyFilteredProducts ] = useState<MyProductsDTO[]>([]as MyProductsDTO[]);
+    
     const { user } =  UserAuthHook();
-    
-    
-    // criar uma funcao para passar para o contexto, quantos Ads ativos do usuario, para que  rota HOME possa consumir
-    // console.log(myProducts, 'filterBy')
+   
+
+   
  
     const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
@@ -54,14 +55,40 @@ export const MyAds = ()=>{
 
 const getUserProducts = async()=>{
     const  { data } = await api.get('/users/products');
+
     setMyProducts(data);
+    setMyFilteredProducts(data);
 
 }
 
+const handleFilteredProducts = ()=>{
+    if(filterBy === 'all'){
+        setMyFilteredProducts(myProducts);
+    }else if(filterBy === 'active'){
+        const activeProds = myProducts.filter((product)=> product.is_active === true);
+        setMyFilteredProducts(activeProds)   
+            
+    }else {
+        const inactiveProds = myProducts.filter((product)=> product.is_active === false);
+        setMyFilteredProducts(inactiveProds)  
+    }
+
+
+};
+
+useEffect(()=>{
+    getUserProducts();
+
+},[]);
+
+useEffect(()=>{
+    handleFilteredProducts();
+},[ filterBy ]);
 
 useFocusEffect(useCallback(()=>{
         getCurrentUser();
         getUserProducts();
+        setFilterBy('all')
 }, []))
 
 
@@ -118,8 +145,8 @@ useFocusEffect(useCallback(()=>{
                             You have no Ads available!
                     </Text>
                 } 
-                data={myProducts}
-                keyExtractor={(item)=> item.id}
+                data={myFilteredProducts}
+                keyExtractor={(item)=> item.id }
                 numColumns={2}
                 columnWrapperStyle={{ justifyContent: 'space-around' }}
                 renderItem={({item})=> 

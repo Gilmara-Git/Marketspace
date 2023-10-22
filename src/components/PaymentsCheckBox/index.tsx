@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { LogBox } from 'react-native';
 import { Checkbox, ICheckboxGroupProps,   } from 'native-base';
 
-export const PaymentsCheckBox = ({...rest}: ICheckboxGroupProps)=>{
+export const PaymentsCheckBox = ({value, ...rest}: ICheckboxGroupProps)=>{
   
 
 useEffect(()=>{
@@ -16,24 +16,23 @@ useEffect(()=>{
     return (
     
             <Checkbox.Group
+
                 colorScheme='blue'
+                value={value}
                 {...rest}
                 >
                 <Checkbox
                     value='pix'
                     mb={2}
                     colorScheme='blue'
-                    
                     >
-                Zelle
+                    Zelle
                 </Checkbox>
 
                 <Checkbox
                     value='card'
                     mb={2}
                     colorScheme='blue'
-                   
-                
                     >
                     Credit Card
                 </Checkbox>

@@ -1,14 +1,16 @@
 import { VStack, HStack, Center, Heading, Text, IconButton } from "native-base";
 import { Tag } from "phosphor-react-native";
 import { Feather } from '@expo/vector-icons';
+import { Loading } from '@components/Loading';
 
 
 
 type HomeSubHeaderProps = {
   uponClicking: ()=>void; 
+  userActiveAds: string;
 }
 
-export const HomeSubHeader = ({ uponClicking }: HomeSubHeaderProps) => {
+export const HomeSubHeader = ({ uponClicking , userActiveAds}: HomeSubHeaderProps) => {
   return (
     <VStack mt={8}>
       <Text fontFamily="body" fontSize="sm" color='gray.600' mb={3}>
@@ -24,7 +26,7 @@ export const HomeSubHeader = ({ uponClicking }: HomeSubHeaderProps) => {
 
             <VStack ml={4} pr={24}>
               <Heading fontFamily="heading" fontSize="xl" color='gray.800'>
-                4
+                {userActiveAds}
               </Heading>
               <Text fontFamily="body" fontSize="xs" color='gray.800'>
                 Active Adds
