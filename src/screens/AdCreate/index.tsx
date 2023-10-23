@@ -96,21 +96,6 @@ export const AdCreate = () => {
     },
   });
 
-const avoidEmptyPayment= ()=>{
- 
-  const filteredPayments = [];
-  for(let key in state){
-    if(state[key as keyof typeof state] === true){
-      filteredPayments.push(key)
-    }
-
-    setPaymentOptions(filteredPayments);
-}
-
-
-
-}
-
   const ensurePriceHasCents = async (value: string) => {
     const containsDot = value.split("").includes(".");
     return containsDot;
@@ -118,8 +103,6 @@ const avoidEmptyPayment= ()=>{
 
   const handleAdCreate = async (data: any) => {
     try {
-
-
 
       if (!imagesInPhotoFile.length) {
         return toast.show({

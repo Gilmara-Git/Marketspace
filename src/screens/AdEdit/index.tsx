@@ -40,6 +40,7 @@ import { ArrowLeft } from 'phosphor-react-native';
 import { api } from '@services/api';
 import { UserAuthHook } from "@src/hooks/UserAuthHook";
 import { AppError } from '@utils/AppError';
+import CheckBox from '@react-native-community/checkbox';
 
 const EditSchema = yup.object().shape({
   name: yup.string().required("Type a title for your product."),
@@ -60,6 +61,14 @@ interface AdEditParams {
 
 export const AdEdit = () => {
   
+  const initialState = {
+    pix: false,
+    deposit: false,
+    cash: false,
+    card: true,
+    boleto: false,
+  };
+  const [state, setState] = useState(initialState);
   const [ imagesLoaded, setImagesLoaded ] = useState<any[]>([]);
   const [ imageLoading, setImageLoading ] = useState(false);
   const { user } = UserAuthHook();
@@ -169,14 +178,41 @@ export const AdEdit = () => {
   const handleAdEdit = async(data: any) =>{ 
     try{
 
-    if(!data.payment_methods.length){
-      return toast.show({
-        title: 'You must provide at least one payment method!',
-        placement: 'top',
-        bg: 'red.400',
-        duration: 1000
-      })
+
+      let count = 0;
+
+      for(let key in state){
+        if(state[key as keyof typeof state] === false){
+          count++;
+
+       if(count === 5){
+        return toast.show({
+              title: 'You must pick at least one Payment method!',
+              placement: 'top',
+              bg: 'red.400',
+              duration: 2000
+            })
+       }
+
     }
+    
+  }
+
+  const filteredPayments: string[] = [];
+    for(let key in state){
+      if(state[key as keyof typeof state] === true){
+        filteredPayments.push(key);
+      }
+    }
+   
+    // if(!data.payment_methods.length){
+    //   return toast.show({
+    //     title: 'You must provide at least one payment method!',
+    //     placement: 'top',
+    //     bg: 'red.400',
+    //     duration: 1000
+    //   })
+    // }
    
 
     if(!imagesLoaded.length){
@@ -223,7 +259,7 @@ export const AdEdit = () => {
         is_new: data.is_new === 'new'? true: false,
         price: data.price * 100,
         accept_trade: data.accept_trade,
-        payment_methods: data.payment_methods,
+        payment_methods: filteredPayments,
         product_images: imagesLoaded
        });
 
@@ -488,8 +524,91 @@ export const AdEdit = () => {
             <Heading mb={6} fontFamily="heading" fontSize="sm">
               Methods of payments accepted
             </Heading>
+            <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={state.pix}
+                        onValueChange={(value: any) => setState({...state, pix:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
 
-            <View>
+                  <Center>
+                    <Text ml={2}>ZELLE</Text>
+                </Center>
+              </HStack>
+
+              <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={state.deposit}
+                        onValueChange={(value: any) => setState({...state, deposit:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        onTintColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
+
+                  <Center>
+                    <Text ml={2}>DEPOSIT</Text>
+                </Center>
+              </HStack>
+
+              <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={state.cash}
+                        onValueChange={(value: any) => setState({...state, cash:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        onTintColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
+
+                  <Center>
+                    <Text ml={2}>CASH</Text>
+                </Center>
+              </HStack>
+
+              <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={state.card}
+                        onValueChange={(value: any) => setState({...state, card:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        onTintColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
+
+                  <Center>
+                    <Text ml={2}>CREDIT CARD</Text>
+                </Center>
+              </HStack>
+
+              <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={state.boleto}
+                        onValueChange={(value: any) => setState({...state, boleto:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        onTintColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
+
+                  <Center>
+                    <Text ml={2}>BILL</Text>
+                </Center>
+              </HStack>
+
+            {/* <View>
                 <Controller 
                   name='payment_methods'
                   control={control}
@@ -515,7 +634,7 @@ export const AdEdit = () => {
                         {errors.payment_methods.message}
                       </Text> }
                 
-            </View>
+            </View> */}
           </View>
         </VStack>
       </VStack>
