@@ -11,8 +11,7 @@ export class ProductImagesController {
     const userId = request.user.id;
     const productId = request.body.product_id;
     const productFiles = request.files
-    console.log(request.files, 'linha14 no controller de images')
-      
+  
     const diskStorage = new DiskStorage();
  
     const product = await prisma.products.findUnique({

@@ -25,7 +25,7 @@ import { TextBox } from "@components/TextBox";
 import { Button } from "@components/Button";
 import { ButtonsRadio } from "@components/ButtonsRadio";
 import { ProductImage } from "@src/components/ProductImage";
-import { PaymentsCheckBoxCopy } from "@src/components/PaymentsCheckBoxCopy";
+import { PaymentsCheckBox } from "@src/components/PaymentsCheckBox";
 import { NavigationHeader } from "@src/components/NavigationHeader";
 
 import * as ImagePicker from "expo-image-picker";
@@ -36,8 +36,6 @@ import { AppRoutesNavigationTabProps } from "@routes/app.routes";
 import { ArrowLeft } from "phosphor-react-native";
 import { AppError } from "@utils/AppError";
 import { UserAuthHook } from "@src/hooks/UserAuthHook";
-// import { Checkbox, ICheckboxGroupProps,   } from 'native-base';
-import CheckBox from '@react-native-community/checkbox';
 
 const AdCreateSchema = yup.object().shape({
   name: yup.string().required("Type a title for your product."),
@@ -45,33 +43,25 @@ const AdCreateSchema = yup.object().shape({
   is_new: yup.string().required("Please select if product is new or used."),
   price: yup.string().required("Please type your product price"),
   accept_trade: yup.boolean().required().default(false),
-  // payment_methods: yup
-  //   .array()
-  //   .of(yup.string().required("Choose one method of payment."))
-  //   .default(["card"]),
+  payment_methods: yup
+    .array()
+    .of(yup.string().required("Choose one method of payment."))
+    .default(["card"]),
 });
 
 type FormData = yup.InferType<typeof AdCreateSchema>;
 
 export const AdCreate = () => {
-  const initialState = {
-    pix: false,
-    deposit: false,
-    cash: false,
-    card: true,
-    boleto: false,
-  };
-  const [state, setState] = useState(initialState);
+
   const [imageLoading, setImageLoading] = useState(false);
   const [imagesInPhotoFile, setImagesInPhotoFile] = useState<any[]>([]);
-  const [paymentOptions, setPaymentOptions] = useState<string[]>([]);
-  const [ paymentStatus , setPaymentStatus] = useState(1);
 
+  
   const { user } = UserAuthHook();
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
-  const handleGoback = async () => {
+  const handleGoback = async() => {
     setImagesInPhotoFile([]);
 
     navigation.goBack();
@@ -81,6 +71,7 @@ export const AdCreate = () => {
     const currentImages = imagesInPhotoFile;
     const filteredImages = currentImages?.filter((image) => image.uri !== uri);
     setImagesInPhotoFile(filteredImages);
+   
   };
 
   const {
@@ -91,25 +82,11 @@ export const AdCreate = () => {
   } = useForm<FormData>({
     resolver: yupResolver(AdCreateSchema),
     defaultValues: {
-      is_new: "",
-      accept_trade: false,
-    },
-  });
-
-const avoidEmptyPayment= ()=>{
- 
-  const filteredPayments = [];
-  for(let key in state){
-    if(state[key as keyof typeof state] === true){
-      filteredPayments.push(key)
+      is_new: '',
+      payment_methods: [],
+      accept_trade: false
     }
-
-    setPaymentOptions(filteredPayments);
-}
-
-
-
-}
+  });
 
   const ensurePriceHasCents = async (value: string) => {
     const containsDot = value.split("").includes(".");
@@ -117,10 +94,8 @@ const avoidEmptyPayment= ()=>{
   };
 
   const handleAdCreate = async (data: any) => {
+
     try {
-
-
-
       if (!imagesInPhotoFile.length) {
         return toast.show({
           title: "Please select at least one image for your product.",
@@ -141,41 +116,13 @@ const avoidEmptyPayment= ()=>{
         });
       }
 
-
-
-      let count = 0;
-
-      for(let key in state){
-        if(state[key as keyof typeof state] === false){
-          count++;
-
-       if(count === 5){
-        return toast.show({
-              title: 'You must pick at least one Payment method!',
-              placement: 'top',
-              bg: 'red.400',
-              duration: 2000
-            })
-       }
-
-    }
-    
-  }
-
-  const filteredPayments: string[] = [];
-    for(let key in state){
-      if(state[key as keyof typeof state] === true){
-        filteredPayments.push(key);
-      }
-    }
-   
       data.is_new = data.is_new === "new" ? true : false;
       data.price = Number(data.price);
       data.product_images = imagesInPhotoFile;
-      data.payment_methods = filteredPayments;
       
-
       navigation.navigate("AdPreview", data);
+
+      
     } catch (error) {
       const isAppError = error instanceof AppError;
 
@@ -189,6 +136,8 @@ const avoidEmptyPayment= ()=>{
       });
     }
   };
+
+
 
   const handlePickedImages = async () => {
     try {
@@ -233,6 +182,8 @@ const avoidEmptyPayment= ()=>{
         }
       }
 
+
+
       const imagesToStorage = validatedImages.map((image: any) => {
         const imageExt = image.url.split(".").pop();
 
@@ -244,8 +195,12 @@ const avoidEmptyPayment= ()=>{
 
         return photoFile;
       });
+    
+    
+  
+      setImagesInPhotoFile((prev)=>[...prev, ...imagesToStorage]);
+    
 
-      setImagesInPhotoFile((prev) => [...prev, ...imagesToStorage]);
     } catch (error) {
       toast.show({
         title:
@@ -259,16 +214,14 @@ const avoidEmptyPayment= ()=>{
     }
   };
 
-  const handleSelectedMethods = (method: any) => {
-    setPaymentOptions((prevState) => [...prevState, method]);
-  };
-
   useFocusEffect(
     useCallback(() => {
       reset();
       setImagesInPhotoFile([]);
+   
     }, [])
   );
+
 
   useEffect(() => {
     LogBox.ignoreLogs([
@@ -276,8 +229,6 @@ const avoidEmptyPayment= ()=>{
     ]);
   }, []);
 
-
- 
   return (
     <ScrollView>
       <NavigationHeader
@@ -429,93 +380,21 @@ const avoidEmptyPayment= ()=>{
             <Heading mb={6} fontFamily="heading" fontSize="sm">
               Methods of payments accepted
             </Heading>
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={state.pix}
-                        onValueChange={(value: any) => setState({...state, pix:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>ZELLE</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={state.deposit}
-                        onValueChange={(value: any) => setState({...state, deposit:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>DEPOSIT</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={state.cash}
-                        onValueChange={(value: any) => setState({...state, cash:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>CASH</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={state.card}
-                        onValueChange={(value: any) => setState({...state, card:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>CREDIT CARD</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={state.boleto}
-                        onValueChange={(value: any) => setState({...state, boleto:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>BILL</Text>
-                </Center>
-              </HStack>
 
             <View>
-            
-              { paymentStatus === 0 && <View><Text color="red.400">Choose one method of payment.</Text></View>}
+              <Controller
+                name="payment_methods"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: {  onChange, value } }) => (
+                  <PaymentsCheckBox onChange={onChange} value={value} defaultValue={value}/>
+                )}
+              />
+              {errors?.payment_methods && (
+                <Text color="red.400" fontFamily="body" fontSize="sm">
+                  {errors.payment_methods.message}
+                </Text>
+              )}
             </View>
           </View>
         </VStack>
