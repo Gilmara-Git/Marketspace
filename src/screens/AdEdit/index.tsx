@@ -27,7 +27,7 @@ import { TextBox } from "@components/TextBox";
 import { Button } from '@components/Button';
 import { ButtonsRadio } from "@components/ButtonsRadio";
 import { ProductImage } from "@src/components/ProductImage";
-import { PaymentsCheckBox } from "@src/components/PaymentsCheckBox"; 
+
 import { NavigationHeader } from "@src/components/NavigationHeader";
 
 import * as ImagePicker from 'expo-image-picker';
@@ -40,7 +40,8 @@ import { ArrowLeft } from 'phosphor-react-native';
 import { api } from '@services/api';
 import { UserAuthHook } from "@src/hooks/UserAuthHook";
 import { AppError } from '@utils/AppError';
-import CheckBox from '@react-native-community/checkbox';
+
+import { PaymentCheckbox } from '@components/PaymentCheckbox';
 
 const EditSchema = yup.object().shape({
   name: yup.string().required("Type a title for your product."),
@@ -48,8 +49,7 @@ const EditSchema = yup.object().shape({
   is_new: yup.string().required("Please select if product is new or used."),
   price: yup.string().required('Please type your product price'),
   accept_trade: yup.boolean().required().default(false),
-  // payment_methods: yup.array().of(yup.string()
-  // .required('Choose one method of payment.')).default(['card']),
+
 });
 
 type FormData = yup.InferType<typeof EditSchema>;
@@ -65,7 +65,7 @@ export const AdEdit = () => {
     pix: false,
     deposit: false,
     cash: false,
-    card: true,
+    card: false,
     boleto: false,
   };
   const [paymentState, setPaymentState] = useState(initialState);
@@ -79,7 +79,7 @@ export const AdEdit = () => {
   const route = useRoute();
   const { productId }  =  route.params as AdEditParams;
 
-  
+  console.log(paymentState, 'linha82 na AdEdit')
   const {
     reset,
     control, 
@@ -93,12 +93,21 @@ export const AdEdit = () => {
     }
   });
   
+  const handlePaymentState = (value: any)=>{
+    setPaymentState(value);
+};
 
 
   const loadAdToBeEdited = async()=>{
     const { data } = await api.get(`/products/${productId}`);
 
     const methods = data.payment_methods.map((method:{key:string, name: string})=>{return method.key});
+ 
+    // updating the paymentState so it will display what comes from the database
+    methods.forEach((method: any)=> {
+      paymentState[method as keyof typeof paymentState] = true;
+   
+    })
 
     const productInfo = 
     { ...data,
@@ -507,90 +516,11 @@ export const AdEdit = () => {
             <Heading mb={6} fontFamily="heading" fontSize="sm">
               Methods of payments accepted
             </Heading>
-            <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.pix}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, pix:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>ZELLE</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.deposit}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, deposit:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>DEPOSIT</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.cash}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, cash:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>CASH</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.card}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, card:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>CREDIT CARD</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.boleto}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, boleto:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>BILL</Text>
-                </Center>
-              </HStack>
-
+           
+            <PaymentCheckbox 
+                  paymentOptions={paymentState} 
+                  getPaymentState={handlePaymentState}/>
+           
           </View>
         </VStack>
       </VStack>

@@ -1,3 +1,5 @@
+
+//Not being used. Using PaymentCheckBox instead
 import { useEffect } from 'react';
 import { LogBox } from 'react-native';
 import { Checkbox, ICheckboxGroupProps,   } from 'native-base';

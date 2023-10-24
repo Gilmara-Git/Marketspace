@@ -9,13 +9,11 @@ import {
   VStack,
   Switch,
   View,
-  Center,
-  Text
 } from "native-base";
 
 import { TagBox } from "@components/TagBox";
 import { Button } from '@components/Button';
-import CheckBox from '@react-native-community/checkbox';
+import { PaymentCheckbox } from '@components/PaymentCheckbox';
 
 
 
@@ -63,6 +61,11 @@ export const Modal = ({
 
     }
     
+    const handlePaymentState = (value: any)=>{
+      setPaymentState(value);
+  };
+  
+
     const getPaymentsToFilter = ()=>{
       let payments = [];
       for(let key in paymentState){
@@ -150,89 +153,12 @@ export const Modal = ({
             Methods of payments accepted
           </Heading>
 
+          <PaymentCheckbox 
+                  paymentOptions={paymentState} 
+                  getPaymentState={handlePaymentState}/>
+
           <View>
-          <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.pix}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, pix:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>ZELLE</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.deposit}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, deposit:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>DEPOSIT</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.cash}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, cash:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>CASH</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.card}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, card:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>CREDIT CARD</Text>
-                </Center>
-              </HStack>
-            <HStack mb={2}>
-                      <CheckBox
-                          disabled={false}
-                          value={paymentState.boleto}
-                          onValueChange={(value: any) => setPaymentState({...paymentState, boleto:value})}
-                          boxType='square'
-                          onCheckColor="#647AC7"
-                          onFillColor="#647AC7"
-                          onTintColor="#647AC7"
-                          tintColor="#647AC7"
-                          />
-
-                    <Center>
-                      <Text ml={2}>BILL</Text>
-                  </Center>
-                </HStack>
+          
                    
             </View>
             

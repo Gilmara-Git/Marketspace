@@ -260,14 +260,14 @@ useFocusEffect((useCallback(()=>{
                                 </Box>
                             </HStack>
 
-                            <HStack pb={1.5} justifyContent="space-between">
-                                <View width={64}>
+                            <HStack pb={1.5}  justifyContent="space-between">
+                                <View width={50}>
                                 <Text numberOfLines={1} fontFamily="heading" fontSize="xl">
                                 {myProd.name}
                                 </Text>
 
                                 </View>
-                                <Text fontFamily="heading" fontSize="xl" color="blue.600">
+                                <Text fontFamily="heading" fontSize="xl" color="blue.600" >
                                     {myProd.price}
                                 </Text>
                             </HStack>

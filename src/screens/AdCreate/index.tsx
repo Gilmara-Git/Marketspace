@@ -35,7 +35,8 @@ import { AppRoutesNavigationTabProps } from "@routes/app.routes";
 import { ArrowLeft } from "phosphor-react-native";
 import { AppError } from "@utils/AppError";
 import { UserAuthHook } from "@src/hooks/UserAuthHook";
-import CheckBox from '@react-native-community/checkbox';
+
+import { PaymentCheckbox } from '@components/PaymentCheckbox';
 
 const AdCreateSchema = yup.object().shape({
   name: yup.string().required("Type a title for your product."),
@@ -64,6 +65,12 @@ export const AdCreate = () => {
   const { user } = UserAuthHook();
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
+
+
+
+const handlePaymentState = (value: any)=>{
+    setPaymentState(value);
+};
 
   const handleGoback = async () => {
     setImagesInPhotoFile([]);
@@ -199,7 +206,7 @@ export const AdCreate = () => {
 
         if (file.exists && file.size / 1024 / 1024 > 5) {
           return toast.show({
-            title: "Error, one of more images are bigger than 5MB.",
+            title: "One of more images are bigger than 5MB.",
             placement: "top",
             duration: 2000,
             bg: "red.400",
@@ -404,89 +411,10 @@ export const AdCreate = () => {
             <Heading mb={6} fontFamily="heading" fontSize="sm">
               Methods of payments accepted
             </Heading>
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.pix}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, pix:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>ZELLE</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.deposit}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, deposit:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>DEPOSIT</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.cash}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, cash:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>CASH</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.card}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, card:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>CREDIT CARD</Text>
-                </Center>
-              </HStack>
-
-              <HStack mb={2}>
-                    <CheckBox
-                        disabled={false}
-                        value={paymentState.boleto}
-                        onValueChange={(value: any) => setPaymentState({...paymentState, boleto:value})}
-                        boxType='square'
-                        onCheckColor="#647AC7"
-                        onFillColor="#647AC7"
-                        onTintColor="#647AC7"
-                        tintColor="#647AC7"
-                        />
-
-                  <Center>
-                    <Text ml={2}>BILL</Text>
-                </Center>
-              </HStack>
+              
+              <PaymentCheckbox 
+                  paymentOptions={paymentState} 
+                  getPaymentState={handlePaymentState}/>
 
             <View>
             </View>
