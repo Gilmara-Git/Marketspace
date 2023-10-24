@@ -211,8 +211,9 @@ export const AdPreview = () => {
               }
 
               return (
-                <HStack>
+                <HStack key={method}>
                 <Icon 
+                    
                     as={Ionicons} 
                     name={iconsType[method]} 
                     size={5}

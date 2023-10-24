@@ -1,5 +1,4 @@
-import { useEffect, useCallback } from "react";
-import {  useFocusEffect } from '@react-navigation/native';
+import { useEffect, useState} from "react";
 import { LogBox } from 'react-native';
 import {
   Modal as ModalNativeBase,
@@ -14,7 +13,8 @@ import {
 
 import { TagBox } from "@components/TagBox";
 import { Button } from '@components/Button';
-import { PaymentsCheckBox } from '@components/PaymentsCheckBox'; 
+import { PaymentCheckbox } from '@components/PaymentCheckbox';
+
 
 
 type ModalProps = IModalProps & {
@@ -43,6 +43,16 @@ export const Modal = ({
   ...rest }: ModalProps) => {
 
 
+    const initialState = {
+      pix: false,
+      deposit: false,
+      cash: false,
+      card: false,
+      boleto: false,
+    };
+    const [paymentState, setPaymentState] = useState(initialState);
+
+
     const resetFilters = ()=>{
       onIsNewChanged(undefined);
       onAcceptTradeChange(undefined);
@@ -50,6 +60,22 @@ export const Modal = ({
   
 
     }
+    
+    const handlePaymentState = (value: any)=>{
+      setPaymentState(value);
+  };
+  
+
+    const getPaymentsToFilter = ()=>{
+      let payments = [];
+      for(let key in paymentState){
+        if(paymentState[key as keyof typeof paymentState] === true){
+          payments.push(key);
+        }
+      }
+   
+      onPaymentMethodsChanged(payments)
+    };
 
 
     useEffect(()=>{
@@ -57,6 +83,10 @@ export const Modal = ({
         'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
       ])
     }, []);
+
+    useEffect(()=>{
+      getPaymentsToFilter();
+    }, [paymentState])
 
 
   return (
@@ -123,14 +153,13 @@ export const Modal = ({
             Methods of payments accepted
           </Heading>
 
+          <PaymentCheckbox 
+                  paymentOptions={paymentState} 
+                  getPaymentState={handlePaymentState}/>
+
           <View>
-
-                    <PaymentsCheckBox
-                      defaultValue={paymentMethods}
-                      value={paymentMethods}
-                      onChange={onPaymentMethodsChanged}
-                    />
-
+          
+                   
             </View>
             
         </ModalNativeBase.Body>

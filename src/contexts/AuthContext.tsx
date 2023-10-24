@@ -1,17 +1,18 @@
 import { createContext, ReactNode, useState, useEffect } from 'react';
 import {  useToast } from 'native-base';
-import { UserDTO } from 'src/dtos/UserDTO'
-import { api } from '@services/api';
-import { AppError } from '@utils/AppError';
 import { storageSaveUser, storageGetUser, storageDeleteUser} from '@storage/storageUser';
 import { storageSaveUSerToken, storageGetUserToken, storageDeleteUserToken } from '@src/storage/storageToken';
 import { storageSaveUserRefreshToken, storageDeleteUserRefreshToken} from '@storage/storageRefreshToken';
+import { MyProductsDTO } from '@src/dtos/MyProductsDTO';
+import { UserDTO } from 'src/dtos/UserDTO'
+import { api } from '@services/api';
+import { AppError } from '@utils/AppError';
 
 type UserContextType = {
     user: UserDTO;
     login: (email: string, password: string)=> Promise<void>;
     signOut: ()=> Promise<void>;
-    resetFormFieldsToEmpty: (reset: any)=>void;
+   
 };
 
 
@@ -26,10 +27,11 @@ export const AuthContext = createContext({} as UserContextType);
 export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
     const [ user, setUser] = useState<UserDTO>({} as UserDTO);
     const toast = useToast();
+
   
 
     const userAndTokenUpdate = ( user: UserDTO, token: string,)=>{
-        // console.log(token, 'token indo para o cabecalho da requisicao')
+       
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setUser(user);
     }
@@ -117,14 +119,10 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
 
     }
 
-    const resetFormFieldsToEmpty =(reset:any)=>{
-        console.log('me diz se reset esta passando por aqui', reset)
-        reset();
-    };
-
 
     useEffect(()=>{
         loadUserAndTokenStorageData();
+       
     }, []);
 
     useEffect(()=>{
@@ -137,7 +135,7 @@ export const AuthContextProvider =({children}: AuthContextProviderProps)=>{
     }, [signOut]);
 
     return <AuthContext.Provider value={{ 
-        user, login, signOut, resetFormFieldsToEmpty }}>
+        user, login, signOut }}>
 
             {children } 
       </AuthContext.Provider>

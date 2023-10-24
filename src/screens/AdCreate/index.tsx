@@ -25,7 +25,6 @@ import { TextBox } from "@components/TextBox";
 import { Button } from "@components/Button";
 import { ButtonsRadio } from "@components/ButtonsRadio";
 import { ProductImage } from "@src/components/ProductImage";
-import { PaymentsCheckBox } from "@src/components/PaymentsCheckBox";
 import { NavigationHeader } from "@src/components/NavigationHeader";
 
 import * as ImagePicker from "expo-image-picker";
@@ -37,31 +36,43 @@ import { ArrowLeft } from "phosphor-react-native";
 import { AppError } from "@utils/AppError";
 import { UserAuthHook } from "@src/hooks/UserAuthHook";
 
+import { PaymentCheckbox } from '@components/PaymentCheckbox';
+
 const AdCreateSchema = yup.object().shape({
   name: yup.string().required("Type a title for your product."),
   description: yup.string().required("Please describe your product."),
   is_new: yup.string().required("Please select if product is new or used."),
   price: yup.string().required("Please type your product price"),
   accept_trade: yup.boolean().required().default(false),
-  payment_methods: yup
-    .array()
-    .of(yup.string().required("Choose one method of payment."))
-    .default(["card"]),
+
 });
 
 type FormData = yup.InferType<typeof AdCreateSchema>;
 
 export const AdCreate = () => {
-
+  const initialState = {
+    pix: false,
+    deposit: false,
+    cash: false,
+    card: true,
+    boleto: false,
+  };
+  const [paymentState, setPaymentState] = useState(initialState);
   const [imageLoading, setImageLoading] = useState(false);
   const [imagesInPhotoFile, setImagesInPhotoFile] = useState<any[]>([]);
 
-  
+
   const { user } = UserAuthHook();
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
 
-  const handleGoback = async() => {
+
+
+const handlePaymentState = (value: any)=>{
+    setPaymentState(value);
+};
+
+  const handleGoback = async () => {
     setImagesInPhotoFile([]);
 
     navigation.goBack();
@@ -71,7 +82,6 @@ export const AdCreate = () => {
     const currentImages = imagesInPhotoFile;
     const filteredImages = currentImages?.filter((image) => image.uri !== uri);
     setImagesInPhotoFile(filteredImages);
-   
   };
 
   const {
@@ -82,10 +92,9 @@ export const AdCreate = () => {
   } = useForm<FormData>({
     resolver: yupResolver(AdCreateSchema),
     defaultValues: {
-      is_new: '',
-      payment_methods: [],
-      accept_trade: false
-    }
+      is_new: "",
+      accept_trade: false,
+    },
   });
 
   const ensurePriceHasCents = async (value: string) => {
@@ -94,8 +103,8 @@ export const AdCreate = () => {
   };
 
   const handleAdCreate = async (data: any) => {
-
     try {
+
       if (!imagesInPhotoFile.length) {
         return toast.show({
           title: "Please select at least one image for your product.",
@@ -116,13 +125,42 @@ export const AdCreate = () => {
         });
       }
 
+
+
+      let count = 0;
+
+      for(let key in paymentState){
+        if(paymentState[key as keyof typeof paymentState] === false){
+          count++;
+
+       if(count === 5){
+    
+        return toast.show({
+              title: 'You must pick at least one Payment method!',
+              placement: 'top',
+              bg: 'red.400',
+              duration: 2000
+            })
+       }
+
+    }
+    
+  }
+
+  const filteredPayments: string[] = [];
+    for(let key in paymentState){
+      if(paymentState[key as keyof typeof paymentState] === true){
+        filteredPayments.push(key);
+      }
+    }
+   
       data.is_new = data.is_new === "new" ? true : false;
       data.price = Number(data.price);
       data.product_images = imagesInPhotoFile;
+      data.payment_methods = filteredPayments;
       
-      navigation.navigate("AdPreview", data);
 
-      
+      navigation.navigate("AdPreview", data);
     } catch (error) {
       const isAppError = error instanceof AppError;
 
@@ -136,8 +174,6 @@ export const AdCreate = () => {
       });
     }
   };
-
-
 
   const handlePickedImages = async () => {
     try {
@@ -170,7 +206,7 @@ export const AdCreate = () => {
 
         if (file.exists && file.size / 1024 / 1024 > 5) {
           return toast.show({
-            title: "Error, one of more images are bigger than 5MB.",
+            title: "One of more images are bigger than 5MB.",
             placement: "top",
             duration: 2000,
             bg: "red.400",
@@ -181,8 +217,6 @@ export const AdCreate = () => {
           validatedImages.push({ url: image.url, type: image.type });
         }
       }
-
-
 
       const imagesToStorage = validatedImages.map((image: any) => {
         const imageExt = image.url.split(".").pop();
@@ -195,12 +229,8 @@ export const AdCreate = () => {
 
         return photoFile;
       });
-    
-    
-  
-      setImagesInPhotoFile((prev)=>[...prev, ...imagesToStorage]);
-    
 
+      setImagesInPhotoFile((prev) => [...prev, ...imagesToStorage]);
     } catch (error) {
       toast.show({
         title:
@@ -214,14 +244,13 @@ export const AdCreate = () => {
     }
   };
 
+
   useFocusEffect(
     useCallback(() => {
       reset();
       setImagesInPhotoFile([]);
-   
     }, [])
   );
-
 
   useEffect(() => {
     LogBox.ignoreLogs([
@@ -229,6 +258,8 @@ export const AdCreate = () => {
     ]);
   }, []);
 
+
+ 
   return (
     <ScrollView>
       <NavigationHeader
@@ -380,21 +411,12 @@ export const AdCreate = () => {
             <Heading mb={6} fontFamily="heading" fontSize="sm">
               Methods of payments accepted
             </Heading>
+              
+              <PaymentCheckbox 
+                  paymentOptions={paymentState} 
+                  getPaymentState={handlePaymentState}/>
 
             <View>
-              <Controller
-                name="payment_methods"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <PaymentsCheckBox value={value} onChange={onChange} />
-                )}
-              />
-              {errors?.payment_methods && (
-                <Text color="red.400" fontFamily="body" fontSize="sm">
-                  {errors.payment_methods.message}
-                </Text>
-              )}
             </View>
           </View>
         </VStack>

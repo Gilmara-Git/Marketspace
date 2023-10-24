@@ -15,19 +15,47 @@ import  { api } from '@services/api';
 import { AppError } from '@utils/AppError';
 import  { AllProductsDTO } from '@src/dtos/AllProductsDTO';
 
-export const Home =()=>{
+
+export const Home = ()=>{
     const [products , setProducts ] = useState<AllProductsDTO[]>();
     const [ isProductLoading, setIsProductLoading ] = useState(false);
     const [ modalVisible, setModalVisible ] = useState(false);
+    const [ activeProds, setActiveProds ] = useState(0);
 
     const [is_newFilter, setIs_newFilter] = useState<boolean | undefined>(undefined);
     const [accept_trade, setAccept_trade] = useState<boolean | undefined>(undefined);
     const [payment_methods, setPayment_methods ] = useState<string[] | undefined>([]);
     const [ query, setQuery ] = useState<string>('');
-  
+
     
     const toast = useToast();
     const navigation = useNavigation<AppRoutesNavigationTabProps>();
+
+   const fetchUserActiveProds = async()=>{
+    try{
+    
+        setIsProductLoading(true)
+        const { data }  = await api.get('/users/products');
+        const activeProducts = data.filter((product: { is_active: boolean; }) => product.is_active === true);
+        setActiveProds(activeProducts.length)
+
+    }catch(error){
+        const isAppError = error instanceof AppError;
+            
+        toast.show({
+            title: isAppError ? error.message : 'There was an error to active products',
+            placement: 'top',
+            bg: 'red.400',
+            duration: 3000
+
+        })
+        
+
+   }finally{
+    setIsProductLoading(false)
+   }
+}
+   ;
 
     const fetchAllProducts = async()=>{
         try{
@@ -98,6 +126,7 @@ export const Home =()=>{
 
     useFocusEffect(useCallback(()=>{
         fetchAllProducts();
+        fetchUserActiveProds();
         
     }, [is_newFilter, accept_trade, payment_methods, query]));
     
@@ -105,7 +134,10 @@ export const Home =()=>{
         <VStack bg='gray.200' flex={1}>
             <Center mt={8} py={6}>
                     <HomeHeader uponClicking={handleCreateAd}/>
-                    <HomeSubHeader uponClicking={goToMyAds}/>
+                    <HomeSubHeader 
+                        uponClicking={goToMyAds}
+                        userActiveAds={!isProductLoading ? String(activeProds): ''}    
+                        />
 
 
                     
@@ -134,7 +166,7 @@ export const Home =()=>{
 
                             <>
                             <View mt={20}/>
-                            <Loading /> 
+                                <Loading /> 
                             </>
 
                         

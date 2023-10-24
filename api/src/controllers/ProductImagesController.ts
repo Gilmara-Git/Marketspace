@@ -11,7 +11,7 @@ export class ProductImagesController {
     const userId = request.user.id;
     const productId = request.body.product_id;
     const productFiles = request.files
-      
+  
     const diskStorage = new DiskStorage();
  
     const product = await prisma.products.findUnique({
@@ -63,7 +63,7 @@ export class ProductImagesController {
     const userId = request.user.id;
     const productImagesIds = request.body.productImagesIds;
 
-
+    console.log('Images to be deleted no Controller', productImagesIds)
     const diskStorage = new DiskStorage();
 
     if (productImagesIds.length === 0) {

@@ -27,7 +27,7 @@ import { TextBox } from "@components/TextBox";
 import { Button } from '@components/Button';
 import { ButtonsRadio } from "@components/ButtonsRadio";
 import { ProductImage } from "@src/components/ProductImage";
-import { PaymentsCheckBox } from "@src/components/PaymentsCheckBox"; 
+
 import { NavigationHeader } from "@src/components/NavigationHeader";
 
 import * as ImagePicker from 'expo-image-picker';
@@ -41,14 +41,15 @@ import { api } from '@services/api';
 import { UserAuthHook } from "@src/hooks/UserAuthHook";
 import { AppError } from '@utils/AppError';
 
+import { PaymentCheckbox } from '@components/PaymentCheckbox';
+
 const EditSchema = yup.object().shape({
   name: yup.string().required("Type a title for your product."),
   description: yup.string().required('Please describe your product.'),
   is_new: yup.string().required("Please select if product is new or used."),
   price: yup.string().required('Please type your product price'),
   accept_trade: yup.boolean().required().default(false),
-  payment_methods: yup.array().of(yup.string()
-  .required('Choose one method of payment.')).default(['card']),
+
 });
 
 type FormData = yup.InferType<typeof EditSchema>;
@@ -60,16 +61,25 @@ interface AdEditParams {
 
 export const AdEdit = () => {
   
+  const initialState = {
+    pix: false,
+    deposit: false,
+    cash: false,
+    card: false,
+    boleto: false,
+  };
+  const [paymentState, setPaymentState] = useState(initialState);
   const [ imagesLoaded, setImagesLoaded ] = useState<any[]>([]);
   const [ imageLoading, setImageLoading ] = useState(false);
   const { user } = UserAuthHook();
+
   
   const toast = useToast();
   const navigation = useNavigation<AppRoutesNavigationTabProps>();
   const route = useRoute();
   const { productId }  =  route.params as AdEditParams;
 
-  
+  console.log(paymentState, 'linha82 na AdEdit')
   const {
     reset,
     control, 
@@ -79,17 +89,25 @@ export const AdEdit = () => {
     resolver: yupResolver(EditSchema),
     defaultValues: {
       is_new: '',
-      payment_methods: [],
       accept_trade: false
     }
   });
   
+  const handlePaymentState = (value: any)=>{
+    setPaymentState(value);
+};
 
 
   const loadAdToBeEdited = async()=>{
     const { data } = await api.get(`/products/${productId}`);
 
     const methods = data.payment_methods.map((method:{key:string, name: string})=>{return method.key});
+ 
+    // updating the paymentState so it will display what comes from the database
+    methods.forEach((method: any)=> {
+      paymentState[method as keyof typeof paymentState] = true;
+   
+    })
 
     const productInfo = 
     { ...data,
@@ -111,6 +129,7 @@ export const AdEdit = () => {
   };
 
   const handleImageRemove = async(id: string, uri: string)=>{
+  
 
     try{
 
@@ -122,16 +141,15 @@ export const AdEdit = () => {
           duration: 1000
         })
       }
+
+
   
     if(id){
      setImagesLoaded(prevState => prevState.filter(image => image.id !== id));
-     const imageToRemove = [];
-     imageToRemove.push(id);
-
-    //  Needs to send the body { data: { } }
+  
      await api.delete('products/images/', { 
       data: { 
-        productImagesIds: imageToRemove }
+        productImagesIds: [id]}
      });
 
     }
@@ -156,8 +174,6 @@ export const AdEdit = () => {
    
   };
 
-
-
   const ensurePriceHasCents = async( value: string)=>{
     const containsDot = value.split('').includes('.');
    return containsDot;
@@ -167,16 +183,36 @@ export const AdEdit = () => {
   const handleAdEdit = async(data: any) =>{ 
     try{
 
-    if(!data.payment_methods.length){
-      return toast.show({
-        title: 'You must provide at least one payment method!',
-        placement: 'top',
-        bg: 'red.400',
-        duration: 1000
-      })
+
+      let count = 0;
+
+      for(let key in paymentState){
+        if(paymentState[key as keyof typeof paymentState] === false){
+          count++;
+
+       if(count === 5){
+        return toast.show({
+              title: 'You must pick at least one Payment method!',
+              placement: 'top',
+              bg: 'red.400',
+              duration: 2000
+            })
+       }
+
+    }
+    
+  }
+
+  const filteredPayments: string[] = [];
+    for(let key in paymentState){
+      if(paymentState[key as keyof typeof paymentState] === true){
+        filteredPayments.push(key);
+      }
     }
    
-    if(!data.product_images.length && !imagesLoaded.length){
+  
+  
+    if(!imagesLoaded.length){
       return toast.show({
         title: 'You must provide at least one Image!',
         placement: 'top',
@@ -189,18 +225,18 @@ export const AdEdit = () => {
         photoForm.append('product_id', productId);
 
         imagesLoaded.forEach(async item =>{
-          if(!item.id){
-            return photoForm.append('images', item);
+          if(item.uri){
+            photoForm.append('images', item);
+          
+            await api.post('/products/images',
+              photoForm,
+              { headers: { 
+                'Content-Type': 'multipart/form-data'}
+            },
+            )
             
           }
-        })
-        await api.post('/products/images',
-          photoForm,
-          { headers: { 
-            'Content-Type': 'multipart/form-data'}
-        },
-        )
-      
+        }); 
    
       const validPrice = await ensurePriceHasCents(data.price);
       
@@ -220,7 +256,8 @@ export const AdEdit = () => {
         is_new: data.is_new === 'new'? true: false,
         price: data.price * 100,
         accept_trade: data.accept_trade,
-        payment_methods: data.payment_methods
+        payment_methods: filteredPayments,
+        product_images: imagesLoaded
        });
 
         navigation.navigate('MyAds')
@@ -263,51 +300,37 @@ export const AdEdit = () => {
       }
          
             const { assets } = pickedImages;
-            let selectedImages:any = [];
-            let validatedImages : any = [];
+           
             
             if(assets.length){
-              assets.forEach((asset)=>{
-                return selectedImages.push({ url: asset.uri, type: asset.type})
-              })
+              
+                  const file = await FileSystem.getInfoAsync(assets[0].uri, {size: true});
+                  
+                  if(file.exists && (file.size /1024/1024) > 5){
+                      return toast.show({
+                        title: 'One of more images are bigger than 5MB.',
+                        placement: 'top',
+                        duration: 2000,
+                        bg: 'red.400'
+                      })
+                  
+                }
+                
+              
+                  const imageExt = assets[0].uri.split(".").pop();
+      
+                  const photoFile = {
+                    name: `${user.name}.${imageExt}`.toLowerCase(),
+                    type: `${assets[0].type}/${imageExt}`,
+                    uri:  `${assets[0].uri}`,
+                  } as any;
+                  
+              
+           
+                  setImagesLoaded((prev)=>[...prev, photoFile]);
 
             }
            
-            for( let image of selectedImages){
-              const file = await FileSystem.getInfoAsync(image.url, {size: true});
-              
-              if(file.exists && (file.size /1024/1024) > 5){
-                  return toast.show({
-                    title: 'One of more images are bigger than 5MB.',
-                    placement: 'top',
-                    duration: 2000,
-                    bg: 'red.400'
-                  })
-
-              }
-              
-              if(!validatedImages.includes({ url: image.url} )){
-                validatedImages.push( { url: image.url, type: image.type})
-                
-              }
-              
-            }
-            
-            const imagesToStorage = validatedImages.map((image: any) => {
-              const imageExt = image.url.split(".").pop();
-              
-              const photoFile = {
-                name: `${user.name}.${imageExt}`.toLowerCase(),
-                type: `${image.type}/${imageExt}`,
-                uri:  `${image.url}`,
-              };
-      
-              return photoFile;
-            });
-          
-            setImagesLoaded((prev)=>[...prev, ...imagesToStorage]);
-    
-     
 
     }
     catch(error){
@@ -322,7 +345,7 @@ export const AdEdit = () => {
 
   useEffect(()=>{
     loadAdToBeEdited();
-  },[productId, reset]);
+  },[productId, reset ]);
 
     useEffect(()=>{
       LogBox.ignoreLogs([
@@ -493,34 +516,11 @@ export const AdEdit = () => {
             <Heading mb={6} fontFamily="heading" fontSize="sm">
               Methods of payments accepted
             </Heading>
-
-            <View>
-                <Controller 
-                  name='payment_methods'
-                  control={control}
-                  rules={{required: true}}
-                  render={ ( {field: { value, onChange }})=>(
-                    <PaymentsCheckBox
-                      value={value}
-                      onChange={onChange}
-                      defaultValue={value}
-                      
-                    />
-                    
-                    
-                  )}
-                    />
-
-                    { errors?.payment_methods && 
-                      <Text
-                        color='red.400'
-                        fontFamily='body'
-                        fontSize='sm'
-                      >
-                        {errors.payment_methods.message}
-                      </Text> }
-                
-            </View>
+           
+            <PaymentCheckbox 
+                  paymentOptions={paymentState} 
+                  getPaymentState={handlePaymentState}/>
+           
           </View>
         </VStack>
       </VStack>

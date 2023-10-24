@@ -1,32 +1,48 @@
-import { VStack, HStack, Center, Heading, Text, IconButton } from "native-base";
+import {
+  VStack,
+  HStack,
+  Center,
+  Heading,
+  Text,
+  IconButton,
+  Pressable
+} from "native-base";
 import { Tag } from "phosphor-react-native";
-import { Feather } from '@expo/vector-icons';
-
+import { Feather } from "@expo/vector-icons";
 
 
 type HomeSubHeaderProps = {
-  uponClicking: ()=>void; 
-}
+  uponClicking: () => void;
+  userActiveAds: string;
+};
 
-export const HomeSubHeader = ({ uponClicking }: HomeSubHeaderProps) => {
+export const HomeSubHeader = ({
+  uponClicking,
+  userActiveAds,
+}: HomeSubHeaderProps) => {
   return (
     <VStack mt={8}>
-      <Text fontFamily="body" fontSize="sm" color='gray.600' mb={3}>
+      <Text fontFamily="body" fontSize="sm" color="gray.600" mb={3}>
         Your Ads listed for sale
       </Text>
 
-      <HStack bg="blue.100" height={16} width={75}>
+      <HStack height={16} width={75}>
         <Center px={4}>
           <HStack>
             <VStack pt={2}>
               <Tag color="#364D9D" weight="regular" size="22" />
             </VStack>
 
-            <VStack ml={4} pr={24}>
-              <Heading fontFamily="heading" fontSize="xl" color='gray.800'>
-                4
-              </Heading>
-              <Text fontFamily="body" fontSize="xs" color='gray.800'>
+            <VStack ml={4} pr={24} alignItems='center'>
+              <HStack  bg="blue.600" justifyContent='center' rounded='full' width={6}>
+                <Pressable onPress={uponClicking}>
+                  <Heading fontFamily="heading" fontSize="md" color="gray.200">
+                    {userActiveAds}
+                  </Heading>
+                </Pressable>
+              </HStack>
+
+              <Text fontFamily="body" fontSize="xs" color="gray.800">
                 Active Adds
               </Text>
             </VStack>
@@ -45,17 +61,14 @@ export const HomeSubHeader = ({ uponClicking }: HomeSubHeaderProps) => {
                   </Heading>
                   <IconButton
                     onPress={uponClicking}
-                    _pressed={{ opacity: .5}}
-                    size={4} 
-
+                    _pressed={{ opacity: 0.5 }}
+                    size={4}
                     _icon={{
                       as: Feather,
-                      color:'blue.900',
-                      name:'arrow-right',
-                      
+                      color: "blue.900",
+                      name: "arrow-right",
                     }}
                   />
-                 
                 </HStack>
               </Center>
             </HStack>
