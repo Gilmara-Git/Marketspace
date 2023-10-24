@@ -48,8 +48,8 @@ const EditSchema = yup.object().shape({
   is_new: yup.string().required("Please select if product is new or used."),
   price: yup.string().required('Please type your product price'),
   accept_trade: yup.boolean().required().default(false),
-  payment_methods: yup.array().of(yup.string()
-  .required('Choose one method of payment.')).default(['card']),
+  // payment_methods: yup.array().of(yup.string()
+  // .required('Choose one method of payment.')).default(['card']),
 });
 
 type FormData = yup.InferType<typeof EditSchema>;
@@ -68,7 +68,7 @@ export const AdEdit = () => {
     card: true,
     boleto: false,
   };
-  const [state, setState] = useState(initialState);
+  const [paymentState, setPaymentState] = useState(initialState);
   const [ imagesLoaded, setImagesLoaded ] = useState<any[]>([]);
   const [ imageLoading, setImageLoading ] = useState(false);
   const { user } = UserAuthHook();
@@ -89,7 +89,6 @@ export const AdEdit = () => {
     resolver: yupResolver(EditSchema),
     defaultValues: {
       is_new: '',
-      payment_methods: [],
       accept_trade: false
     }
   });
@@ -138,10 +137,7 @@ export const AdEdit = () => {
   
     if(id){
      setImagesLoaded(prevState => prevState.filter(image => image.id !== id));
-    //  const imageToRemove = [];
-    //  imageToRemove.push(id);
-
-    //  Needs to send the body { data: { } }
+  
      await api.delete('products/images/', { 
       data: { 
         productImagesIds: [id]}
@@ -181,8 +177,8 @@ export const AdEdit = () => {
 
       let count = 0;
 
-      for(let key in state){
-        if(state[key as keyof typeof state] === false){
+      for(let key in paymentState){
+        if(paymentState[key as keyof typeof paymentState] === false){
           count++;
 
        if(count === 5){
@@ -199,22 +195,14 @@ export const AdEdit = () => {
   }
 
   const filteredPayments: string[] = [];
-    for(let key in state){
-      if(state[key as keyof typeof state] === true){
+    for(let key in paymentState){
+      if(paymentState[key as keyof typeof paymentState] === true){
         filteredPayments.push(key);
       }
     }
    
-    // if(!data.payment_methods.length){
-    //   return toast.show({
-    //     title: 'You must provide at least one payment method!',
-    //     placement: 'top',
-    //     bg: 'red.400',
-    //     duration: 1000
-    //   })
-    // }
-   
-
+  
+  
     if(!imagesLoaded.length){
       return toast.show({
         title: 'You must provide at least one Image!',
@@ -334,11 +322,6 @@ export const AdEdit = () => {
 
             }
            
-        
-   
-          
-    
-     
 
     }
     catch(error){
@@ -527,8 +510,8 @@ export const AdEdit = () => {
             <HStack mb={2}>
                     <CheckBox
                         disabled={false}
-                        value={state.pix}
-                        onValueChange={(value: any) => setState({...state, pix:value})}
+                        value={paymentState.pix}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, pix:value})}
                         boxType='square'
                         onCheckColor="#647AC7"
                         onFillColor="#647AC7"
@@ -543,8 +526,8 @@ export const AdEdit = () => {
               <HStack mb={2}>
                     <CheckBox
                         disabled={false}
-                        value={state.deposit}
-                        onValueChange={(value: any) => setState({...state, deposit:value})}
+                        value={paymentState.deposit}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, deposit:value})}
                         boxType='square'
                         onCheckColor="#647AC7"
                         onFillColor="#647AC7"
@@ -560,8 +543,8 @@ export const AdEdit = () => {
               <HStack mb={2}>
                     <CheckBox
                         disabled={false}
-                        value={state.cash}
-                        onValueChange={(value: any) => setState({...state, cash:value})}
+                        value={paymentState.cash}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, cash:value})}
                         boxType='square'
                         onCheckColor="#647AC7"
                         onFillColor="#647AC7"
@@ -577,8 +560,8 @@ export const AdEdit = () => {
               <HStack mb={2}>
                     <CheckBox
                         disabled={false}
-                        value={state.card}
-                        onValueChange={(value: any) => setState({...state, card:value})}
+                        value={paymentState.card}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, card:value})}
                         boxType='square'
                         onCheckColor="#647AC7"
                         onFillColor="#647AC7"
@@ -594,8 +577,8 @@ export const AdEdit = () => {
               <HStack mb={2}>
                     <CheckBox
                         disabled={false}
-                        value={state.boleto}
-                        onValueChange={(value: any) => setState({...state, boleto:value})}
+                        value={paymentState.boleto}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, boleto:value})}
                         boxType='square'
                         onCheckColor="#647AC7"
                         onFillColor="#647AC7"
@@ -608,33 +591,6 @@ export const AdEdit = () => {
                 </Center>
               </HStack>
 
-            {/* <View>
-                <Controller 
-                  name='payment_methods'
-                  control={control}
-                  rules={{required: true}}
-                  render={ ( {field: { value, onChange }})=>(
-                    <PaymentsCheckBox
-                      value={value}
-                      onChange={onChange}
-                      defaultValue={value}
-                      
-                    />
-                    
-                    
-                  )}
-                    />
-
-                    { errors?.payment_methods && 
-                      <Text
-                        color='red.400'
-                        fontFamily='body'
-                        fontSize='sm'
-                      >
-                        {errors.payment_methods.message}
-                      </Text> }
-                
-            </View> */}
           </View>
         </VStack>
       </VStack>

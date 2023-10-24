@@ -1,5 +1,4 @@
-import { useEffect, useCallback } from "react";
-import {  useFocusEffect } from '@react-navigation/native';
+import { useEffect, useState} from "react";
 import { LogBox } from 'react-native';
 import {
   Modal as ModalNativeBase,
@@ -10,11 +9,14 @@ import {
   VStack,
   Switch,
   View,
+  Center,
+  Text
 } from "native-base";
 
 import { TagBox } from "@components/TagBox";
 import { Button } from '@components/Button';
-import { PaymentsCheckBox } from '@components/PaymentsCheckBox'; 
+import CheckBox from '@react-native-community/checkbox';
+
 
 
 type ModalProps = IModalProps & {
@@ -43,6 +45,16 @@ export const Modal = ({
   ...rest }: ModalProps) => {
 
 
+    const initialState = {
+      pix: false,
+      deposit: false,
+      cash: false,
+      card: false,
+      boleto: false,
+    };
+    const [paymentState, setPaymentState] = useState(initialState);
+
+
     const resetFilters = ()=>{
       onIsNewChanged(undefined);
       onAcceptTradeChange(undefined);
@@ -50,6 +62,17 @@ export const Modal = ({
   
 
     }
+    
+    const getPaymentsToFilter = ()=>{
+      let payments = [];
+      for(let key in paymentState){
+        if(paymentState[key as keyof typeof paymentState] === true){
+          payments.push(key);
+        }
+      }
+   
+      onPaymentMethodsChanged(payments)
+    };
 
 
     useEffect(()=>{
@@ -57,6 +80,10 @@ export const Modal = ({
         'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
       ])
     }, []);
+
+    useEffect(()=>{
+      getPaymentsToFilter();
+    }, [paymentState])
 
 
   return (
@@ -124,13 +151,89 @@ export const Modal = ({
           </Heading>
 
           <View>
+          <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={paymentState.pix}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, pix:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
 
-                    <PaymentsCheckBox
-                      defaultValue={paymentMethods}
-                      value={paymentMethods}
-                      onChange={onPaymentMethodsChanged}
-                    />
+                  <Center>
+                    <Text ml={2}>ZELLE</Text>
+                </Center>
+              </HStack>
 
+              <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={paymentState.deposit}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, deposit:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        onTintColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
+
+                  <Center>
+                    <Text ml={2}>DEPOSIT</Text>
+                </Center>
+              </HStack>
+
+              <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={paymentState.cash}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, cash:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        onTintColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
+
+                  <Center>
+                    <Text ml={2}>CASH</Text>
+                </Center>
+              </HStack>
+
+              <HStack mb={2}>
+                    <CheckBox
+                        disabled={false}
+                        value={paymentState.card}
+                        onValueChange={(value: any) => setPaymentState({...paymentState, card:value})}
+                        boxType='square'
+                        onCheckColor="#647AC7"
+                        onFillColor="#647AC7"
+                        onTintColor="#647AC7"
+                        tintColor="#647AC7"
+                        />
+
+                  <Center>
+                    <Text ml={2}>CREDIT CARD</Text>
+                </Center>
+              </HStack>
+            <HStack mb={2}>
+                      <CheckBox
+                          disabled={false}
+                          value={paymentState.boleto}
+                          onValueChange={(value: any) => setPaymentState({...paymentState, boleto:value})}
+                          boxType='square'
+                          onCheckColor="#647AC7"
+                          onFillColor="#647AC7"
+                          onTintColor="#647AC7"
+                          tintColor="#647AC7"
+                          />
+
+                    <Center>
+                      <Text ml={2}>BILL</Text>
+                  </Center>
+                </HStack>
+                   
             </View>
             
         </ModalNativeBase.Body>
