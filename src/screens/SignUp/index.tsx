@@ -41,7 +41,7 @@ export const SignUp =()=>{
     const [ avatarType, setAvatarType ] = useState('');
     
     const {user, login} =  UserAuthHook();
-    console.log(user, 'lina 45')
+
 
     const navigation = useNavigation();
     const toast = useToast();
@@ -81,7 +81,7 @@ export const SignUp =()=>{
     };
 
     const handleCreateUser =  async (data : FormData)=>{
-        console.log(data, 'line31 signup');
+   
         try{
             setIsCreating(true);
 
@@ -96,7 +96,7 @@ export const SignUp =()=>{
             }
 
             const imgExt = userAvatar.split('.').pop();
-            console.log(imgExt, '85')    
+          
             
            const photoFile = {
             name: `${data.name}.${imgExt}`.toLowerCase(),
@@ -113,7 +113,6 @@ export const SignUp =()=>{
             userForm.append('tel', data.tel);
             userForm.append('password', data.password);
 
-            console.log(userForm, 'linha101')
         //    create the api.post sending the 'userForm' , Content-type: multipart/form-data
             await api.post('/users', userForm, {
             headers: { 
