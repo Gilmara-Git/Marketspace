@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import {
   VStack,
   HStack,
@@ -13,7 +14,7 @@ import { Feather } from "@expo/vector-icons";
 
 type HomeSubHeaderProps = {
   uponClicking: () => void;
-  userActiveAds: string;
+  userActiveAds: string | ReactNode;
 };
 
 export const HomeSubHeader = ({

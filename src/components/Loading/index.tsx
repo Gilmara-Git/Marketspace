@@ -1,13 +1,16 @@
 import { Center, Spinner, View} from 'native-base';
 
+type LoadingProps = {
+    spinnerColor: string
+}
 
-export const Loading =()=>{
+export const Loading =({ spinnerColor}:LoadingProps )=>{
     return (
         <Center
             mt={80}
             justifyContent='center'
             >
-            <Spinner color='blue.900'/>
+            <Spinner color={spinnerColor}/>
         </Center>
            
     )

@@ -11,6 +11,7 @@ import { Modal } from '@components/Modal';
 import { AppRoutesNavigationTabProps } from '@routes/app.routes';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
+
 import  { api } from '@services/api';
 import { AppError } from '@utils/AppError';
 import  { AllProductsDTO } from '@src/dtos/AllProductsDTO';
@@ -136,7 +137,7 @@ export const Home = ()=>{
                     <HomeHeader uponClicking={handleCreateAd}/>
                     <HomeSubHeader 
                         uponClicking={goToMyAds}
-                        userActiveAds={!isProductLoading ? String(activeProds): ''}    
+                        userActiveAds={!isProductLoading ? String(activeProds): <Loading spinnerColor='gray.100'/>}    
                         />
 
 
@@ -166,7 +167,7 @@ export const Home = ()=>{
 
                             <>
                             <View mt={20}/>
-                                <Loading /> 
+                                <Loading spinnerColor='blue.600'/> 
                             </>
 
                         
