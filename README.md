@@ -7,7 +7,7 @@ Figma Layout:
 
 <img src="https://github.com/Gilmara-Git/Marketspace/assets/66445234/ecba2232-39c1-426d-8fbd-3de18be524cb" alt="layout">
 
-<img src="https://github.com/Gilmara-Git/Marketspace/assets/66445234/a73c2781-8db6-4615-98c8-cfb80a75539d" alt="marketspace"/>
+<img src="https://github.com/Gilmara-Git/Marketspace/assets/66445234/f0209daf-5ac4-4ae8-8a13-a833a86e7739"/>
 
 </div>
 
