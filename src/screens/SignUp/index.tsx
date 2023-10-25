@@ -84,6 +84,17 @@ export const SignUp =()=>{
         console.log(data, 'line31 signup');
         try{
             setIsCreating(true);
+
+            if(!userAvatar){
+                setIsCreating(false);
+               return toast.show({
+                    title: 'Pick you avatar image',
+                    placement: 'top',
+                    bg: 'red.400',
+                    duration: 2000
+                })
+            }
+
             const imgExt = userAvatar.split('.').pop();
             console.log(imgExt, '85')    
             
@@ -117,7 +128,7 @@ export const SignUp =()=>{
         }catch(error){  
             const isAppError = error instanceof AppError;
             toast.show({
-                title: isAppError ? error.message :  'There was an error creating your account. Upload your photo and all fields.',
+                title: isAppError ? error.message :  'There was an error creating your account.',
                 placement: 'top',
                 duration: 5000,
                 bg: 'red.400'
