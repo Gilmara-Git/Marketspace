@@ -7,7 +7,15 @@ Figma Layout:
 
 <img src="https://github.com/Gilmara-Git/Marketspace/assets/66445234/ecba2232-39c1-426d-8fbd-3de18be524cb" alt="layout">
 
-<img src="https://github.com/Gilmara-Git/Marketspace/assets/66445234/f0209daf-5ac4-4ae8-8a13-a833a86e7739"/>
+<img src="https://github.com/Gilmara-Git/Marketspace/assets/66445234/f0209daf-5ac4-4ae8-8a13-a833a86e7739" alt="gif"/>
+
+
+</div>
+
+<div >
+    <img src='https://github.com/Gilmara-Git/Marketspace/assets/66445234/d3032e43-8e0f-4ce4-99d7-9419f466984f'alt='Product Display'/>
+     <img src="https://github.com/Gilmara-Git/Marketspace/assets/66445234/c3e3f485-66e1-4dcb-a4df-bf457d83f78d" alt="Filters">
+
 
 </div>
 
@@ -22,13 +30,9 @@ Figma Layout:
 
 **React Native** project developed as one of the challenges during my **Ignite bootcamp** with [Rocketseat](https://www.rocketseat.com.br/).
 
-- This app provides a list of exercises per body area, and each exercise suggests the number and 
-**series** and **repetitions**. 
-- Furthermore, you can mark the exercise as **completed** which creates your exercises **history**.
-- On the **History** page it displays the exercises per day in a **Section List**.  
-- On the **Profile** page you can set a **profile picture** by uploading it from your device.
-- You can only access the exercises if you are **authenticated** (App routes/private), otherwise you are displayed with the **SignIn** or **SignUp** pages (Auth routes /public).
-
+- This app is a **e-commerce** style where you can advertise your products and also buy other people's products.
+- Users can create a new account, login, create their products Ads, edit, activate, deactivate and delete their advertisements.
+- They can upload up to 3 images to display on their product.
 
 
  # Motivation
@@ -57,9 +61,10 @@ Figma Layout:
 - "react-native-svg-transformer"
 - Refresh Token Rotation Strategy
 - JWT (JSON Web Token)
-- Features to change username and password
-- Password validation - React Hook Form 
+- Fields validation - React Hook Form 
 - Babel-plugin-module-resolver to map path/imports
+- Prima studio to see the database
+- Api requests were performed using Axios
 
 
 # App creation
@@ -67,14 +72,12 @@ Project was created using **expo init appName --npm***
 # To run the project
 
 - Clone it
-- You will need Expo and NodeJS installed
+- You will need Expo and NodeJS 16 installed
 - **Navigate** to the project 's folder
 - To start the frontend, go to the **mobile** folder and run **expo start** or if you can build the App in iOS and Android run **npx react-native start**
 - To start the backend run **npm start**
 
 Thanks [Rocketseat](https://www.instagram.com/rocketseat/?igshid=Yzg5MTU1MDY%3D) 🚀
 
-**Instructor Mobile**:
-[Rodrigo Gonçalves](https://www.linkedin.com/in/rodrigo-gon%C3%A7alves-santana/)
 
 Made with 💗 by [Gilmara Pimentel](https://www.linkedin.com/in/gilmara-pimentel/)
