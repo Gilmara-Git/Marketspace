@@ -12,15 +12,6 @@ import { THEME } from '@themes/index';
 
 import { Loading } from "@components/Loading/index";
 import { Routes } from '@routes/index';
-import { SignIn } from '@screens/SignIn';
-
-import { Home } from '@screens/Home';
-import { AdDetails } from "@screens/AdDetails";
-import { MyAds} from '@screens/MyAds';
-import { MyAdsDetails } from '@screens/MyAdsDetails';
-import { AdCreate } from '@screens/AdCreate';
-import { AdEdit } from '@screens/AdEdit';
-import { AdPreview } from '@screens/AdPreview';
 import { AuthContextProvider } from "@src/contexts/AuthContext";
 
 
@@ -43,7 +34,7 @@ export default function App() {
 
         <AuthContextProvider >
 
-          {!fontsLoaded ? <Loading /> : <Routes/>}
+          {!fontsLoaded ? <Loading spinnerColor='blue.600'/> : <Routes/>}
 
         </AuthContextProvider>
       </NativeBaseProvider>
