@@ -79,7 +79,7 @@ export const AdEdit = () => {
   const route = useRoute();
   const { productId }  =  route.params as AdEditParams;
 
-  console.log(paymentState, 'linha82 na AdEdit')
+
   const {
     reset,
     control, 

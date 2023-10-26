@@ -152,12 +152,14 @@ export const AdDetails = () => {
             </HStack>
 
             <HStack pb={1.5} justifyContent="space-between">
+              <View width={64}>
               <Heading fontFamily="heading" fontSize="xl">
                 {productDetails?.name}
               </Heading>
+
+              </View>
               <Text fontFamily="heading" fontSize="xl" color="blue.600">
                 <Text fontSize="sm">{productDetails.price}</Text>
-                {}
               </Text>
             </HStack>
 

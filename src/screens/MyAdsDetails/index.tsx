@@ -125,10 +125,17 @@ const handleDeleteAd = async() => {
     try{
         setIsLoading(true);
 
-        await api.delete(`/products/${productId}`);
-
         
-        handleDeleteAdImages();
+        await api.delete(`/products/${productId}`);
+        
+        await handleDeleteAdImages();
+        toast.show({
+            title: 'Your Ad was removed',
+            placement: 'top',
+            bg: 'tertiary.600',
+            duration: 3000
+        })
+        
         navigation.navigate('MyAds');
 
     }catch(error){
@@ -166,13 +173,14 @@ const handleDeleteAdImages = async() => {
         
 
     }catch(error){
-        const isAppError = error instanceof AppError;
-        toast.show({
-            title: isAppError ? error.message: 'There was an error to delete your Ad',
-            placement: 'top',
-            bg: 'red.400',
-            duration: 3000
-        })
+        console.log(error)
+        // const isAppError = error instanceof AppError;
+        // toast.show({
+        //     title: isAppError ? error.message: 'There was an error to delete your Ad',
+        //     placement: 'top',
+        //     bg: 'red.400',
+        //     duration: 3000
+        // })
 
     }finally{
         setIsLoading(false);
@@ -208,7 +216,7 @@ useFocusEffect((useCallback(()=>{
             bgColor='gray.200'
         />
 
-            { isLoading ? <Loading/>  : 
+            { isLoading ? <Loading spinnerColor="blue.600"/>  : 
             <VStack bg='gray.200'>
                 <View>
                     <ImageSlider
